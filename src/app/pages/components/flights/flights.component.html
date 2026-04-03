@@ -1,0 +1,276 @@
+<!-- Header -->
+<div class="content__header">
+    <div class="header__options">
+        <!-- Left (boton de volver) -->
+        <div class="icon-gap">
+            <!-- Return Icon -->
+            <svg *appRole="['ADMIN']" xmlns="https://www.w3.org/2000/svg"
+                class="icon-hover icon icon-tabler icon-tabler-arrow-narrow-left" (click)="this.globalsService.return()"
+                width="16" height="16" viewBox="0 0 24 24" stroke-width="1.5" stroke="#FFFFFF" fill="none"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+                <line x1="5" y1="12" x2="9" y2="16" />
+                <line x1="5" y1="12" x2="9" y2="8" />
+            </svg>
+            <div [ngClass]="{
+                    'display-none': this.globalsService.desktop.getValue()
+                }" style="width: 1.6rem"></div>
+        </div>
+        <!-- Nombre y apellido del usuario actual -->
+        <ng-container *ngIf="user">
+            <h3 *ngIf="user.nombreUsuario && user.apellidoUsuario">
+                Piloto: {{ user.nombreUsuario }} {{ user.apellidoUsuario }}
+            </h3>
+            <h3 *ngIf="!(user.nombreUsuario && user.apellidoUsuario)">
+                {{ user.aliasUsuario }}
+            </h3>
+        </ng-container>
+
+        <ng-container *ngIf="!user">
+            <h3>Usuario no Identificado</h3>
+        </ng-container>
+
+        <!-- Right -->
+        <div class="icon-gap">
+            <!-- Filter Icon -->
+            <svg [ngClass]="{
+                    'display-none': this.globalsService.desktop.getValue()
+                }" xmlns="https://www.w3.org/2000/svg" (click)="this.sidebarService.toggleFilter()"
+                class="icon-hover icon icon-tabler icon-tabler-adjustments-horizontal" width="16" height="16"
+                viewBox="0 0 24 24" stroke-width="1.5" stroke="#ffffff" fill="none" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <circle cx="14" cy="6" r="2" />
+                <line x1="4" y1="6" x2="12" y2="6" />
+                <line x1="16" y1="6" x2="20" y2="6" />
+                <circle cx="8" cy="12" r="2" />
+                <line x1="4" y1="12" x2="6" y2="12" />
+                <line x1="10" y1="12" x2="20" y2="12" />
+                <circle cx="17" cy="18" r="2" />
+                <line x1="4" y1="18" x2="15" y2="18" />
+                <line x1="19" y1="18" x2="20" y2="18" />
+            </svg>
+            <!-- Sort Icon -->
+            <svg (click)="sortOwnerData(ownerDataList)" xmlns="https://www.w3.org/2000/svg"
+                class="sort-icon icon-hover icon icon-tabler icon-tabler-arrows-sort" width="16" height="16"
+                viewBox="0 0 24 24" stroke-width="1.5" stroke="#ffffff" fill="none" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path d="M3 9l4 -4l4 4m-4 -4v14" />
+                <path d="M21 15l-4 4l-4 -4m4 4v-14" />
+            </svg>
+        </div>
+    </div>
+
+    <div [ngClass]="{
+            'header__elements--active': this.sidebarService.filterOptions
+        }" class="header__elements">
+        <button mat-stroked-button color="primary" id="flights" (click)="filterElement('flights')">
+            Vuelos
+        </button>
+        <button mat-stroked-button color="primary" id="analysis" (click)="filterElement('analysis')">
+            Análisis
+        </button>
+    </div>
+
+    <div [ngClass]="{
+            'header__dates--active': this.sidebarService.filterOptions
+        }" class="header__dates">
+        <mat-form-field appearance="fill">
+            <mat-label>Rango de fechas</mat-label>
+            <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
+                <input matStartDate formControlName="start" placeholder="Fecha desde" [readonly]="true" />
+                <input (dateChange)="formatRangeDates()" matEndDate formControlName="end" placeholder="Fecha hasta"
+                    [readonly]="true" />
+            </mat-date-range-input>
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-date-range-picker #picker></mat-date-range-picker>
+            <mat-icon *ngIf="range.get('start')?.value" class="pointer" matSuffix mat-icon-button aria-label="Clear"
+                (click)="range.reset()">
+                close
+            </mat-icon>
+        </mat-form-field>
+    </div>
+    <!-- FILTRO DE BÚSQUEDA-->
+    <mat-form-field appearance="fill">
+        <mat-label>Buscar por cuadro de vuelo</mat-label>
+        <input matInput [formControl]="searchUsers" placeholder="Ingrese cuadro de vuelo...">
+        <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+
+</div>
+<!-- END Header -->
+
+<!-- List -->
+<div *ngIf="loading" style="flex-grow: 1">
+    <mat-progress-bar mode="query"></mat-progress-bar>
+</div>
+
+
+<mat-selection-list *ngIf="!loading" class="content__list" [multiple]="false">
+    <ng-container *ngFor="let data of searchUsers.value ? filteredOwnerDataList : ownerDataList">
+        <!-- Flight -->
+        <ng-container *ngIf="data.vueloId">
+            <mat-list-option [selected]="" [value]="data" class="list__element" (click)="goToElement(data)">
+
+                <!-- grafico mini del vuelo -->
+                <div class="list__img">
+                    <svg [ngStyle]="{
+                            fill: data.colorVuelo,
+                            stroke: data.colorVuelo
+                        }" width="30" height="30">
+                        <path [attr.d]="data.path" fill-opacity="0.25" stroke-width="2px" stroke-opacity="0.75" />
+                    </svg>
+                </div>
+
+
+                <!-- Preview de datos del vuelo -->
+                <div class="list__text">
+                    <div mat-line><strong>Vuelo</strong></div>
+                    <div mat-line>{{ data.date | date : "dd/MM/yyyy" }}</div>
+                    <div mat-line>
+                        {{ data.cuadroVuelo }} - {{ data.cultivoVuelo }}
+                    </div>
+                    <div mat-line>{{ data.aplicacionVuelo }}</div>
+                    <div mat-line>{{ data.superficieVuelo | number }} ha</div>
+                </div>
+
+                <!-- icono de ojo para mostrar/ocultar vuelo -->
+                <button mat-icon-button matSuffix (click)="$event.stopPropagation(); hideShowLayer($event, data)"
+                    [attr.aria-label]="'Ocultar Elemento'" [attr.aria-pressed]="!data.visibility">
+                    <mat-icon style="font-weight: 400">
+                        {{ data.visibility ? "visibility" : "visibility_off" }}</mat-icon>
+                </button>
+
+                <!-- icono de impresora -->
+                <button mat-icon-button matSuffix (click)="$event.stopPropagation(); imprimirVuelo(data)" [disabled]="selectedFlight && selectedFlight.vueloId !== data.vueloId">
+                    <mat-icon style="font-weight: 400">print</mat-icon>
+                </button>
+
+
+
+            </mat-list-option>
+        </ng-container>
+
+
+        <!-- Analysis -->
+        <ng-container *ngIf="data.analisisId">
+            <mat-list-option [selected]="" [value]="data" class="list__element" (click)="goToElement(data)">
+                <div class="list__img">
+                    <div class="index-gradient" [ngStyle]="{ background: data.indice.rangos }"></div>
+                </div>
+                <div class="list__text">
+                    <div mat-line><strong>Análisis</strong></div>
+                    <div mat-line>{{ data.date | date : "dd/MM/yyyy" }}</div>
+                    <div mat-line>{{ data.indice.siglasIndice }}</div>
+                </div>
+                <button mat-icon-button matSuffix (click)="hideShowLayer($event, data)"
+                    [attr.aria-label]="'Ocultar Elemento'" [attr.aria-pressed]="!data.visibility">
+                    <mat-icon style="font-weight: 400">{{
+                        data.visibility ? "visibility" : "visibility_off"
+                        }}</mat-icon>
+                </button>
+            </mat-list-option>
+        </ng-container>
+    </ng-container>
+</mat-selection-list>
+<!-- END List -->
+
+<!-- Footer -->
+<div class="sidebar__footer">
+    <!-- Toggle -->
+    <div [ngClass]="{ 'display-none': this.sidebarService.extendedSidebar }" class="sidebar__toggle"
+        (click)="this.sidebarService.toggleSidebar()">
+        <svg xmlns="https://www.w3.org/2000/svg" class="icon-hover icon icon-tabler icon-tabler-chevrons-right"
+            width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="#ffffff" fill="none"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+            <polyline points="7 7 12 12 7 17" />
+            <polyline points="13 7 18 12 13 17" />
+        </svg>
+    </div>
+    <div [ngClass]="{ 'display-none': !this.sidebarService.extendedSidebar }" class="sidebar__toggle pointer"
+        (click)="this.sidebarService.toggleSidebar()">
+        <svg xmlns="https://www.w3.org/2000/svg" class="icon-hover icon icon-tabler icon-tabler-chevrons-left"
+            width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="#ffffff" fill="none"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+            <polyline points="11 7 6 12 11 17" />
+            <polyline points="17 7 12 12 17 17" />
+        </svg>
+    </div>
+    <!-- END Toggle -->
+    <!-- Buttons -->
+    <div class="footer__buttons">
+        <!-- Add Flight -->
+        <!-- (click)="addFlight() -->
+        <button mat-flat-button color="primary" *appRole="['ADMIN', 'PILOTO']" (click)="addFlight()">
+            <div [ngClass]="{
+                    'display-none': this.globalsService.desktop.getValue()
+                }">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+                    class="icon icon-tabler icons-tabler-outline icon-tabler-polygon">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M12 5m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+                    <path d="M19 8m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+                    <path d="M5 11m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+                    <path d="M15 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+                    <path d="M6.5 9.5l3.5 -3" />
+                    <path d="M14 5.5l3 1.5" />
+                    <path d="M18.5 10l-2.5 7" />
+                    <path d="M13.5 17.5l-7 -5" />
+                </svg>
+            </div>
+            <div [ngClass]="{
+                    'display-none': !this.globalsService.desktop.getValue()
+                }">
+                Crear Vuelo
+            </div>
+        </button>
+
+        <button mat-flat-button class="btn-secondary" *appRole="['ADMIN', 'PILOTO']" (click)="activarEdicionPoligono()"
+            [style.background-color]="isEditingPolygon ? 'red' : ''">
+            <div [ngClass]="{ 'display-none': this.globalsService.desktop.getValue() }">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+                    class="icon icon-tabler icons-tabler-outline icon-tabler-edit">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" />
+                    <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" />
+                    <path d="M16 5l3 3" />
+                </svg>
+            </div>
+            <div [ngClass]="{ 'display-none': !this.globalsService.desktop.getValue() }">
+                {{ isEditingPolygon ? 'Salir de Edición' : 'Editar Polígono' }}
+            </div>
+        </button>
+
+        <!-- Generate report -->
+        <button mat-flat-button color="accent" (click)="generateReport(user)">
+            <div [ngClass]="{
+                    'display-none': this.globalsService.desktop.getValue()
+                }">
+                <svg xmlns="https://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-report-analytics"
+                    width="24" height="24" viewBox="0 0 24 24" stroke-width="1.5" stroke="#ffffff" fill="none"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2" />
+                    <rect x="9" y="3" width="6" height="4" rx="2" />
+                    <path d="M9 17v-5" />
+                    <path d="M12 17v-1" />
+                    <path d="M15 17v-3" />
+                </svg>
+            </div>
+            <div [ngClass]="{
+                    'display-none': !this.globalsService.desktop.getValue()
+                }">
+                Informe
+            </div>
+        </button>
+
+    </div>
+    <!-- END Buttons -->
+</div>
+<!-- END Footer -->

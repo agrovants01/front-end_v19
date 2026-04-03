@@ -1,0 +1,112 @@
+@use 'variables' as *;
+
+/* Media Queries */
+@mixin mobile {
+    @media (min-width: 480px) {
+        @content;
+    }
+}
+@mixin tablet {
+    @media (min-width: 768px) {
+        @content;
+    }
+}
+@mixin desktop {
+    @media (min-width: 1024px) {
+        @content;
+    }
+}
+@mixin desktopLarge {
+    @media (min-width: 1270px) {
+        @content;
+    }
+}
+
+/* Utilities */
+@mixin content-flex {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+@mixin box-shadow($c, $a) {
+    box-shadow: 0px 0px 200rem 200rem rgba($color: $c, $alpha: $a) inset;
+    -webkit-box-shadow: 0px 0px 200rem 200rem rgba($color: $c, $alpha: $a) inset;
+    -moz-box-shadow: 0px 0px 200rem 200rem rgba($color: $c, $alpha: $a) inset;
+}
+
+/* Components */
+@mixin button($c: $mainColor) {
+    cursor: pointer;
+    border: 0;
+    border-radius: .5rem;
+    padding: 0.5rem 3rem;
+    background-color: $c;
+    color: white;
+    font-size: 1.4rem;
+    font-weight: bold;
+    word-break: break-word;
+    overflow: hidden;
+    max-width: 35rem;
+    height: 3.6rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Map control */
+@mixin mapButton {
+    position: absolute;
+    z-index: 1000;
+    background-color: $backgroundColor;
+    border-radius: 0.5rem;
+    min-height: 3.6rem;
+    max-height: 3.6rem;
+    height: auto;
+    min-width: 3.6rem;
+    max-width: 3.6rem;
+    width: auto;
+    overflow: hidden;
+    display: flex;
+    transition: max-height 300ms, max-width 400ms;
+}
+
+@mixin mapButtonRef {
+    position: absolute;
+    z-index: 1000;
+    background-color: $backgroundColor;
+    border-radius: 0.5rem;
+    min-height: 3.6rem;
+    max-height: 3.6rem;
+    height: auto;
+    min-width: 3.6rem;
+    max-width: 3.6rem;
+    width: auto;
+    overflow: hidden;
+    display: block;
+    transition: max-height 300ms, max-width 400ms;
+}
+
+@mixin mapButtonToggle {
+    cursor: pointer;
+    min-width: 3.6rem;
+    height: 3.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 0;
+    padding-left: 0;
+    transition: padding 200ms;
+}
+
+@mixin mapButtonToggleRef {
+    cursor: pointer;
+    min-width: 3.6rem;
+    height: 3.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 0;
+    padding-left: 0;
+    transition: padding 200ms;
+}

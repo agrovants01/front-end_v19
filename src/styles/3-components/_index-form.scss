@@ -1,0 +1,50 @@
+@use "../0-abstracts/index" as *;
+
+.admin-references {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  table {
+    border: 1px solid;
+    border-color: $grey;
+    border-radius: 0.5rem;
+  }
+}
+
+.reference-table {
+  margin-top: 2rem;
+
+  th {
+    background-color: $mainColor;
+  }
+
+  th, td {
+    padding: 0.5rem;
+  }
+
+  tr td:first-child {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+  }
+}
+
+.reference-table-options {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+
+  td {
+    cursor: pointer;
+    padding-top: 3rem;
+  }
+}
+
+.color-box {
+  width: 2rem;
+  height: 2rem;
+  margin-left: 0.5rem;
+  margin-bottom: 2rem;
+  border-radius: 0.3rem;
+}

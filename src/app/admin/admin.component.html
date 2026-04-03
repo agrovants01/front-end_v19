@@ -1,0 +1,181 @@
+<div class="root">
+    <app-sidebar></app-sidebar>
+    <div class="admin-bg">
+        <div class="admin-cont">
+            <h2>Administración</h2>
+
+            <div class="admin-item-container">
+
+                <!-- Flights Upload -->
+                <a *ngIf="authService.auth.perfilUsuario === 'ADMIN'" matRipple class="admin-item"
+                    [routerLink]="['/admin/upload-flights']" routerLinkActive="router-link-active">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="icon icon-tabler icons-tabler-outline icon-tabler-upload">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" />
+                        <path d="M7 9l5 -5l5 5" />
+                        <path d="M12 4l0 12" />
+                    </svg>
+                    Cargar Vuelos por archivo
+                </a>
+
+                <!-- Analysis Layer Upload -->
+                <a *ngIf="authService.auth.perfilUsuario === 'ADMIN'" matRipple class="admin-item"
+                    [routerLink]="['/admin/upload-analysis']">
+                    <svg xmlns="https://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-stack" width="60"
+                        height="60" viewBox="0 0 24 24" stroke-width="1.5" stroke="#ffffff" fill="none"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <path d="M12 6l-8 4l8 4l8 -4l-8 -4" />
+                        <path d="M4 14l8 4l8 -4" />
+                    </svg>
+                    Agregar Análisis
+                </a>
+
+                <!-- Analysis Index Managment -->
+                <a *ngIf="authService.auth.perfilUsuario === 'ADMIN'" matRipple class="admin-item"
+                    [routerLink]="['/admin/indexes']">
+                    <svg xmlns="https://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-plant-2" width="60"
+                        height="60" viewBox="0 0 24 24" stroke-width="1.5" stroke="#ffffff" fill="none"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <path d="M2 9a10 10 0 1 0 20 0" />
+                        <path d="M12 19a10 10 0 0 1 10 -10" />
+                        <path d="M2 9a10 10 0 0 1 10 10" />
+                        <path d="M12 4a9.7 9.7 0 0 1 2.99 7.5" />
+                        <path d="M9.01 11.5a9.7 9.7 0 0 1 2.99 -7.5" />
+                    </svg>
+                    Gestionar Índices
+                </a>
+
+
+
+
+                <a *ngIf="authService.auth.perfilUsuario === 'ADMIN'" matRipple class="admin-item"
+                    [routerLink]="['/admin/agrochemicals']">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24"
+                        fill="currentColor" class="icon icon-tabler icons-tabler-filled icon-tabler-flask">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <path
+                            d="M15 2a1 1 0 0 1 0 2v4.826l3.932 10.814l.034 .077a1.7 1.7 0 0 1 -.002 1.193l-.07 .162a1.7 1.7 0 0 1 -1.213 .911l-.181 .017h-11l-.181 -.017a1.7 1.7 0 0 1 -1.285 -2.266l.039 -.09l3.927 -10.804v-4.823a1 1 0 1 1 0 -2h6zm-2 2h-2v4h2v-4z" />
+                    </svg>
+                    Gestionar Agroquímicos
+                </a>
+
+                <a *ngIf="authService.auth.perfilUsuario === 'ADMIN'" matRipple class="admin-item"
+                    [routerLink]="['/admin/adjuvants']">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24"
+                        fill="currentColor" class="icon icon-tabler icons-tabler-filled icon-tabler-flask-2">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <path
+                            d="M15 2a1 1 0 0 1 0 2v5.674l.062 .03a7 7 0 0 1 3.85 5.174l.037 .262a7 7 0 0 1 -3.078 6.693a1 1 0 0 1 -.553 .167h-6.635a1 1 0 0 1 -.552 -.166a7 7 0 0 1 .807 -12.134l.062 -.028v-5.672a1 1 0 1 1 0 -2h6zm-2 2h-2v6.34a1 1 0 0 1 -.551 .894l-.116 .049a5 5 0 0 0 -2.92 2.717h9.172a5 5 0 0 0 -2.918 -2.715a1 1 0 0 1 -.667 -.943v-6.342z" />
+                    </svg>
+                    Gestionar Coadyuvantes
+                </a>
+
+                <!-- Users managment -->
+                <a *ngIf="authService.auth.perfilUsuario === 'ADMIN'" matRipple class="admin-item"
+                    [routerLink]="['/admin/users']">
+                    <svg xmlns="https://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-users" width="60"
+                        height="60" viewBox="0 0 24 24" stroke-width="1.5" stroke="#ffffff" fill="none"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <circle cx="9" cy="7" r="4" />
+                        <path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                        <path d="M21 21v-2a4 4 0 0 0 -3 -3.85" />
+                    </svg>
+                    Gestión de Usuarios
+                </a>
+
+                <!-- Flights managment -->
+                <a *ngIf="authService.auth.perfilUsuario === 'ADMIN' || authService.auth.perfilUsuario === 'PILOTO' || authService.auth.perfilUsuario === 'ADMINISTRATIVO'"
+                    matRipple class="admin-item" [routerLink]="['/admin/flights-admin']">
+                    <svg xmlns="https://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-drone" width="60"
+                        height="60" viewBox="0 0 24 24" stroke-width="1.5" stroke="#ffffff" fill="none"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <path d="M10 10h4v4h-4z" />
+                        <line x1="10" y1="10" x2="6.5" y2="6.5" />
+                        <path d="M9.96 6a3.5 3.5 0 1 0 -3.96 3.96" />
+                        <path d="M14 10l3.5 -3.5" />
+                        <path d="M18 9.96a3.5 3.5 0 1 0 -3.96 -3.96" />
+                        <line x1="14" y1="14" x2="17.5" y2="17.5" />
+                        <path d="M14.04 18a3.5 3.5 0 1 0 3.96 -3.96" />
+                        <line x1="10" y1="14" x2="6.5" y2="17.5" />
+                        <path d="M6 14.04a3.5 3.5 0 1 0 3.96 3.96" />
+                    </svg>
+                    Gestión de Vuelos
+                </a>
+
+                <!-- Remitos managment -->
+                <!-- *ngIf="authService.auth.perfilUsuario === 'ADMINISTRATIVO'" -->
+                <a *ngIf="['ADMINISTRATIVO', 'ADMIN'].includes(authService.auth.perfilUsuario)" matRipple
+                    class="admin-item" [routerLink]="['/admin/remito-admin']">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="icon icon-tabler icons-tabler-outline icon-tabler-receipt">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <path
+                            d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16l-3 -2l-2 2l-2 -2l-2 2l-2 -2l-3 2m4 -14h6m-6 4h6m-2 4h2" />
+                    </svg>
+                    Remitos
+                </a>
+
+                <!-- <a *ngIf="['ADMINISTRATIVO', 'ADMIN'].includes(authService.auth.perfilUsuario)" matRipple
+                    class="admin-item" [routerLink]="['/admin/pago-admin-piloto']">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="icon icon-tabler icons-tabler-outline icon-tabler-cash-register">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <path
+                            d="M21 15h-2.5c-.398 0 -.779 .158 -1.061 .439c-.281 .281 -.439 .663 -.439 1.061c0 .398 .158 .779 .439 1.061c.281 .281 .663 .439 1.061 .439h1c.398 0 .779 .158 1.061 .439c.281 .281 .439 .663 .439 1.061c0 .398 -.158 .779 -.439 1.061c-.281 .281 -.663 .439 -1.061 .439h-2.5" />
+                        <path d="M19 21v1m0 -8v1" />
+                        <path
+                            d="M13 21h-7c-.53 0 -1.039 -.211 -1.414 -.586c-.375 -.375 -.586 -.884 -.586 -1.414v-10c0 -.53 .211 -1.039 .586 -1.414c.375 -.375 .884 -.586 1.414 -.586h2m12 3.12v-1.12c0 -.53 -.211 -1.039 -.586 -1.414c-.375 -.375 -.884 -.586 -1.414 -.586h-2" />
+                        <path
+                            d="M16 10v-6c0 -.53 -.211 -1.039 -.586 -1.414c-.375 -.375 -.884 -.586 -1.414 -.586h-4c-.53 0 -1.039 .211 -1.414 .586c-.375 .375 -.586 .884 -.586 1.414v6m8 0h-8m8 0h1m-9 0h-1" />
+                        <path d="M8 14v.01" />
+                        <path d="M8 17v.01" />
+                        <path d="M12 13.99v.01" />
+                        <path d="M12 17v.01" />
+                    </svg>
+                    Pagos a Pilotos
+                </a> -->
+
+
+
+
+
+                <a *ngIf="['ADMINISTRATIVO', 'ADMIN'].includes(authService.auth.perfilUsuario)" matRipple
+                    class="admin-item" [routerLink]="['/admin/gestion-admin']">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="icon icon-tabler icons-tabler-outline icon-tabler-receipt-dollar">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <path d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16l-3 -2l-2 2l-2 -2l-2 2l-2 -2l-3 2" />
+                        <path d="M14.8 8a2 2 0 0 0 -1.8 -1h-2a2 2 0 1 0 0 4h2a2 2 0 1 1 0 4h-2a2 2 0 0 1 -1.8 -1" />
+                        <path d="M12 6v10" />
+                    </svg>
+                    Gestión administrativa
+                </a>
+
+                <!-- Backup -->
+                <a *ngIf="authService.auth.perfilUsuario === 'ADMIN'" matRipple class="admin-item"
+                    [routerLink]="['/admin/backups']">
+                    <svg xmlns="https://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-database" width="60"
+                        height="60" viewBox="0 0 24 24" stroke-width="1.5" stroke="#ffffff" fill="none"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <ellipse cx="12" cy="6" rx="8" ry="3"></ellipse>
+                        <path d="M4 6v6a8 3 0 0 0 16 0v-6" />
+                        <path d="M4 12v6a8 3 0 0 0 16 0v-6" />
+                    </svg>
+                    Copias de Seguridad
+                </a>
+
+            </div>
+        </div>
+    </div>
+</div>

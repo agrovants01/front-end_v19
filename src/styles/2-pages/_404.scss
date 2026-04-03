@@ -1,0 +1,38 @@
+@use "../0-abstracts/index" as *;
+
+.notFound-bg {
+    height: 100%;
+    width: 100%;
+    background-color: $backgroundColor;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10rem;
+
+    img {
+        max-width: 100%;
+        width: auto;
+        height: auto;
+    }
+
+    @include desktop {
+        img {
+            max-width: 50%;
+        }
+    }
+}
+
+.notFound-options {
+
+    display: flex;
+    justify-content: space-between;
+    gap: 15rem;
+    align-items: center;
+    @include desktop {
+        .mat-raised-button {
+            gap: 15rem;
+            transform: scale(1.5);
+        }
+    }
+}

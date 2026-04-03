@@ -1,0 +1,58 @@
+<!-- From header -->
+<h1 mat-dialog-title>Generar informe</h1>
+<!-- END Form Header -->
+
+<!-- Form Content -->
+<div mat-dialog-content>
+    <form [formGroup]="range" class="mat-form" autocomplete="off">
+
+        <mat-form-field appearance="fill">
+            <mat-label>Rango de fechas</mat-label>
+            <mat-date-range-input [rangePicker]="picker">
+                <input matStartDate formControlName="start" placeholder="Fecha desde"
+                    (dateChange)="setFromDate($event.value)">
+                <input matEndDate formControlName="end" placeholder="Fecha hasta"
+                    (dateChange)="getFlights($event.value)">
+            </mat-date-range-input>
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-date-range-picker #picker></mat-date-range-picker>
+        </mat-form-field>
+
+        <mat-checkbox formControlName="includeImages">
+            Incluir imágenes de parcelas
+        </mat-checkbox>
+
+        <div *ngIf="flights.length == 0" class="report__flights">
+            <p>Vuelos agregados</p>
+            <div>No hay vuelos agregados</div>
+        </div>
+
+        <div *ngIf="flights.length > 0" class="report__flights">
+            <p>Vuelos agregados</p>
+            <div class="report__ref">
+                <div>Fecha</div>
+                <div>Cuadro</div>
+                <div>Zona</div>
+                <div>Superficie</div>
+                <div></div>
+            </div>
+            <div class="report__flight" *ngFor="let f of flights">
+                <div class="report__field"> {{ f.fechaVuelo }} </div>
+                <div class="report__field"> {{ f.cuadroVuelo }} </div>
+                <div class="report__field"> {{ f.zonaVuelo }}</div>
+                <div class="report__field"> {{ f.superficieVuelo }}</div>
+                <div class="report__field" (click)="removeFlight(f.vueloId)">X</div>
+            </div>
+        </div>
+
+    </form>
+</div>
+<!-- END Form Content -->
+
+<!-- Form Actions -->
+<div mat-dialog-actions class="action-buttons">
+    <button mat-raised-button color="warn" (click)="cancel()">Cancelar</button>
+    <button mat-raised-button color="primary" type="submit" cdkFocusInitial (click)="generateReport()">Generar
+        informe</button>
+</div>
+<!-- END Form Actions -->

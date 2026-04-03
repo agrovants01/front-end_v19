@@ -1,0 +1,96 @@
+<!-- From header -->
+<h1 mat-dialog-title>{{ title | titlecase }} Usuario</h1>
+<!-- END Form Header -->
+<!-- Form Content -->
+<div mat-dialog-content>
+    <form class="mat-form" [formGroup]="userForm" autocomplete="off">
+        <mat-form-field class="form-field" appearance="fill">
+            <mat-label>Nombre</mat-label>
+            <input matInput type="text" placeholder="Ingrese nombre/s..." formControlName="nombreUsuario" />
+            <mat-error *ngIf="notValidField('nombreUsuario')">{{
+                nombreErrorMsg
+                }}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="form-field" appearance="fill">
+            <mat-label>Razón Social</mat-label>
+            <input matInput type="text" placeholder="Ingrese Razón Social..." formControlName="apellidoUsuario" />
+            <mat-error *ngIf="notValidField('apellidoUsuario')">{{
+                apellidoErrorMsg
+                }}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="form-field" appearance="fill">
+            <mat-label>CUIT</mat-label>
+            <input matInput type="text" placeholder="Ingrese CUIT..." formControlName="cuitUsuario" />
+            <mat-hint>Sólo se permiten caracteres núméricos</mat-hint>
+            <mat-error *ngIf="notValidField('cuitUsuario')">{{
+                cuitErrorMsg
+                }}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="form-field" appearance="fill">
+            <mat-label>Alias</mat-label>
+            <input matInput type="text" placeholder="Ingrese alias..." formControlName="aliasUsuario" />
+
+            <!-- Checkbox como sufijo - CORREGIDO -->
+            <mat-checkbox matSuffix [checked]="bloqueoAlias" (change)="toggleBloqueoAlias($event)" color="primary"
+                style="font-size: 11px; margin-right: 8px;">
+                Bloquear
+            </mat-checkbox>
+
+            <mat-error *ngIf="notValidField('aliasUsuario')">{{
+                aliasErrorMsg
+                }}</mat-error>
+
+            <mat-hint *ngIf="bloqueoAlias" style="font-size: 11px; color: #f57c00;">
+                ⚠️ Alias bloqueado - No se actualizará automáticamente
+            </mat-hint>
+        </mat-form-field>
+
+        <mat-form-field class="form-field" appearance="fill">
+            <mat-label>Domicilio</mat-label>
+            <input matInput type="text" placeholder="Ingrese domicilio..." formControlName="domicilioUsuario" />
+            <mat-error *ngIf="notValidField('domicilioUsuario')">{{
+                domicilioErrorMsg
+                }}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="form-field" appearance="fill">
+            <mat-label>Email</mat-label>
+            <input matInput type="email" placeholder="Ingrese email..." formControlName="emailUsuario" />
+            <mat-error *ngIf="notValidField('emailUsuario')">{{
+                emailErrorMsg
+                }}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="form-field" appearance="fill">
+            <mat-label>Teléfono</mat-label>
+            <input matInput type="text" placeholder="Ingrese teléfono..." formControlName="telefonoUsuario" />
+            <mat-error *ngIf="notValidField('telefonoUsuario')">{{
+                telefonoErrorMsg
+                }}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="form-field" appearance="fill">
+            <mat-label>Perfil</mat-label>
+            <mat-select formControlName="perfilUsuario">
+                <mat-option *ngFor="let profile of profiles | async" [value]="profile.perfilId">
+                    {{ profile.nombrePerfil | titlecase }}</mat-option>
+            </mat-select>
+            <mat-error *ngIf="notValidField('perfilUsuario')">{{
+                perfilErrorMsg
+                }}</mat-error>
+        </mat-form-field>
+    </form>
+</div>
+<!-- END Form Content -->
+<!-- Form Actions -->
+<div mat-dialog-actions class="action-buttons">
+    <button mat-raised-button color="warn" (click)="cancel()">Cancelar</button>
+    <button mat-raised-button color="primary" type="submit" [disabled]="userForm.pending" cdkFocusInitial
+        (click)="onSubmit()">
+        Guardar
+    </button>
+</div>
+<!-- END Form Actions -->

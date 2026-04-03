@@ -1,0 +1,42 @@
+.perfilAdmin {
+    margin-top: 0;
+    text-align: center;
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+    background-color: red;
+    border-radius: 0.5rem;
+    color: white;
+    font-weight: bold;
+    font-size: small;
+}
+
+.perfilPiloto {
+    margin-top: 0;
+    text-align: center;
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+    background-color: #feb301;
+    border-radius: 0.5rem;
+    font-weight: bold;
+    color: black;
+    font-size: small;
+}
+
+.perfilContratista {
+    margin-top: 0;
+    text-align: center;
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+    background-color: #84207a;
+    border-radius: 0.5rem;
+    font-weight: bold;
+    color: white;
+    font-size: small;
+}
+
+.search-input {
+    margin-bottom: 1.5rem !important;
+    padding-bottom: 0;
+    height: 50px;
+    border-radius: 4px 4px 0 0 !important;
+}

@@ -1,0 +1,67 @@
+@use "../0-abstracts/index" as *;
+
+.swal2-popup {
+    background-color: $backgroundColor !important;
+    font-size: 1.2rem !important;
+
+    a {
+        color: $accentColor !important;
+    }
+}
+
+.swal2-title {
+    color: white !important;
+}
+
+.swal2-html-container {
+    color: #E1E1E1 !important
+}
+
+.swal2-actions {
+    font-size: 1.3rem !important;
+}
+
+.swal2-styled.swal2-confirm {
+    background-color: $mainColor !important;
+    &:focus {
+        box-shadow: 0 0 0 0.3rem darken($color: $mainColor, $amount: 10) !important;
+    }
+}
+
+.swal2-styled.swal2-deny {
+    background-color: $warnColor !important;
+    &:focus {
+        box-shadow: 0 0 0 0.3rem darken($color: $warnColor, $amount: 20) !important;
+    }
+}
+
+.swal2-styled.swal2-cancel {
+    background-color: $darkGrey !important;
+    &:focus {
+        box-shadow: 0 0 0 0.3rem darken($color: $darkGrey, $amount: 10) !important;
+    }
+}
+
+.swal2-footer {
+    color: #BBBBBB !important;
+    border-top: 0.2rem solid rgba(0, 0, 0, 0.25) !important;
+}
+
+.swal2-close {
+    &:hover {
+        color: $mainColor !important;
+    }
+    &:focus {
+        box-shadow: none !important;
+    }
+}
+
+.swal2-file, .swal2-input, .swal2-textarea {
+    color: white !important;
+    border: 0.1rem solid rgb(120 120 120) !important;
+    background-color: rgba(0, 0, 0, 0.25) !important;
+    &:focus {
+        box-shadow: none !important;
+        border: 0.1rem solid darken($color: $mainColor, $amount: 10) !important;
+    }
+}

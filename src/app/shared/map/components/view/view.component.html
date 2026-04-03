@@ -1,0 +1,81 @@
+<div class="view">
+    <div class="view__toggle" (click)="this.mapService.toggleView()">
+        <svg xmlns="https://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-squares-filled" width="20"
+            height="20" viewBox="0 0 24 24" stroke-width="1.5" stroke="#ffffff" fill="none" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+            <rect x="8" y="8" width="12" height="12" rx="2" />
+            <path d="M8 14.5l6.492 -6.492" />
+            <path d="M13.496 20.004l6.504 -6.504l-6.504 6.504z" />
+            <path d="M8.586 19.414l10.827 -10.827" />
+            <path d="M16 8v-2a2 2 0 0 0 -2 -2h-8a2 2 0 0 0 -2 2v8a2 2 0 0 0 2 2h2" />
+        </svg>
+    </div>
+
+
+    <div class="view__table">
+        <table mat-table [dataSource]="this.mapService.viewList">
+            <!-- Index Column -->
+            <ng-container matColumnDef="index">
+                <th mat-header-cell *matHeaderCellDef>Índice</th>
+                <td mat-cell *matCellDef="let element">{{ element.index }}</td>
+            </ng-container>
+
+            <!-- Date Column -->
+            <ng-container matColumnDef="date">
+                <th mat-header-cell *matHeaderCellDef>Fecha</th>
+                <td mat-cell *matCellDef="let element">{{ element.date }}</td>
+            </ng-container>
+
+            <!-- Week Column -->
+            <ng-container matColumnDef="week">
+                <th mat-header-cell *matHeaderCellDef>Semana</th>
+                <td mat-cell *matCellDef="let element">{{ element.week }}</td>
+            </ng-container>
+
+            <!-- Options Column -->
+            <ng-container matColumnDef="options">
+                <th mat-header-cell *matHeaderCellDef style="text-align: center;">Opciones</th>
+                <td mat-cell *matCellDef="let element">
+                    <div class="options__cell">
+                        <!-- Hide -->
+                        <svg *ngIf="!element.show" (click)="this.mapService.showSateliteAnalysisView(element)"
+                            xmlns="https://www.w3.org/2000/svg" class="icon-hover icon icon-tabler icon-tabler-eye-off"
+                            width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="#ffffff" fill="none"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <line x1="3" y1="3" x2="21" y2="21" />
+                            <path d="M10.584 10.587a2 2 0 0 0 2.828 2.83" />
+                            <path
+                                d="M9.363 5.365a9.466 9.466 0 0 1 2.637 -.365c4 0 7.333 2.333 10 7c-.778 1.361 -1.612 2.524 -2.503 3.488m-2.14 1.861c-1.631 1.1 -3.415 1.651 -5.357 1.651c-4 0 -7.333 -2.333 -10 -7c1.369 -2.395 2.913 -4.175 4.632 -5.341" />
+                        </svg>
+
+                        <!-- Show -->
+                        <svg *ngIf="element.show" (click)="this.mapService.hideSateliteAnalysisView(element)"
+                            xmlns="https://www.w3.org/2000/svg" class="icon-hover icon icon-tabler icon-tabler-eye"
+                            width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="#ffffff" fill="none"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <circle cx="12" cy="12" r="2" />
+                            <path
+                                d="M22 12c-2.667 4.667 -6 7 -10 7s-7.333 -2.333 -10 -7c2.667 -4.667 6 -7 10 -7s7.333 2.333 10 7" />
+                        </svg>
+
+                        <!-- Remove -->
+                        <svg (click)="this.mapService.removeSateliteAnalysisFromView(element)"
+                            xmlns="https://www.w3.org/2000/svg" class="icon-hover icon icon-tabler icon-tabler-x"
+                            width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="#ffffff" fill="none"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <line x1="18" y1="6" x2="6" y2="18" />
+                            <line x1="6" y1="6" x2="18" y2="18" />
+                        </svg>
+                    </div>
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+    </div>
+</div>

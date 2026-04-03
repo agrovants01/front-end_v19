@@ -1,0 +1,598 @@
+/* =========================================== */
+/* ESTILOS PARA LISTA DE VUELOS */
+/* =========================================== */
+
+.list__text div:nth-child(3) {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 120px;
+}
+
+.list__text div:nth-child(4) {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 120px;
+}
+
+/* =========================================== */
+/* ICONOS DE VUELO ALINEADOS A LA DERECHA */
+/* =========================================== */
+
+.flight-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: auto;
+}
+
+.flight-actions button {
+    color: #666;
+    transition: all 0.2s ease;
+}
+
+.flight-actions button:hover:not([disabled]) {
+    color: #1976d2;
+}
+
+.flight-actions button[disabled] {
+    color: #ccc;
+    cursor: not-allowed;
+}
+
+/* =========================================== */
+/* ESTILOS DE PERFIL */
+/* =========================================== */
+
+.perfilAdmin {
+    margin-top: 0;
+    text-align: center;
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+    background-color: red;
+    border-radius: 0.5rem;
+    color: white;
+    font-weight: bold;
+    font-size: small;
+}
+
+.perfilPiloto {
+    margin-top: 0;
+    text-align: center;
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+    background-color: #feb301;
+    border-radius: 0.5rem;
+    font-weight: bold;
+    color: black;
+    font-size: small;
+}
+
+/*perfilContratista*/
+.perfilContratista {
+    margin-top: 0;
+    text-align: center;
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+    background-color: #84207a;
+    border-radius: 0.5rem;
+    font-weight: bold;
+    color: white;
+    font-size: small;
+}
+
+/* =========================================== */
+/* BOTÓN DE EDICIÓN INDIVIDUAL EN LISTA */
+/* =========================================== */
+
+.edit-flight-btn {
+    margin-right: 4px;
+    color: #666;
+    transition: all 0.2s ease;
+}
+
+.edit-flight-btn:hover:not([disabled]) {
+    color: #1976d2;
+    transform: scale(1.1);
+}
+
+.edit-flight-btn[disabled] {
+    color: #ccc;
+    cursor: not-allowed;
+}
+
+.edit-flight-btn svg {
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+}
+
+/* =========================================== */
+/* ESTILOS PARA VUELOS EN LA LISTA */
+/* =========================================== */
+
+.flight-selected {
+    background-color: rgba(25, 118, 210, 0.08) !important;
+    border-left: 3px solid #1976d2 !important;
+}
+
+.flight-editing {
+    background-color: rgba(255, 0, 0, 0.05) !important;
+    border-left: 3px solid #f44336 !important;
+    animation: pulse-border 2s infinite;
+}
+
+@keyframes pulse-border {
+    0% {
+        border-left-color: #f44336;
+    }
+
+    50% {
+        border-left-color: #ff7961;
+    }
+
+    100% {
+        border-left-color: #f44336;
+    }
+}
+
+/* =========================================== */
+/* INDICADOR VISUAL EN EL MAPA (GEOMAN) */
+/* =========================================== */
+
+.single-flight-edit .leaflet-pm-toolbar {
+    background-color: rgba(255, 0, 0, 0.1);
+    border: 2px solid #f44336;
+}
+
+/* =========================================== */
+/* BOTONES DEL FOOTER - LO MÁS IMPORTANTE */
+/* =========================================== */
+
+/* ELIMINA CUALQUIER MARGEN DEL HEADER - ESTO ARREGLA EL PROBLEMA */
+.content__header {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}
+
+/* Asegura que el sidebar no tenga padding extra */
+.sidebar__content-flex {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+}
+
+/* Contenedor de botones en el footer */
+.footer__buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* Para asegurar que los botones tengan el mismo tamaño */
+.footer__buttons button {
+    flex: 1;
+    min-width: 120px;
+}
+
+/* Botones de edición individual (rojo para cancelar) */
+.editing-buttons .btn-secondary {
+    background-color: #f44336 !important;
+    color: white !important;
+}
+
+.editing-buttons .btn-secondary:hover {
+    background-color: #d32f2f !important;
+}
+
+/* Asegurar transición suave entre cambios de botones */
+.normal-buttons, .editing-buttons {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+/* =========================================== */
+/* RESPONSIVE PARA MÓVILES */
+/* =========================================== */
+
+@media (max-width: 768px) {
+    .footer__buttons {
+        flex-direction: column;
+    }
+
+    .footer__buttons button {
+        min-width: 100%;
+    }
+
+    .normal-buttons, .editing-buttons {
+        flex-direction: column;
+    }
+
+    /* Ajustes para texto en móviles */
+    .list__text div:nth-child(3),
+    .list__text div:nth-child(4) {
+        max-width: 100px;
+    }
+}
+
+/* =========================================== */
+/* ELIMINAR ESTOS ESTILOS (SI EXISTEN EN OTRO LADO) */
+/* =========================================== */
+/*
+.editing-overlay { ... } ← ELIMINAR COMPLETAMENTE
+.editing-container { ... } ← ELIMINAR COMPLETAMENTE
+.editing-info { ... } ← ELIMINAR COMPLETAMENTE
+.editing-icon { ... } ← ELIMINAR COMPLETAMENTE
+.editing-details { ... } ← ELIMINAR COMPLETAMENTE
+.editing-actions { ... } ← ELIMINAR COMPLETAMENTE
+.editing-message { ... } ← ELIMINAR COMPLETAMENTE
+.individual-editing { ... } ← ELIMINAR COMPLETAMENTE (los que no sean para flight-editing)
+.global-editing { ... } ← ELIMINAR COMPLETAMENTE
+@keyframes slideDown { ... } ← ELIMINAR COMPLETAMENTE
+@keyframes pulse { ... } ← ELIMINAR COMPLETAMENTE (excepto pulse-border)
+*/
+/* =========================================== */
+/* BOTONES DEL FOOTER - ARREGLADO */
+/* =========================================== */
+
+/* Contenedor de botones en el footer */
+.footer__buttons {
+    display: flex;
+    gap: 8px;
+    /* Reducido de 10px */
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+/* Para los 3 botones normales - hacerlos más compactos */
+.normal-buttons {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+}
+
+/* Para los 2 botones de edición - mantener como están */
+.editing-buttons {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+}
+
+/* Botones generales - quitar flex:1 y usar ancho proporcional */
+.footer__buttons button {
+    /* QUITAR ESTO: flex: 1; */
+    /* QUITAR ESTO: min-width: 120px; */
+
+    /* NUEVO: Anchos proporcionales */
+    flex-grow: 0;
+    flex-shrink: 0;
+}
+
+/* Para 3 botones: 32% de ancho cada uno */
+.normal-buttons button {
+    flex-basis: calc(33.333% - 6px);
+    /* 33% menos el gap */
+    max-width: calc(33.333% - 6px);
+}
+
+/* Para 2 botones: 48% de ancho cada uno */
+.editing-buttons button {
+    flex-basis: calc(50% - 4px);
+    /* 50% menos el gap */
+    max-width: calc(50% - 4px);
+}
+
+/* Ajustar padding de los botones para hacerlos más compactos */
+.mat-flat-button {
+    padding: 0 8px !important;
+    /* Reducir padding horizontal */
+    font-size: 13px !important;
+    /* Reducir tamaño de fuente si es necesario */
+    min-width: 0 !important;
+    /* Permitir que se encojan */
+}
+
+/* Asegurar que el texto se ajuste en los botones */
+.mat-button-wrapper {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* =========================================== */
+/* RESPONSIVE PARA MÓVILES */
+/* =========================================== */
+
+@media (max-width: 768px) {
+    .footer__buttons {
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .normal-buttons, .editing-buttons {
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    /* En móviles, botones a 100% */
+    .normal-buttons button,
+    .editing-buttons button {
+        flex-basis: 100% !important;
+        max-width: 100% !important;
+        width: 100% !important;
+    }
+
+    /* Aumentar tamaño de fuente en móviles para mejor legibilidad */
+    .mat-flat-button {
+        padding: 0 12px !important;
+        font-size: 14px !important;
+    }
+}
+
+/* =========================================== */
+/* AJUSTES ESPECÍFICOS PARA ICONOS EN MÓVILES */
+/* =========================================== */
+
+/* Cuando está en modo desktop (texto visible) */
+@media (min-width: 769px) {
+
+    /* Ocultar iconos en desktop cuando hay texto */
+    .normal-buttons .mat-icon,
+    .editing-buttons .mat-icon {
+        display: none !important;
+    }
+}
+
+/* Cuando está en modo móvil (iconos visibles) */
+@media (max-width: 768px) {
+
+    /* Ocultar texto en móviles cuando hay iconos */
+    .normal-buttons .desktop-text,
+    .editing-buttons .desktop-text {
+        display: none !important;
+    }
+
+    /* Asegurar que los iconos se vean bien */
+    .mat-icon {
+        font-size: 20px !important;
+        width: 20px !important;
+        height: 20px !important;
+    }
+}
+
+/* SOLUCIÓN SIMPLE - Solo ajustar anchos */
+
+/* Para los 3 botones normales */
+.normal-buttons button {
+    width: calc(33.333% - 6px) !important;
+    /* 33% menos el gap */
+    flex: 0 0 auto !important;
+}
+
+/* Para los 2 botones de edición */
+.editing-buttons button {
+    width: calc(50% - 4px) !important;
+    /* 50% menos el gap */
+    flex: 0 0 auto !important;
+}
+
+/* Reducir padding interno */
+.mat-flat-button {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+    line-height: 36px !important;
+}
+
+/* En móviles, botones al 100% */
+@media (max-width: 768px) {
+
+    .normal-buttons button,
+    .editing-buttons button {
+        width: 100% !important;
+        margin-bottom: 4px;
+    }
+}
+
+/* =========================================== */
+
+/* =========================================== */
+/* BOTONES DEL FOOTER - ARREGLADO */
+/* =========================================== */
+
+/* Contenedor de botones en el footer */
+.footer__buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+/* Para los 3 botones normales - hacerlos más compactos */
+.normal-buttons {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+}
+
+/* Para los botones de edición */
+.editing-buttons {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+}
+
+/* Botones generales */
+.footer__buttons button {
+    flex-grow: 0;
+    flex-shrink: 0;
+}
+
+/* Para 3 botones: 32% de ancho cada uno */
+.normal-buttons button {
+    flex-basis: calc(33.333% - 6px);
+    max-width: calc(33.333% - 6px);
+}
+
+/* Para 2 botones: 48% de ancho cada uno */
+.editing-buttons button {
+    flex-basis: calc(50% - 4px);
+    max-width: calc(50% - 4px);
+}
+
+/* =========================================== */
+/* BOTONES ESPECÍFICOS DE EDICIÓN */
+/* =========================================== */
+
+/* Botón Cancelar Edición GLOBAL (ROJO) */
+.btn-cancel-global {
+    background-color: #f44336 !important;
+    color: white !important;
+}
+
+.btn-cancel-global:hover:not([disabled]) {
+    background-color: #d32f2f !important;
+}
+
+/* Botón Cancelar Edición INDIVIDUAL (ROJO) */
+.btn-cancel-individual {
+    background-color: #f44336 !important;
+    color: white !important;
+}
+
+.btn-cancel-individual:hover:not([disabled]) {
+    background-color: #d32f2f !important;
+}
+
+/* Botón Guardar Cambios INDIVIDUAL (VERDE) - Ya usa color="accent" */
+.editing-individual button[color="accent"] {
+    background-color: #4caf50 !important;
+    color: white !important;
+}
+
+.editing-individual button[color="accent"]:hover:not([disabled]) {
+    background-color: #388e3c !important;
+}
+
+/* Botón Guardar Cambios GLOBAL (AZUL) - Ya usa color="primary" */
+.editing-global button[color="primary"] {
+    background-color: #1976d2 !important;
+    color: white !important;
+}
+
+.editing-global button[color="primary"]:hover:not([disabled]) {
+    background-color: #1565c0 !important;
+}
+
+/* =========================================== */
+/* AJUSTES DE DISEÑO GENERALES */
+/* =========================================== */
+
+/* Ajustar padding de los botones para hacerlos más compactos */
+.mat-flat-button {
+    padding: 0 8px !important;
+    font-size: 13px !important;
+    min-width: 0 !important;
+    transition: all 0.2s ease !important;
+}
+
+/* Asegurar que el texto se ajuste en los botones */
+.mat-button-wrapper {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* =========================================== */
+/* RESPONSIVE PARA MÓVILES */
+/* =========================================== */
+
+@media (max-width: 768px) {
+    .footer__buttons {
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .normal-buttons, .editing-buttons {
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    /* En móviles, botones a 100% */
+    .normal-buttons button,
+    .editing-buttons button {
+        flex-basis: 100% !important;
+        max-width: 100% !important;
+        width: 100% !important;
+    }
+
+    /* Aumentar tamaño de fuente en móviles */
+    .mat-flat-button {
+        padding: 0 12px !important;
+        font-size: 14px !important;
+        line-height: 40px !important;
+    }
+}
+
+/* =========================================== */
+/* AJUSTES ESPECÍFICOS PARA ICONOS EN MÓVILES */
+/* =========================================== */
+
+/* Cuando está en modo desktop (texto visible) */
+@media (min-width: 769px) {
+
+    /* Ocultar iconos en desktop cuando hay texto */
+    .normal-buttons .mat-icon,
+    .editing-buttons .mat-icon {
+        display: none !important;
+    }
+}
+
+/* Cuando está en modo móvil (iconos visibles) */
+@media (max-width: 768px) {
+
+    /* Ocultar texto en móviles cuando hay iconos */
+    .normal-buttons .desktop-text,
+    .editing-buttons .desktop-text {
+        display: none !important;
+    }
+
+    /* Asegurar que los iconos se vean bien */
+    .mat-icon {
+        font-size: 20px !important;
+        width: 20px !important;
+        height: 20px !important;
+    }
+}
+
+/* =========================================== */
+/* INDICADORES VISUALES PARA TIPO DE EDICIÓN */
+/* =========================================== */
+
+/* Cuando está en edición global, cambiar color del botón original */
+.is-editing-global {
+    border: 2px solid #1976d2 !important;
+    box-shadow: 0 0 10px rgba(25, 118, 210, 0.3) !important;
+}
+
+/* Cuando está en edición individual, cambiar color del botón en la lista */
+.flight-editing {
+    background-color: rgba(76, 175, 80, 0.05) !important;
+    border-left: 3px solid #4caf50 !important;
+    animation: pulse-green 2s infinite;
+}
+
+@keyframes pulse-green {
+    0% {
+        border-left-color: #4caf50;
+    }
+
+    50% {
+        border-left-color: #81c784;
+    }
+
+    100% {
+        border-left-color: #4caf50;
+    }
+}

@@ -1,0 +1,389 @@
+<!-- COMPONENTE QUE CORRESPONDE al popup que sale al hacer click sobre el vuelo -->
+<div class="data-card">
+    <!-- Flight -->
+    <ng-container *ngIf="data.type === 'flight'">
+        <header>
+            <div class="card__title">
+                <div>Vuelo</div>
+                <!-- Si es el admin muestra boton de eliminar vuelo -->
+                <div *appRole="['ADMIN', 'PILOTO', 'CONTRATISTA']" style="display: inline-block;">
+                    <div style="display: inline-block;"
+                        matTooltip="{{ canEditFlight ? 'Editar vuelo' : 'No tienes permisos para editar este vuelo' }}"
+                        matTooltipPosition="above">
+                        <svg (click)="enableEditing()" xmlns="http://www.w3.org/2000/svg"
+                            class="icon-hover icon icon-tabler icon-tabler-pencil iconHover iconTransition {{ canEditFlight ? '' : 'disabled' }}"
+                            width="25" height="25" viewBox="0 0 24 24" stroke-width="2" stroke="#B6B6B6" fill="none"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24V24H0z" fill="none" />
+                            <path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4" />
+                            <line x1="13.5" y1="6.5" x2="17.5" y2="10.5" />
+                        </svg>
+                    </div>
+                    &nbsp;
+                    <div style="display: inline-block;"
+                        matTooltip="{{ canDeleteFlight ? 'Eliminar vuelo' : 'No tienes permisos para eliminar este vuelo' }}"
+                        matTooltipPosition="above">
+                        <svg (click)="deleteData()" xmlns="https://www.w3.org/2000/svg"
+                            class="icon-hover icon icon-tabler icon-tabler-trash iconHover iconTransition {{ canDeleteFlight ? '' : 'disabled' }}"
+                            width="25" height="25" viewBox="0 0 24 24" stroke-width="2" stroke="#B6B6B6" fill="none"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <line x1="4" y1="7" x2="20" y2="7" />
+                            <line x1="10" y1="11" x2="10" y2="17" />
+                            <line x1="14" y1="11" x2="14" y2="17" />
+                            <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" />
+                            <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />
+                        </svg>
+                    </div>
+
+
+                </div>
+            </div>
+            <div class="card__subtitle">
+                Realizado el día:&nbsp;{{
+                data.data.date | date : "dd/MM/yyyy"
+                }}
+            </div>
+        </header>
+
+        <div class="card__content">
+
+            <form [formGroup]="flightUpdateForm">
+                <div class="row">
+                    <div class="column">
+
+                        <!-- ID DEL USUARIO -->
+                        <!-- <mat-form-field appearance="outline">
+                            <mat-label>Id de Vuelo</mat-label> -->
+                        <input matInput hidden formControlName="vueloIdUpdateFlight" [disabled]="!isEditing"
+                            value="{{ data.data.vueloId | titlecase }}">
+                        <!-- </mat-form-field> -->
+
+                        <mat-form-field appearance="outline">
+                            <mat-label>Fecha de vuelo</mat-label>
+                            <input matInput [matDatepicker]="picker" formControlName="dateUpdateFlight"
+                                [disabled]="!isEditing" [value]="flightUpdateForm.get('dateUpdateFlight')?.value">
+                            <mat-datepicker-toggle matSuffix [for]="picker">
+                            </mat-datepicker-toggle>
+                            <mat-datepicker #picker></mat-datepicker>
+                        </mat-form-field>
+
+
+
+                        <!-- Si no está en modo de edición, muestra el texto del propietario -->
+                        <mat-form-field appearance="outline" *ngIf="!isEditing">
+                            <mat-label>Propietario</mat-label>
+                            <input matInput formControlName="propietarioUpdateFlight2Text" [disabled]="true" />
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline" *ngIf="isEditing">
+                            <mat-label>Propietario</mat-label>
+                            <mat-select formControlName="propietarioUpdateFlight2" placeholder="Seleccione propietario">
+                                <mat-option *ngFor="let owner of ownersList" [value]="owner">
+                                    {{ owner.aliasPropietario | titlecase }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline">
+                            <mat-label>Cuadro de vuelo</mat-label>
+                            <input matInput formControlName="cuadroUpdateFlight" [disabled]="!isEditing"
+                                value="{{ data.data.cuadroVuelo | titlecase }}" required>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline">
+                            <mat-label>Zona</mat-label>
+                            <input matInput formControlName="zonaUpdateFlight" [disabled]="!isEditing"
+                                value="{{ data.data.zonaVuelo | titlecase }}" required>
+                        </mat-form-field>
+
+                        <!-- Input de texto para mostrar el valor actual del cultivo en modo lectura -->
+                        <mat-form-field appearance="outline" *ngIf="!isEditing">
+                            <mat-label>Cultivo</mat-label>
+                            <input matInput formControlName="cultivoUpdateFlightText" [disabled]="true" />
+                        </mat-form-field>
+
+
+                        <mat-form-field appearance="outline" *ngIf="isEditing">
+                            <mat-label>Cultivo</mat-label>
+                            <input matInput formControlName="cultivoUpdateFlight" [matAutocomplete]="autoCultivo">
+                            <mat-autocomplete #autoCultivo="matAutocomplete">
+                                <mat-option *ngFor="let cultivo of cultivosFiltrados | async"
+                                    [value]="cultivo.nombreCultivo">
+                                    {{ cultivo.nombreCultivo }}
+                                </mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline">
+                            <mat-label>Superficie (ha)</mat-label>
+                            <input matInput formControlName="areaUpdateFlight" [disabled]="!isEditing"
+                                value="{{ data.data.superficieVuelo | number }}" required>
+                        </mat-form-field>
+                    </div>
+
+                    <div class="column">
+
+                        <mat-form-field appearance="outline">
+                            <mat-label>Caldo x ha (lts)</mat-label>
+                            <input matInput formControlName="caldohaUpdateFlight" [disabled]="!isEditing"
+                                value="{{ data.data.caldohaVuelo | number }}">
+                        </mat-form-field>
+
+
+                        <div *ngIf="admin || piloto">
+                            <mat-form-field appearance="outline">
+                                <mat-label>Piloto</mat-label>
+                                <mat-select formControlName="pilotoUpdateFlight"
+                                    (selectionChange)="updateFields($event)">
+                                    <mat-option *ngFor="let piloto of pilotos" [value]="piloto.pilotoId">
+                                        {{ piloto.nombrePiloto }} {{ piloto.apellidoPiloto }}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+
+
+                        <div *ngIf="admin || piloto">
+                            <mat-form-field appearance="outline" *ngIf="false">
+                                <mat-label>ID del Piloto</mat-label>
+                                <input matInput formControlName="idPilotoUpdateFlight" />
+                            </mat-form-field>
+                        </div>
+
+                        <div *ngIf="admin || piloto">
+                            <mat-form-field appearance="outline" *ngIf="false">
+                                <mat-label>Nombre completo de piloto</mat-label>
+                                <input matInput formControlName="nomCompletoPilotoUpdateFlight" />
+                            </mat-form-field>
+                        </div>
+
+                        <div *ngIf="admin || piloto">
+
+                            <mat-form-field appearance="outline">
+                                <mat-label>Técnico agrícola</mat-label>
+                                <mat-select formControlName="tecnicoUpdateFlight">
+                                    <mat-option *ngFor="let tecnico of tecnicosList"
+                                        [value]="tecnico.nombreCompletoTecnico">
+                                        {{ tecnico.nombreCompletoTecnico | titlecase }}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+
+                        </div>
+
+                        <div *ngIf="admin || piloto">
+                            <mat-form-field appearance="outline">
+                                <mat-label>Precio/ha</mat-label>
+                                <input matInput formControlName="precioHaUpdateFlight" [disabled]="!isEditing"
+                                    value="{{ data.data.precioHa | number }}" required>
+                            </mat-form-field>
+                        </div>
+
+
+                        <div *ngIf="admin || piloto">
+                            <mat-form-field appearance="outline">
+                                <mat-label>Forma de Pago</mat-label>
+                                <mat-select formControlName="formaPagoUpdateFlight">
+                                    <mat-option *ngFor="let formaPago of formasPago" [value]="formaPago.value">
+                                        {{ formaPago.viewValue | titlecase }}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+
+                        <div *ngIf="admin || piloto">
+                            <mat-form-field appearance="outline">
+                                <mat-label>Aclaración</mat-label>
+                                <!--<input matInput disabled value="{{ data.data.aclaracion | titlecase }}">-->
+                                <textarea matInput formControlName="aclaracionUpdateFlight"
+                                    [disabled]="!isEditing">{{ data.data.aclaracion | titlecase }}</textarea>
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+                    <div class="column">
+
+                        <!-- <mat-form-field appearance="outline">
+                            <mat-label>Agroquímico 1</mat-label>
+                            <input matInput formControlName="agq1Flight" [disabled]="!isEditing"
+                                value="{{ data.data.agq1 | titlecase }}" required>
+                        </mat-form-field> -->
+
+                        <mat-form-field appearance="outline">
+                            <mat-label>Agroquímico 1</mat-label>
+                            <input matInput formControlName="agq1Flight" [matAutocomplete]="autoAgq1">
+                            <mat-autocomplete #autoAgq1="matAutocomplete" [displayWith]="displayAgroquimico">
+                                <mat-option *ngFor="let agroquimico of filteredAgq1 | async" [value]="agroquimico">
+                                    {{ agroquimico.nombreAgroquimico }}
+                                </mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+
+
+
+
+
+                        <mat-form-field appearance="outline">
+                            <mat-label>Dosis agroquímico 1</mat-label>
+                            <input matInput formControlName="dosisagq1Flight" [disabled]="!isEditing"
+                                value="{{ data.data.dosisagq1 | number }}" required>
+                        </mat-form-field>
+
+
+                        <mat-form-field appearance="outline">
+                            <mat-label>Agroquímico 2</mat-label>
+                            <input matInput formControlName="agq2Flight" [matAutocomplete]="autoAgq2">
+                            <mat-autocomplete #autoAgq2="matAutocomplete" [displayWith]="displayAgroquimico">
+                                <mat-option *ngFor="let agroquimico of filteredAgq2 | async" [value]="agroquimico">
+                                    {{ agroquimico.nombreAgroquimico }}
+                                </mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline">
+                            <mat-label>Dosis agroquímico 2</mat-label>
+                            <input matInput formControlName="dosisagq2Flight" [disabled]="!isEditing"
+                                value="{{ data.data.dosisagq2 | number }}">
+                        </mat-form-field>
+
+
+                        <mat-form-field appearance="outline">
+                            <mat-label>Agroquímico 3</mat-label>
+                            <input matInput formControlName="agq3Flight" [matAutocomplete]="autoAgq3">
+                            <mat-autocomplete #autoAgq3="matAutocomplete" [displayWith]="displayAgroquimico">
+                                <mat-option *ngFor="let agroquimico of filteredAgq3 | async" [value]="agroquimico">
+                                    {{ agroquimico.nombreAgroquimico }}
+                                </mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline">
+                            <mat-label>Dosis agroquímico 3</mat-label>
+                            <input matInput formControlName="dosisagq3Flight" [disabled]="!isEditing"
+                                value="{{ data.data.dosisagq3 | number }}">
+                        </mat-form-field>
+
+
+                    </div>
+
+                    <div class="column">
+
+                        <mat-form-field appearance="outline">
+                            <mat-label>Agroquímico 4</mat-label>
+                            <input matInput formControlName="agq4Flight" [matAutocomplete]="autoAgq4">
+                            <mat-autocomplete #autoAgq4="matAutocomplete" [displayWith]="displayAgroquimico">
+                                <mat-option *ngFor="let agroquimico of filteredAgq4 | async" [value]="agroquimico">
+                                    {{ agroquimico.nombreAgroquimico }}
+                                </mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+
+
+                        <mat-form-field appearance="outline">
+                            <mat-label>Dosis agroquímico 4</mat-label>
+                            <input matInput formControlName="dosisagq4Flight" [disabled]="!isEditing"
+                                value="{{ data.data.dosisagq4 | number }}">
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline">
+                            <mat-label>Coadyuvante 1</mat-label>
+                            <input matInput formControlName="coad1Flight" [matAutocomplete]="autoCoad1">
+                            <mat-autocomplete #autoCoad1="matAutocomplete" [displayWith]="displayCoadyuvante">
+                                <mat-option *ngFor="let coadyuvante of filteredCoad1 | async" [value]="coadyuvante">
+                                    {{ coadyuvante.nombreCoadyuvante }}
+                                </mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+
+
+
+                        <mat-form-field appearance="outline">
+                            <mat-label>Dosis coadyuvante 1</mat-label>
+                            <input matInput formControlName="dosiscoad1Flight" [disabled]="!isEditing"
+                                value="{{ data.data.dosiscoad1 | number }}" required>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline">
+                            <mat-label>Coadyuvante 2</mat-label>
+                            <input matInput formControlName="coad2Flight" [matAutocomplete]="autoCoad2">
+                            <mat-autocomplete #autoCoad2="matAutocomplete" [displayWith]="displayCoadyuvante">
+                                <mat-option *ngFor="let coadyuvante of filteredCoad2 | async" [value]="coadyuvante">
+                                    {{ coadyuvante.nombreCoadyuvante }}
+                                </mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline">
+                            <mat-label>Dosis coadyuvante 2</mat-label>
+                            <input matInput formControlName="dosiscoad2Flight" [disabled]="!isEditing"
+                                value="{{ data.data.dosiscoad2 | number }}">
+                        </mat-form-field>
+
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </ng-container>
+
+
+    <!-- Analysis -->
+    <ng-container *ngIf="data.type === 'analysis'">
+        <header>
+            <div class="card__title">
+                <div>Análisis</div>
+
+                <!--boton de borrar analisis en el modal (aparece si es admin o piloto)-->
+                <svg *ngIf="admin || piloto" (click)="deleteData()" xmlns="https://www.w3.org/2000/svg"
+                    class="icon-hover icon icon-tabler icon-tabler-trash" width="20" height="20" viewBox="0 0 24 24"
+                    stroke-width="2" stroke="#ffffff" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <line x1="4" y1="7" x2="20" y2="7" />
+                    <line x1="10" y1="11" x2="10" y2="17" />
+                    <line x1="14" y1="11" x2="14" y2="17" />
+                    <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" />
+                    <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />
+                </svg>
+            </div>
+            <div class="card__subtitle">
+                Realizado el día:&nbsp;{{
+                data.data.date | date : "dd/MM/yyyy"
+                }}
+            </div>
+        </header>
+
+        <div class="card__content">
+            <div>
+                Índice:&nbsp;
+                <span>{{ data.data.indice.siglasIndice }}
+                    <span style="font-weight: normal">({{ data.data.indice.nombreIndice }})</span></span>
+            </div>
+            <div *ngIf="admin">
+                GeoServer:&nbsp;
+                <span>{{ data.data.imagenAnalisis }}</span>
+            </div>
+            <!-- TODO: SEE WHAT INFO WILL SHOW THE PAGE ABOUT THE ANALYSIS -->
+
+        </div>
+    </ng-container>
+
+
+    <div mat-dialog-actions class="action-buttons fondoOpcionesBotones">
+
+        <div class="row">
+            <div class="column">
+                <button *ngIf="isEditing" mat-raised-button color="primary" (click)="updateData()">
+                    Actualizar
+                </button>
+            </div>
+
+            <div class="column">
+                <button mat-raised-button color="primary" (click)="dialogRef.close()">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+
+
+    </div>

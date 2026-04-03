@@ -1,0 +1,69 @@
+<div class="timeslider">
+    <div class="timeslider__container">
+
+        <form class="timeslider__content" [formGroup]="requestForm" (ngSubmit)="sendRequest()">
+            <!-- Layer selector -->
+            <mat-form-field appearance="outline" class="timeslider-input">
+                <mat-label>Índice</mat-label>
+                <mat-select formControlName="layerRequest">
+                    <mat-option *ngFor="let layer of layers" [value]="layer.value">
+                        {{layer.viewValue}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <!-- Datepicker -->
+            <mat-form-field appearance="outline" class="timeslider-input">
+                <mat-label>Mes y Año</mat-label>
+                <input matInput [matDatepicker]="dp" class="date-format" formControlName="dateRequest">
+                <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
+                <mat-datepicker #dp startView="multi-year" (yearSelected)="chosenYearHandler($event)"
+                    (monthSelected)="chosenMonthHandler($event, dp)" panelClass="example-month-picker">
+                </mat-datepicker>
+            </mat-form-field>
+
+            <!-- Weekpicker -->
+            <mat-form-field appearance="outline" class="timeslider-input">
+                <mat-label>Semana</mat-label>
+                <mat-select formControlName="weekRequest">
+                    <mat-option *ngFor="let week of weeks" [value]="week.value">
+                        {{week.viewValue}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <!-- Send request -->
+            <button class="timeslider__request" type="submit" [disabled]="requestForm.pending">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-map-search" width="24"
+                    height="24" viewBox="0 0 24 24" stroke-width="2" stroke="#ffffff" fill="none" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M11 18l-2 -1l-6 3v-13l6 -3l6 3l6 -3v10" />
+                    <path d="M9 4v13" />
+                    <path d="M15 7v5" />
+                    <circle cx="16.5" cy="17.5" r="2.5" />
+                    <path d="M18.5 19.5l2.5 2.5" />
+                </svg>
+            </button>
+
+        </form>
+
+        <button mat-flat-button color="primary" class="timeslider__toggle">
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-satellite" width="24"
+                    height="24" viewBox="0 0 24 24" stroke-width="1.5" stroke="#ffffff" fill="none" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path
+                        d="M3.707 6.293l2.586 -2.586a1 1 0 0 1 1.414 0l5.586 5.586a1 1 0 0 1 0 1.414l-2.586 2.586a1 1 0 0 1 -1.414 0l-5.586 -5.586a1 1 0 0 1 0 -1.414z" />
+                    <path d="M6 10l-3 3l3 3l3 -3" />
+                    <path d="M10 6l3 -3l3 3l-3 3" />
+                    <line x1="12" y1="12" x2="13.5" y2="13.5" />
+                    <path d="M14.5 17a2.5 2.5 0 0 0 2.5 -2.5" />
+                    <path d="M15 21a6 6 0 0 0 6 -6" />
+                </svg>
+            </div>
+        </button>
+
+    </div>
+</div>

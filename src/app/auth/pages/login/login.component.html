@@ -1,0 +1,58 @@
+<div class="login">
+    <div class="login__img">
+        <img src="/assets/img/agrovants.svg" alt="Agrovants Logo" />
+    </div>
+    <div class="login__container">
+        <mat-card>
+            <h3>Iniciar sesión</h3>
+
+            <form [formGroup]="loginForm" (ngSubmit)="login()">
+                <mat-form-field appearance="fill">
+                    <mat-label>Email</mat-label>
+                    <input
+                        formControlName="emailUsuario"
+                        matInput
+                        placeholder="Ingrese su email"
+                        type="email"
+                    />
+                    <mat-error *ngIf="notValidField('emailUsuario')">{{
+                        emailErrorMsg
+                    }}</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                    <mat-label>Contraseña</mat-label>
+                    <input
+                        formControlName="contraseniaUsuario"
+                        matInput
+                        placeholder="Ingrese su contraseña"
+                        [type]="hide ? 'password' : 'text'"
+                    />
+                    <button
+                        type="button"
+                        mat-icon-button
+                        matSuffix
+                        (click)="hide = !hide"
+                        [attr.aria-label]="'Hide password'"
+                        [attr.aria-pressed]="hide"
+                    >
+                        <mat-icon style="font-weight: 400">{{
+                            hide ? "visibility_off" : "visibility"
+                        }}</mat-icon>
+                    </button>
+                    <mat-error *ngIf="notValidField('contraseniaUsuario')">{{
+                        contraseniaErrorMsg
+                    }}</mat-error>
+                </mat-form-field>
+
+                <button mat-flat-button type="submit" color="primary">
+                    Ingresar
+                </button>
+            </form>
+
+            <div class="login__restore" routerLink="/auth/reset-password">
+                ¿Olvidaste tu contraseña?
+            </div>
+        </mat-card>
+    </div>
+</div>

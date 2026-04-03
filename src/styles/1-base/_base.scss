@@ -1,0 +1,56 @@
+@use "../0-abstracts/index" as *;
+
+html {
+    font-size: 62.5%;
+    box-sizing: border-box;
+}
+
+body {
+    font-size: 1.6rem;
+    font-family: $mainFont;
+    color: white;
+}
+
+*,
+*:before,
+*:after {
+    box-sizing: inherit;
+}
+
+h1,
+h2,
+h3,
+h4 {
+    margin: 0;
+}
+
+/* button,
+input[type="button"],
+input[type="submit"] {
+  @include button;
+} */
+
+.icon-hover {
+    cursor: pointer;
+    &:hover {
+        stroke: $mainColor;
+    }
+}
+
+.root {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+}
+
+*::-webkit-scrollbar {
+    width: 1.2rem;
+}
+
+*::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.65);
+    border-radius: 0.5rem;
+}

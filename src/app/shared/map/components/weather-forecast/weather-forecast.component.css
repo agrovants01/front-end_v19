@@ -1,0 +1,1448 @@
+/* weather-forecast.component.css - VERSIÓN COMPLETA CON DETALLE HORARIO */
+.pronostico-tiempo {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 95%;
+    max-width: 1400px;
+    background: rgba(0, 0, 0, 0.97);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 12px;
+    box-shadow: 0 6px 30px rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    z-index: 1000;
+    color: white;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Nunito, Oxygen, Ubuntu, sans-serif;
+    overflow: hidden;
+    animation: aparecer 0.3s ease-out;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+
+@keyframes aparecer {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+}
+
+.pronostico-cabecera {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 20px;
+    background: rgba(0, 0, 0, 0.4);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    flex-shrink: 0;
+}
+
+.cabecera-izquierda {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.icono-titulo {
+    font-size: 26px;
+    line-height: 1;
+}
+
+.titulo-ubicacion h3 {
+    margin: 0 0 3px 0;
+    font-size: 17px;
+    font-weight: 500;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.etiqueta-hoy {
+    background: #4fc3f7;
+    color: #000;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-left: 6px;
+}
+
+.ubicacion {
+    margin: 0;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.cabecera-derecha {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-icono {
+    background: rgba(255, 255, 255, 0.12);
+    border: none;
+    border-radius: 6px;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.85);
+    transition: all 0.2s ease;
+    font-family: 'Material Icons';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 19px;
+    line-height: 1;
+}
+
+.btn-icono:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.25);
+    color: white;
+    transform: scale(1.05);
+}
+
+.btn-icono:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-cerrar:hover {
+    background: rgba(255, 100, 100, 0.25);
+    color: #ff6b6b;
+}
+
+.pronostico-contenido {
+    padding: 20px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+/* Estados de carga y error */
+.estado-carga {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.spinner {
+    width: 35px;
+    height: 35px;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-top: 3px solid #4fc3f7;
+    border-radius: 50%;
+    animation: girar 1s linear infinite;
+    margin-bottom: 15px;
+}
+
+@keyframes girar {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.estado-carga p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+}
+
+.estado-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.icono-error {
+    font-size: 40px;
+    color: #ff6b6b;
+    margin-bottom: 15px;
+    font-family: 'Material Icons';
+}
+
+.estado-error p {
+    margin: 0 0 15px 0;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 14px;
+}
+
+.btn-reintentar {
+    background: #4fc3f7;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 20px;
+    color: white;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    font-family: inherit;
+    font-size: 13px;
+}
+
+.btn-reintentar:hover {
+    background: #29b6f6;
+}
+
+/* ============================================= */
+/* ESTILOS PARA VISTA PRINCIPAL (7 DÍAS) */
+/* ============================================= */
+
+.dias-pronostico {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 12px;
+}
+
+.dia-pronostico {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 14px 10px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
+    transition: all 0.25s ease;
+    min-height: 190px;
+    cursor: pointer;
+    position: relative;
+    border: 1px solid transparent;
+}
+
+.dia-pronostico:hover {
+    background: rgba(255, 255, 255, 0.12);
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dia-pronostico.seleccionado {
+    background: rgba(79, 195, 247, 0.15);
+    border: 1px solid rgba(79, 195, 247, 0.4);
+    box-shadow: 0 0 0 1px rgba(79, 195, 247, 0.3);
+}
+
+.dia-cabecera {
+    text-align: center;
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+.dia-semana {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 4px;
+    color: white;
+}
+
+.dia-semana.hoy {
+    color: #4fc3f7;
+    position: relative;
+}
+
+.dia-semana.hoy::after {
+    content: "•";
+    color: #4fc3f7;
+    margin-left: 5px;
+    font-size: 18px;
+}
+
+.dia-fecha {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.65);
+}
+
+.click-indicador {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.dia-pronostico:hover .click-indicador {
+    opacity: 0.8;
+}
+
+.dia-pronostico.seleccionado .click-indicador {
+    opacity: 1;
+    color: #4fc3f7;
+}
+
+.click-indicador .material-icons {
+    font-size: 15px;
+    width: 15px;
+    height: 15px;
+}
+
+.clima-icono {
+    font-size: 32px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 8px 0;
+}
+
+.emoji-icono {
+    font-size: 32px;
+    line-height: 1;
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3));
+}
+
+.temperaturas {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin: 10px 0;
+    width: 100%;
+}
+
+.temp-maxima {
+    font-weight: 700;
+    font-size: 20px;
+    min-width: 35px;
+    text-align: right;
+}
+
+.separador-temp {
+    color: rgba(255, 255, 255, 0.4);
+    font-weight: 400;
+    font-size: 16px;
+}
+
+.temp-minima {
+    font-weight: 500;
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.65);
+    min-width: 35px;
+    text-align: left;
+}
+
+.precipitacion-compacta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    margin: 8px 0;
+    padding: 5px 10px;
+    background: rgba(79, 195, 247, 0.12);
+    border-radius: 6px;
+    width: 92%;
+    font-size: 12px;
+    border-left: 2px solid #4fc3f7;
+}
+
+.precipitacion-compacta .icono-precipitacion {
+    color: #4fc3f7;
+    font-size: 13px;
+    font-family: 'Material Icons';
+}
+
+.precipitacion-compacta .precipitacion-texto {
+    color: rgba(255, 255, 255, 0.95);
+    font-weight: 500;
+    font-size: 12px;
+}
+
+.descripcion-clima {
+    text-align: center;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.75);
+    margin-top: 8px;
+    line-height: 1.3;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 0 6px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+/* ============================================= */
+/* ESTILOS PARA DETALLE HORARIO */
+/* ============================================= */
+
+.detalle-horario {
+    animation: deslizarIzquierda 0.3s ease-out;
+}
+
+@keyframes deslizarIzquierda {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Resumen del día */
+.resumen-dia {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 24px;
+    background: rgba(255, 255, 255, 0.07);
+    border-radius: 12px;
+    margin-bottom: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.info-dia {
+    display: flex;
+    align-items: center;
+    /* Centra verticalmente todos los elementos */
+    justify-content: flex-start;
+    /* Alinea a la izquierda por defecto */
+    width: 100%;
+    gap: 24px;
+    /* Espacio entre icono y datos */
+}
+
+.resumen-icono {
+    display: flex;
+    justify-content: center;
+    /* Centra horizontalmente el emoji dentro del icono */
+    align-items: center;
+    /* Centra verticalmente el emoji dentro del icono */
+    width: 120px;
+    /* Ancho fijo para consistencia */
+    height: 120px;
+    /* Alto fijo para consistencia */
+    flex-shrink: 0;
+    /* Evita que se encoja */
+    /* Opcional: si quieres ver el área del icono */
+    /* background: rgba(255, 255, 255, 0.05); */
+    /* border-radius: 50%; */
+}
+
+.resumen-icono .emoji-icono-grande {
+    font-size: 70px;
+    line-height: 1;
+    display: block;
+    text-align: center;
+}
+
+.resumen-datos {
+    flex: 1;
+    /* Ocupa el espacio restante */
+}
+
+/* O si quieres centrar solo el icono pero mantener los datos a la izquierda */
+.info-dia {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    /* Distribuye el espacio */
+    width: 100%;
+}
+
+.resumen-icono {
+    /* mantiene el centrado del emoji */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto;
+    /* Centra el contenedor del icono si hay espacio extra */
+}
+
+.resumen-datos {
+    flex: 1;
+}
+
+/* Versión responsive */
+@media (max-width: 900px) {
+    .resumen-icono {
+        width: 100px;
+        height: 100px;
+    }
+
+    .resumen-icono .emoji-icono-grande {
+        font-size: 60px;
+    }
+}
+
+@media (max-width: 500px) {
+    .resumen-icono {
+        width: 80px;
+        height: 80px;
+    }
+
+    .resumen-icono .emoji-icono-grande {
+        font-size: 50px;
+    }
+}
+
+.resumen-datos {
+    flex: 1;
+}
+
+.resumen-temperaturas {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 12px;
+    align-items: baseline;
+}
+
+.resumen-temperaturas .temp-max {
+    font-size: 28px;
+    font-weight: 700;
+    color: #ff4444;
+}
+
+.resumen-temperaturas .temp-min {
+    font-size: 22px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.resumen-precipitacion {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    color: #4fc3f7;
+    font-size: 17px;
+}
+
+.resumen-precipitacion .material-icons {
+    font-size: 22px;
+    width: 22px;
+    height: 22px;
+}
+
+.resumen-descripcion {
+    font-size: 15px;
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 500;
+}
+
+.resumen-hora-actual {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.resumen-hora-actual .material-icons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: #ffc107;
+}
+
+.resumen-dia-completo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    padding: 6px 12px;
+    background: rgba(255, 193, 7, 0.1);
+    border-radius: 8px;
+    border-left: 3px solid #ffc107;
+    font-size: 13px;
+    color: #ffc107;
+}
+
+.resumen-dia-completo .material-icons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+}
+
+/* Gráfico de temperatura y precipitación */
+.grafico-container {
+    background: rgba(255, 255, 255, 0.07);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.grafico-container h4 {
+    margin: 0 0 18px 0;
+    font-size: 17px;
+    font-weight: 500;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.total-horas {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: normal;
+}
+
+.grafico-wrapper {
+    width: 100%;
+    height: 250px;
+    position: relative;
+}
+
+#grafico-temperatura {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* Indicador de hora actual en el gráfico */
+/* .hora-actual-indicador {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 0;
+    z-index: 10;
+    pointer-events: none;
+} */
+
+/* .hora-actual-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 2px;
+    background: #ffc107;
+    box-shadow: 0 0 8px rgba(255, 193, 7, 0.5);
+} */
+
+/* .hora-actual-label {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(255, 193, 7, 0.9);
+    color: #000;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+    transform: translateX(-50%);
+} */
+
+.mensaje-dia-completo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    padding: 8px 12px;
+    background: rgba(255, 193, 7, 0.1);
+    border-radius: 6px;
+    border-left: 3px solid #ffc107;
+    font-size: 12px;
+    color: #ffc107;
+}
+
+.mensaje-dia-completo .material-icons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+}
+
+/* Tabla horaria */
+.tabla-horaria-container {
+    background: rgba(255, 255, 255, 0.07);
+    border-radius: 12px;
+    padding: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 20px;
+}
+
+.tabla-horaria-container h4 {
+    margin: 0 0 18px 0;
+    font-size: 17px;
+    font-weight: 500;
+    color: white;
+}
+
+.tabla-horaria {
+    display: flex;
+    flex-direction: column;
+    font-size: 13px;
+}
+
+.tabla-header {
+    display: grid;
+    grid-template-columns: 1fr 0.9fr 1.1fr 1fr 1.6fr 0.9fr;
+    gap: 12px;
+    padding: 12px 18px;
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 12px;
+}
+
+.tabla-body {
+    max-height: 320px;
+    overflow-y: auto;
+    border-radius: 8px;
+}
+
+.tabla-fila {
+    display: grid;
+    grid-template-columns: 1fr 0.9fr 1.1fr 1fr 1.6fr 0.9fr;
+    gap: 12px;
+    padding: 14px 18px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    transition: all 0.2s ease;
+    align-items: center;
+}
+
+.tabla-fila:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.tabla-fila.hora-actual {
+    background: rgba(255, 193, 7, 0.1);
+    border-left: 3px solid #ffc107;
+}
+
+.tabla-fila:last-child {
+    border-bottom: none;
+}
+
+/* Columnas específicas */
+.col-hora {
+    font-weight: 600;
+    color: white;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.etiqueta-hora-actual {
+    color: #ffc107;
+    font-size: 12px;
+}
+
+.etiqueta-hora-actual .material-icons {
+    font-size: 12px;
+    width: 12px;
+    height: 12px;
+}
+
+.col-temperatura {
+    color: #ff4444;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.col-precipitacion {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #4fc3f7;
+}
+
+.icono-lluvia-small {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    color: #4fc3f7;
+}
+
+.col-humedad {
+    color: #8bc34a;
+    font-weight: 500;
+}
+
+.col-viento {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.viento-velocidad {
+    color: rgba(255, 255, 255, 0.95);
+    font-weight: 500;
+}
+
+.viento-direccion {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.65);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.icono-direccion {
+    font-size: 12px;
+}
+
+.col-clima {
+    display: flex;
+    justify-content: center;
+}
+
+.icono-clima-small {
+    font-size: 18px;
+    line-height: 1;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+}
+
+/* Resumen de estadísticas */
+.resumen-estadisticas {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    margin-top: 20px;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+}
+
+.estadistica-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.estadistica-titulo {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.estadistica-valor {
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+}
+
+/* Navegación entre días */
+.navegacion-dias {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+.btn-navegacion {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(79, 195, 247, 0.1);
+    border: none;
+    border-radius: 6px;
+    padding: 10px 16px;
+    color: white;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-navegacion:hover:not(:disabled) {
+    background: rgba(79, 195, 247, 0.2);
+    transform: translateY(-1px);
+}
+
+.btn-navegacion:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.btn-navegacion .material-icons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+}
+
+.contador-dias {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Scrollbar personalizado */
+.tabla-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.tabla-body::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+}
+
+.tabla-body::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+
+.tabla-body::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* ============================================= */
+/* RESPONSIVE PARA TODAS LAS VISTAS */
+/* ============================================= */
+
+/* Para pantallas grandes (1200px - 900px) */
+@media (max-width: 1200px) {
+    .pronostico-tiempo {
+        max-width: 1100px;
+    }
+
+    .dias-pronostico {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+    }
+
+    .tabla-header,
+    .tabla-fila {
+        grid-template-columns: 1fr 0.9fr 1.1fr 1fr 1.4fr;
+    }
+
+    .col-clima {
+        display: none;
+    }
+
+    .resumen-dia {
+        gap: 20px;
+        padding: 20px;
+    }
+
+    .resumen-icono .emoji-icono-grande {
+        font-size: 70px;
+        /* Reducido de 70px */
+    }
+
+    .resumen-estadisticas {
+        flex-direction: column;
+        gap: 12px;
+    }
+}
+
+/* Para tablets (900px - 700px) */
+@media (max-width: 900px) {
+    .pronostico-tiempo {
+        width: 96%;
+        max-width: 800px;
+    }
+
+    .dias-pronostico {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .resumen-dia {
+        flex-direction: column;
+        text-align: center;
+        gap: 16px;
+    }
+
+    .resumen-temperaturas {
+        justify-content: center;
+    }
+
+    .tabla-header,
+    .tabla-fila {
+        grid-template-columns: 1fr 1fr 1fr 1.2fr;
+        gap: 10px;
+        padding: 10px 14px;
+    }
+
+    .col-humedad,
+    .col-clima {
+        display: none;
+    }
+
+    .grafico-wrapper {
+        height: 200px;
+    }
+
+    .navegacion-dias {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .btn-navegacion {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* Para tablets pequeñas (700px - 500px) */
+@media (max-width: 700px) {
+    .dias-pronostico {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .pronostico-cabecera {
+        padding: 12px 16px;
+    }
+
+    .titulo-ubicacion h3 {
+        font-size: 16px;
+    }
+
+    .tabla-header,
+    .tabla-fila {
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 8px;
+        padding: 10px 12px;
+    }
+
+    .col-precipitacion,
+    .col-viento {
+        display: none;
+    }
+
+    .resumen-temperaturas {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .grafico-container,
+    .tabla-horaria-container {
+        padding: 16px;
+    }
+
+    .hora-actual-label {
+        font-size: 10px;
+        padding: 3px 6px;
+    }
+}
+
+/* Para móviles (500px - 400px) */
+@media (max-width: 500px) {
+    .dias-pronostico {
+        grid-template-columns: 1fr;
+        max-height: 420px;
+        overflow-y: auto;
+        padding-right: 6px;
+    }
+
+    .dia-pronostico {
+        flex-direction: row;
+        justify-content: space-between;
+        padding: 12px 14px;
+        min-height: auto;
+        gap: 16px;
+    }
+
+    .dia-cabecera {
+        text-align: left;
+        margin-bottom: 0;
+        width: auto;
+        min-width: 65px;
+    }
+
+    .clima-icono {
+        margin: 0;
+        height: auto;
+        width: 45px;
+    }
+
+    .emoji-icono {
+        font-size: 28px;
+    }
+
+    .temperaturas {
+        margin: 0;
+        width: auto;
+        min-width: 75px;
+    }
+
+    .temp-maxima {
+        font-size: 18px;
+    }
+
+    .temp-minima {
+        font-size: 16px;
+    }
+
+    .precipitacion-compacta {
+        margin: 0;
+        width: auto;
+        min-width: 65px;
+        justify-content: center;
+    }
+
+    .descripcion-clima {
+        display: none;
+    }
+
+    .tabla-header,
+    .tabla-fila {
+        grid-template-columns: 1fr 1fr;
+        padding: 10px;
+    }
+
+    .col-temperatura,
+    .col-precipitacion {
+        display: none;
+    }
+
+    .grafico-wrapper {
+        height: 180px;
+    }
+
+    .resumen-icono .emoji-icono-grande {
+        font-size: 50px;
+    }
+
+    /* Scrollbar para móvil */
+    .dias-pronostico::-webkit-scrollbar {
+        width: 5px;
+    }
+
+    .dias-pronostico::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 3px;
+    }
+
+    .dias-pronostico::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 3px;
+    }
+}
+
+/* Para móviles muy pequeños (< 400px) */
+@media (max-width: 400px) {
+    .pronostico-tiempo {
+        width: 98%;
+        top: 5px;
+        max-height: 85vh;
+    }
+
+    .pronostico-contenido {
+        padding: 16px;
+    }
+
+    .dia-pronostico {
+        padding: 10px 12px;
+        gap: 12px;
+    }
+
+    .dia-semana {
+        font-size: 13px;
+    }
+
+    .clima-icono {
+        width: 35px;
+    }
+
+    .tabla-header,
+    .tabla-fila {
+        grid-template-columns: 1fr;
+        font-size: 12px;
+    }
+
+    .col-hora {
+        font-weight: 700;
+        font-size: 13px;
+        justify-content: space-between;
+    }
+
+    .col-temperatura,
+    .col-precipitacion,
+    .col-humedad,
+    .col-viento {
+        display: flex;
+        justify-content: space-between;
+        padding: 4px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .col-clima {
+        justify-content: flex-start;
+        padding-top: 8px;
+    }
+
+    .grafico-wrapper {
+        height: 160px;
+    }
+
+    .hora-actual-label {
+        display: none;
+    }
+}
+
+/* Encuentra la clase .grafico-wrapper y ajústala */
+.grafico-wrapper {
+    width: 100%;
+    height: 180px;
+    /* Reducido de 250px */
+    position: relative;
+    margin: 10px 0;
+}
+
+/* Ajusta el contenedor del gráfico */
+.grafico-container {
+    background: rgba(255, 255, 255, 0.07);
+    border-radius: 10px;
+    /* Reducido de 12px */
+    padding: 16px;
+    /* Reducido de 24px */
+    margin-bottom: 20px;
+    /* Reducido de 24px */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.grafico-container h4 {
+    margin: 0 0 12px 0;
+    /* Reducido de 18px */
+    font-size: 15px;
+    /* Reducido de 17px */
+    font-weight: 500;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Ajusta el indicador de hora actual */
+.hora-actual-label {
+    position: absolute;
+    top: 5px;
+    /* Ajustado por la nueva altura */
+    left: 10px;
+    background: rgba(255, 193, 7, 0.9);
+    color: #000;
+    padding: 3px 6px;
+    /* Reducido de 4px 8px */
+    border-radius: 4px;
+    font-size: 10px;
+    /* Reducido de 11px */
+    font-weight: 600;
+    white-space: nowrap;
+    transform: translateX(-50%);
+}
+
+/* Ajusta el mensaje de día completo */
+.mensaje-dia-completo {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+    padding: 6px 10px;
+    /* Reducido de 8px 12px */
+    background: rgba(255, 193, 7, 0.1);
+    border-radius: 5px;
+    border-left: 3px solid #ffc107;
+    font-size: 11px;
+    /* Reducido de 12px */
+    color: #ffc107;
+}
+
+/* ============================================= */
+/* AJUSTES ESPECÍFICOS PARA EL NUEVO GRÁFICO CON VIENTO */
+/* ============================================= */
+
+/* Asegurar que el gráfico tenga suficiente espacio para 3 ejes */
+.grafico-wrapper {
+    width: 100%;
+    height: 250px;
+    /* Mantener 250px para mejor visualización con 3 ejes */
+    position: relative;
+    margin: 15px 0;
+    /* Un poco más de margen */
+}
+
+/* Mejorar la leyenda para 3 elementos */
+.chartjs-legend {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+/* Estilos para el tooltip personalizado */
+.chartjs-tooltip {
+    background: rgba(0, 0, 0, 0.85) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-radius: 8px !important;
+    padding: 10px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+    backdrop-filter: blur(10px) !important;
+}
+
+/* Mejorar la visibilidad de las líneas del gráfico */
+#grafico-temperatura {
+    width: 100% !important;
+    height: 100% !important;
+    /* Mejorar renderizado */
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+}
+
+/* Ajustes responsive para el gráfico con 3 líneas */
+@media (max-width: 900px) {
+    .grafico-wrapper {
+        height: 220px;
+        /* Un poco menos en tablets */
+    }
+
+    .chartjs-legend {
+        gap: 10px;
+        margin-bottom: 12px;
+    }
+}
+
+@media (max-width: 700px) {
+    .grafico-wrapper {
+        height: 200px;
+    }
+}
+
+@media (max-width: 500px) {
+    .grafico-wrapper {
+        height: 180px;
+    }
+
+    .grafico-container h4 {
+        font-size: 14px;
+    }
+}
+
+/* Color específico para los valores de viento en la leyenda */
+.chartjs-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* Círculos de colores en la leyenda */
+.chartjs-legend-marker {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+/* Color específico para el viento en la leyenda */
+.chartjs-legend-item[data-viento] .chartjs-legend-marker {
+    background-color: #9c27b0;
+}
+
+/* Para temperatura */
+.chartjs-legend-item[data-temperatura] .chartjs-legend-marker {
+    background-color: #ff4444;
+}
+
+/* Para precipitación */
+.chartjs-legend-item[data-precipitacion] .chartjs-legend-marker {
+    background-color: #4fc3f7;
+}
+
+/* Ajuste para la línea de hora actual */
+.hora-actual-indicador {
+    z-index: 20;
+    /* Aumentar z-index para estar por encima del gráfico */
+}
+
+.hora-actual-line {
+    background: linear-gradient(to bottom,
+            transparent 0%,
+            #ffc107 10%,
+            #ffc107 90%,
+            transparent 100%);
+    box-shadow: 0 0 12px rgba(255, 193, 7, 0.6);
+}
+
+/* Mejorar los puntos de datos */
+.chartjs-render-monitor .chartjs-point {
+    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.3));
+}
+
+/* Para tablets (900px - 700px) - AJUSTA ESTA PARTE */
+@media (max-width: 900px) {
+    /* ... otros estilos ... */
+
+    .tabla-header,
+    .tabla-fila {
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        /* Cambia de 1.2fr a 1fr */
+        gap: 10px;
+        padding: 10px 14px;
+    }
+
+    /* Ocultar solo clima en tablets, mantener viento */
+    .col-clima {
+        display: none;
+    }
+
+    /* Mantener viento visible */
+    .col-viento {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        font-size: 11px;
+    }
+
+    .viento-direccion {
+        font-size: 10px;
+    }
+}
+
+/* Para tablets pequeñas (700px - 500px) - AJUSTA ESTA PARTE */
+@media (max-width: 700px) {
+    /* ... otros estilos ... */
+
+    .tabla-header,
+    .tabla-fila {
+        grid-template-columns: 1fr 1fr 1fr;
+        /* Mantener 3 columnas */
+        gap: 8px;
+        padding: 10px 12px;
+    }
+
+    /* Ocultar precipitación pero mantener temperatura y viento */
+    .col-precipitacion {
+        display: none;
+    }
+
+    /* Ajustar viento para móviles */
+    .col-viento {
+        flex-direction: column;
+        gap: 2px;
+        font-size: 11px;
+        min-width: 70px;
+    }
+
+    .viento-velocidad {
+        font-size: 12px;
+    }
+
+    .viento-direccion {
+        font-size: 10px;
+    }
+}
+
+

@@ -1,0 +1,289 @@
+<div class="data-card">
+    <ng-container>
+        <header>
+            <div class="card__title">
+                <div>Editar vuelos seleccionados</div>
+            </div>
+        </header>
+        <!-- Cambiamos el formulario a reactive forms -->
+        <form [formGroup]="flightBatchUpdateForm">
+            <div class="row">
+                <div class="column">
+                    <!-- ===================================================================== -->
+                    <mat-form-field appearance="outline" >
+                        <mat-label>Propietario</mat-label>
+                        <input matInput #propietarioInput formControlName="propietario" [matAutocomplete]="auto"
+                            (input)="onInput($event)" >
+                        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayPropietario"
+                            autoActiveFirstOption="false" *ngIf="isTyping" (optionSelected)="onOptionSelected($event)">
+                            <mat-option *ngFor="let owner of filteredOwners" [value]="owner">
+                                {{ owner.aliasPropietario | titlecase }}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                    <input matInput formControlName="fk_Usuario" *ngIf="false" />
+                    <!-- ===================================================================== -->
+
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Fecha de vuelo</mat-label>
+                        <input matInput [matDatepicker]="picker" formControlName="fechaVuelo">
+                        <mat-datepicker-toggle matSuffix [for]="picker">
+                        </mat-datepicker-toggle>
+                        <mat-datepicker #picker></mat-datepicker>
+                    </mat-form-field>
+
+                    <!-- ===================================================================== -->
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Cultivo</mat-label>
+                        <input matInput #cultivoInput formControlName="cultivoVuelo" [matAutocomplete]="autoCultivo"
+                            (input)="onInputCultivo($event)">
+                        <mat-autocomplete #autoCultivo="matAutocomplete" [displayWith]="displayCultivo"
+                            autoActiveFirstOption="false" *ngIf="isTypingCultivo"
+                            (optionSelected)="onOptionSelectedCultivo($event)">
+                            <mat-option *ngFor="let cultivo of filteredCultivos" [value]="cultivo">
+                                {{ cultivo.nombreCultivo | titlecase }}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+
+
+
+
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Caldo/Ha (Lts.)</mat-label>
+                        <input matInput formControlName="caldohaVuelo">
+                    </mat-form-field>
+
+
+
+
+                    <!-- ===================================================================== -->
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Piloto</mat-label>
+                        <input matInput #pilotoInput formControlName="pilotoNombreCompleto"
+                            [matAutocomplete]="autoPiloto" (input)="onInputPiloto($event)">
+                        <mat-autocomplete #autoPiloto="matAutocomplete" [displayWith]="displayPiloto"
+                            autoActiveFirstOption="false" *ngIf="isTypingPiloto"
+                            (optionSelected)="onOptionSelectedPiloto($event)">
+                            <mat-option *ngFor="let piloto of filteredPilotos" [value]="piloto">
+                                {{ piloto.nombreCompletoPiloto | titlecase }}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                    <input matInput formControlName="idPilotoVuelo" *ngIf="false" />
+                    <input matInput formControlName="pilotoVuelo" *ngIf="false" />
+
+
+                    <!-- ===================================================================== -->
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Técnico Agrícola</mat-label>
+                        <input matInput #tecnicoInput formControlName="tecnicoVuelo" [matAutocomplete]="autoTecnico"
+                            (input)="onInputTecnico($event)">
+                        <mat-autocomplete #autoTecnico="matAutocomplete" [displayWith]="displayTecnico"
+                            autoActiveFirstOption="false" *ngIf="isTypingTecnico"
+                            (optionSelected)="onOptionSelectedTecnico($event)">
+                            <mat-option *ngFor="let tecnico of filteredTecnicos" [value]="tecnico">
+                                {{ tecnico.nombreCompletoTecnico | titlecase }}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+
+                    <!-- ===================================================================== -->
+
+
+                </div>
+                <div class="column">
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Aclaración</mat-label>
+                        <input matInput formControlName="aclaracion">
+                    </mat-form-field>
+
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Precio x Ha</mat-label>
+                        <input matInput formControlName="precioHa">
+                    </mat-form-field>
+
+
+                    <mat-form-field appearance="fill">
+                        <mat-label>Forma de Pago</mat-label>
+                        <mat-select formControlName="formaPago">
+                            <mat-option *ngFor="let formaPago of formasPago" [value]="formaPago.value">
+                                {{ formaPago.viewValue }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Agroquímico 1</mat-label>
+                        <input matInput #agq1Input formControlName="agq1" [matAutocomplete]="autoAgq1"
+                            (input)="onInputAgq1($event)">
+                        <mat-autocomplete #autoAgq1="matAutocomplete" [displayWith]="displayAgroquimico"
+                            autoActiveFirstOption="false" *ngIf="isTypingAgq1"
+                            (optionSelected)="onOptionSelectedAgq1($event)">
+                            <mat-option *ngFor="let agroquimico of filteredAgq1" [value]="agroquimico">
+                                {{ agroquimico.nombreAgroquimico | titlecase }}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+
+
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Dosis agroquímico 1</mat-label>
+                        <input matInput formControlName="dosisagq1">
+                        <mat-error *ngIf="flightBatchUpdateForm.get('dosisagq1')?.hasError('pattern')">
+                            Solo se permiten números decimales con hasta dos decimales.
+                        </mat-error>
+                    </mat-form-field>
+
+                    <!-- <mat-form-field appearance="outline">
+                        <mat-label>Agroquímico 2</mat-label>
+                        <input matInput formControlName="agq2">
+                    </mat-form-field> -->
+
+
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Agroquímico 2</mat-label>
+                        <input matInput #agq2Input formControlName="agq2" [matAutocomplete]="autoAgq2"
+                            (input)="onInputAgq2($event)">
+                        <mat-autocomplete #autoAgq2="matAutocomplete" [displayWith]="displayAgroquimico"
+                            autoActiveFirstOption="false" *ngIf="isTypingAgq2"
+                            (optionSelected)="onOptionSelectedAgq2($event)">
+                            <mat-option *ngFor="let agroquimico of filteredAgq2" [value]="agroquimico">
+                                {{ agroquimico.nombreAgroquimico | titlecase }}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Dosis agroquímico 2</mat-label>
+                        <input matInput formControlName="dosisagq2">
+                        <mat-error *ngIf="flightBatchUpdateForm.get('dosisagq2')?.hasError('pattern')">
+                            Solo se permiten números decimales con hasta dos decimales.
+                        </mat-error>
+                    </mat-form-field>
+
+                </div>
+                <div class="column">
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Agroquímico 3</mat-label>
+                        <input matInput #agq3Input formControlName="agq3" [matAutocomplete]="autoAgq3"
+                            (input)="onInputAgq3($event)">
+                        <mat-autocomplete #autoAgq3="matAutocomplete" [displayWith]="displayAgroquimico"
+                            autoActiveFirstOption="false" *ngIf="isTypingAgq3"
+                            (optionSelected)="onOptionSelectedAgq3($event)">
+                            <mat-option *ngFor="let agroquimico of filteredAgq3" [value]="agroquimico">
+                                {{ agroquimico.nombreAgroquimico | titlecase }}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+
+
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Dosis agroquímico 3</mat-label>
+                        <input matInput formControlName="dosisagq3">
+                        <mat-error *ngIf="flightBatchUpdateForm.get('dosisagq3')?.hasError('pattern')">
+                            Solo se permiten números decimales con hasta dos decimales.
+                        </mat-error>
+                    </mat-form-field>
+
+
+
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Agroquímico 4</mat-label>
+                        <input matInput #agq4Input formControlName="agq4" [matAutocomplete]="autoAgq4"
+                            (input)="onInputAgq4($event)">
+                        <mat-autocomplete #autoAgq4="matAutocomplete" [displayWith]="displayAgroquimico"
+                            autoActiveFirstOption="false" *ngIf="isTypingAgq4"
+                            (optionSelected)="onOptionSelectedAgq4($event)">
+                            <mat-option *ngFor="let agroquimico of filteredAgq4" [value]="agroquimico">
+                                {{ agroquimico.nombreAgroquimico | titlecase }}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Dosis agroquímico 4</mat-label>
+                        <input matInput formControlName="dosisagq4">
+                        <mat-error *ngIf="flightBatchUpdateForm.get('dosisagq4')?.hasError('pattern')">
+                            Solo se permiten números decimales con hasta dos decimales.
+                        </mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Coadyuvante 1</mat-label>
+                        <input matInput #coad1Input formControlName="coad1" [matAutocomplete]="autoCoad1"
+                            (input)="onInputCoad1($event)">
+                        <mat-autocomplete #autoCoad1="matAutocomplete" [displayWith]="displayCoadyuvante"
+                            autoActiveFirstOption="false" *ngIf="isTypingCoad1"
+                            (optionSelected)="onOptionSelectedCoad1($event)">
+                            <mat-option *ngFor="let coadyuvante of filteredCoad1" [value]="coadyuvante">
+                                {{ coadyuvante.nombreCoadyuvante | titlecase }}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+
+
+
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Dosis coadyuvante 1</mat-label>
+                        <input matInput formControlName="dosiscoad1">
+                        <mat-error *ngIf="flightBatchUpdateForm.get('dosiscoad1')?.hasError('pattern')">
+                            Solo se permiten números decimales con hasta dos decimales.
+                        </mat-error>
+                    </mat-form-field>
+
+                    <!-- <mat-form-field appearance="outline">
+                        <mat-label>Coadyuvante 2</mat-label>
+                        <input matInput formControlName="coad2">
+                    </mat-form-field> -->
+
+
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Coadyuvante 2</mat-label>
+                        <input matInput #coad2Input formControlName="coad2" [matAutocomplete]="autoCoad2"
+                            (input)="onInputCoad2($event)">
+                        <mat-autocomplete #autoCoad2="matAutocomplete" [displayWith]="displayCoadyuvante"
+                            autoActiveFirstOption="false" *ngIf="isTypingCoad2"
+                            (optionSelected)="onOptionSelectedCoad2($event)">
+                            <mat-option *ngFor="let coadyuvante of filteredCoad2" [value]="coadyuvante">
+                                {{ coadyuvante.nombreCoadyuvante | titlecase }}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+
+
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Dosis coadyuvante 2</mat-label>
+                        <input matInput formControlName="dosiscoad2">
+                        <mat-error *ngIf="flightBatchUpdateForm.get('dosiscoad2')?.hasError('pattern')">
+                            Solo se permiten números decimales con hasta dos decimales.
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+            </div>
+
+            <div class="contenedorboton">
+                <button mat-raised-button color="primary" [disabled]="flightBatchUpdateForm.invalid"
+                    (click)="guardarCambios()">
+                    Guardar cambios
+                </button>
+            </div>
+        </form>
+    </ng-container>
+</div>

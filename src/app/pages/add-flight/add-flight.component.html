@@ -1,0 +1,274 @@
+<!-- Header -->
+<div class="content__header">
+    <div class="header__options">
+        <!-- Left -->
+        <div></div>
+        <h3>Agregar vuelo</h3>
+
+        <!-- Right -->
+        <div></div>
+    </div>
+    <p>Agregamos el vuelo con los correspondientes datos del mismo.</p>
+</div>
+<!-- END Header -->
+
+<!-- List -->
+<div class="content__list">
+
+    <mat-stepper orientation="vertical" [linear]="true" class="add-observation">
+        <mat-step editable="false">
+            <ng-template matStepLabel>Agregar vuelo</ng-template>
+            <div class="draw-label">
+                <svg xmlns="https://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-alert-circle" width="20"
+                    height="20" viewBox="0 0 24 24" stroke-width="1.5" stroke="#ffffff" fill="none"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <circle cx="12" cy="12" r="9" />
+                    <line x1="12" y1="8" x2="12" y2="12" />
+                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg>
+                Añada un vuelo al mapa con la herramienta de polígono para continuar.
+            </div>
+            <button mat-stroked-button color="primary" matStepperNext [disabled]="markers.length < 1"
+                (click)="getMarkersFlight()">Continuar</button>
+        </mat-step>
+
+        <mat-step>
+            <form [formGroup]="flightForm">
+                <ng-template matStepLabel>Completar los datos</ng-template>
+
+
+                <mat-form-field appearance="fill">
+                    <mat-label>Seleccione una fecha</mat-label>
+                    <input matInput [matDatepicker]="picker" formControlName="dateFlight">
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                    <mat-label>Propietario</mat-label>
+                    <input matInput formControlName="propietarioFlight" placeholder="Propietario" required>
+                </mat-form-field>
+
+
+                <mat-form-field appearance="fill">
+                    <mat-label>Cuadro de vuelo</mat-label>
+                    <input matInput formControlName="cuadroFlight" placeholder="Describir el cuadro..." required>
+                    <mat-error *ngIf="flightForm.get('cuadroFlight')?.hasError('required')">El cuadro de vuelo es
+                        requerido</mat-error>
+                    <mat-error *ngIf="flightForm.get('cuadroFlight')?.hasError('minlength')">El cuadro de vuelo debe
+                        tener al menos 4 caracteres</mat-error>
+                    <mat-error *ngIf="flightForm.get('cuadroFlight')?.hasError('maxlength')">El cuadro de vuelo debe
+                        tener como máximo 40 caracteres</mat-error>
+                </mat-form-field>
+
+
+                <mat-form-field appearance="fill">
+                    <mat-label>Zona de vuelo</mat-label>
+                    <input matInput formControlName="zonaFlight" placeholder="Zona o localidad..." required>
+                    <mat-error *ngIf="flightForm.get('zonaFlight')?.hasError('required')">La zona de vuelo es
+                        requerida</mat-error>
+                    <mat-error *ngIf="flightForm.get('zonaFlight')?.hasError('minlength')">La zona de vuelo debe tener
+                        al menos 4 caracteres</mat-error>
+                    <mat-error *ngIf="flightForm.get('zonaFlight')?.hasError('maxlength')">La zona de vuelo debe tener
+                        como máximo 40 caracteres</mat-error>
+                </mat-form-field>
+
+
+                <mat-form-field appearance="fill">
+                    <mat-label>Cultivo</mat-label>
+                    <mat-select formControlName="cultivoFlight">
+                        <mat-option *ngFor="let cultivo of cultivosList" [value]="cultivo.nombreCultivo">
+                            {{ cultivo.nombreCultivo }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                    <mat-label>Caldo x ha</mat-label>
+                    <input matInput type="number" formControlName="caldohaFlight" placeholder="Litros de caldo * ha..."
+                        required>
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                    <mat-label>Área (ha)</mat-label>
+                    <input matInput type="number" min="0" formControlName="areaFlight"
+                        placeholder="Superficie de vuelo..." required>
+                </mat-form-field>
+
+                <mat-form-field *appRole="['ADMIN']" appearance="fill">
+                    <mat-label>Piloto</mat-label>
+                    <mat-select formControlName="pilotoFlight" (selectionChange)="updateFields($event)">
+                        <mat-option *ngFor="let piloto of pilotos" [value]="piloto.pilotoId">
+                            {{ piloto.nombrePiloto }} {{ piloto.apellidoPiloto }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+
+                <mat-form-field *ngIf="!isAdmin()" appearance="fill">
+                    <mat-label>Piloto</mat-label>
+                    <input matInput formControlName="pilotoNombreCompletoFlight" [value]="aliasUsuarioLogueado"
+                        readonly>
+                </mat-form-field>
+
+
+
+
+
+
+                <mat-form-field appearance="fill" *ngIf="false">
+                    <mat-label>Id de Piloto</mat-label>
+                    <input matInput formControlName="idPilotoCreateFlight"
+                        placeholder="Seleccione antes un piloto por favor." readonly />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill" *ngIf="false">
+                    <mat-label>Nombre completo del piloto</mat-label>
+                    <input matInput formControlName="pilotoNombreCompletoFlight"
+                        placeholder="Seleccione antes un piloto por favor." readonly />
+                </mat-form-field>
+
+                <!-- <mat-form-field appearance="fill">
+                    <mat-label>Técnico agrícola</mat-label>
+                    <input matInput formControlName="tecnicoFlight" placeholder="Técnico agrícola..." required>
+                </mat-form-field> -->
+
+                <mat-form-field appearance="fill">
+                    <mat-label>Técnico agrícola</mat-label>
+                    <mat-select formControlName="tecnicoFlight">
+                        <mat-option *ngFor="let tecnico of tecnicosList" [value]="tecnico.nombreCompletoTecnico">
+                            {{ tecnico.nombreCompletoTecnico }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                    <mat-label>Agroquímico 1</mat-label>
+                    <input matInput formControlName="agq1Flight" placeholder="Nombre de agroquímico Nº1 ..." required>
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                    <mat-label>Dosis Agroquímico 1</mat-label>
+                    <input matInput type="number" formControlName="dosisagq1Flight"
+                        placeholder="Dosis de agroquímico Nº1 ..." required>
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                    <mat-label>Agroquímico 2</mat-label>
+                    <input matInput formControlName="agq2Flight" placeholder="Nombre de agroquímico Nº2 ...">
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                    <mat-label>Dosis Agroquímico 2</mat-label>
+                    <input matInput type="number" formControlName="dosisagq2Flight"
+                        placeholder="Dosis de agroquímico Nº2 ...">
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                    <mat-label>Agroquímico 3</mat-label>
+                    <input matInput formControlName="agq3Flight" placeholder="Nombre de agroquímico Nº3 ...">
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                    <mat-label>Dosis Agroquímico 3</mat-label>
+                    <input matInput type="number" formControlName="dosisagq3Flight"
+                        placeholder="Dosis de agroquímico Nº3 ...">
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                    <mat-label>Agroquímico 4</mat-label>
+                    <input matInput formControlName="agq4Flight" placeholder="Nombre de agroquímico Nº4 ...">
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                    <mat-label>Dosis Agroquímico 4</mat-label>
+                    <input matInput type="number" formControlName="dosisagq4Flight"
+                        placeholder="Dosis de agroquímico Nº4 ...">
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                    <mat-label>Coadyuvante 1</mat-label>
+                    <input matInput formControlName="coad1Flight" placeholder="Nombre de coadyuvante Nº1 ..." required>
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                    <mat-label>Dosis Coadyuvante 1</mat-label>
+                    <input matInput type="number" formControlName="dosiscoad1Flight"
+                        placeholder="Dosis de coadyuvante Nº1 ..." required>
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                    <mat-label>Coadyuvante 2</mat-label>
+                    <input matInput formControlName="coad2Flight" placeholder="Nombre de coadyuvante Nº2 ...">
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                    <mat-label>Dosis Coadyuvante 2</mat-label>
+                    <input matInput type="number" formControlName="dosiscoad2Flight"
+                        placeholder="Dosis de coadyuvante Nº2 ...">
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                    <mat-label>Forma de Pago</mat-label>
+                    <mat-select formControlName="formaPagoFlight">
+                        <mat-option *ngFor="let formaPago of formasPago" [value]="formaPago.value">
+                            {{ formaPago.viewValue }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                    <mat-label>Precio x ha</mat-label>
+                    <input matInput formControlName="precioHaFlight" placeholder="Precio x ha ...">
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                    <mat-label>Aclaración</mat-label>
+                    <textarea matInput formControlName="aclaracionFlight" placeholder="Aclaración ..."></textarea>
+                </mat-form-field>
+
+
+            </form>
+        </mat-step>
+    </mat-stepper>
+
+</div>
+<!-- END List -->
+
+<!-- Footer -->
+<div class="sidebar__footer">
+    <!-- Toggle -->
+    <div [ngClass]="{'display-none': this.sidebarService.extendedSidebar}" class="sidebar__toggle"
+        (click)="this.sidebarService.toggleSidebar()">
+        <svg xmlns="https://www.w3.org/2000/svg" class="icon-hover icon icon-tabler icon-tabler-chevrons-right"
+            width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="#ffffff" fill="none"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+            <polyline points="7 7 12 12 7 17" />
+            <polyline points="13 7 18 12 13 17" />
+        </svg>
+    </div>
+    <div [ngClass]="{'display-none': !this.sidebarService.extendedSidebar}" class="sidebar__toggle pointer"
+        (click)="this.sidebarService.toggleSidebar()">
+        <svg xmlns="https://www.w3.org/2000/svg" class="icon-hover icon icon-tabler icon-tabler-chevrons-left"
+            width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="#ffffff" fill="none"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+            <polyline points="11 7 6 12 11 17" />
+            <polyline points="17 7 12 12 17 17" />
+        </svg>
+    </div>
+    <!-- END Toggle -->
+
+    <!-- Buttons -->
+    <div class="footer__buttons">
+        <!-- Cancel -->
+        <button mat-flat-button color="warn" (click)="cancelFlight()">Cancelar</button>
+        <!-- Confirm -->
+        <button mat-flat-button color="primary" (click)="saveFlight()">Confirmar</button>
+    </div>
+    <!-- END Buttons -->
+
+</div>
+<!-- END Footer -->

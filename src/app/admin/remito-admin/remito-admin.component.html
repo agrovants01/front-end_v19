@@ -1,0 +1,186 @@
+<div class="root">
+    <app-sidebar></app-sidebar>
+    <div class="admin-bg">
+        <div class="admin-cont">
+            <h2>Gestionar Remitos</h2>
+            <mat-tab-group>
+                <mat-tab label="Crear Remito">
+                    <div class="tab-content">
+                        <!-- Contenido de la pestaña "Crear Remitos" -->
+                        <!-- <h2>Crear Remito</h2> -->
+
+                        <div class="SelectRemito" [formGroup]="remitoForm">
+
+                            <mat-form-field appearance="fill">
+                                <mat-label>Seleccionar propietario</mat-label>
+                                <mat-select formControlName="propietarioFlight"
+                                    (selectionChange)="onPropietarioSelected()">
+                                    <mat-option *ngFor="let l of ownersList"
+                                        [value]="{ alias: l.aliasPropietario, id: l.propietarioId, cuit: l.cuitPropietario, domicilio: l.domicilioPropietario, telefono: l.telefonoPropietario}">
+                                        {{ l.nombrePropietario && l.apellidoPropietario ? (l.nombrePropietario + ' ' +
+                                        l.apellidoPropietario )
+                                        : l.aliasPropietario }}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+
+
+                            <div class="fecha-container">
+
+                                <mat-form-field appearance="fill">
+                                    <mat-label>Definir rango de fechas...</mat-label>
+                                    <mat-date-range-input [rangePicker]="picker">
+                                        <input matStartDate formControlName="startDate" placeholder="Fecha de inicio"
+                                            (dateInput)="onDateRangeChange($event)">
+                                        <input matEndDate formControlName="endDate" placeholder="Fecha de fin"
+                                            (dateInput)="onDateRangeChange($event)">
+                                    </mat-date-range-input>
+                                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                                    <mat-date-range-picker #picker></mat-date-range-picker>
+                                </mat-form-field>
+                            </div>
+
+                        </div>
+
+
+                        <!-- TABLA DE RESULTADOS -->
+                        <div *ngIf="propietarioSeleccionado">
+
+                            <div class="admin__content admin__users">
+                                <div class="admin-table" *ngIf="flights.length > 0">
+                                    <table mat-table [dataSource]="flights" matSort>
+
+                                        <!-- Checkbox Column -->
+                                        <ng-container matColumnDef="select">
+                                            <th mat-header-cell *matHeaderCellDef>
+                                                <mat-checkbox (change)="$event ? masterToggle() : null"
+                                                    [checked]="selection.hasValue() && isAllSelected()"
+                                                    [indeterminate]="isIndeterminate()">
+                                                </mat-checkbox>
+                                            </th>
+                                            <td mat-cell *matCellDef="let row">
+                                                <mat-checkbox (click)="$event.stopPropagation()"
+                                                    (change)="$event ? selection.toggle(row) : null"
+                                                    [checked]="selection.isSelected(row)">
+                                                </mat-checkbox>
+                                            </td>
+                                        </ng-container>
+
+                                        <!-- Propietario Column -->
+                                        <ng-container matColumnDef="cuadroVuelo">
+                                            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                                                Parcela
+                                            </th>
+                                            <td mat-cell *matCellDef="let row">
+                                                {{ row.cuadroVuelo }}
+                                            </td>
+                                        </ng-container>
+
+                                        <!-- Fecha Vuelo Column -->
+                                        <ng-container matColumnDef="date">
+                                            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                                                Fecha
+                                            </th>
+                                            <td mat-cell *matCellDef="let row">
+                                                {{ row.date }}
+                                            </td>
+                                        </ng-container>
+
+                                        <!-- Cultivo Column -->
+                                        <ng-container matColumnDef="cultivoVuelo">
+                                            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                                                Cultivo
+                                            </th>
+                                            <td mat-cell *matCellDef="let row">
+                                                {{ row.cultivoVuelo }}
+                                            </td>
+                                        </ng-container>
+
+                                        <!-- Superficie Column -->
+                                        <ng-container matColumnDef="superficieVuelo">
+                                            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                                                Superficie
+                                            </th>
+                                            <td mat-cell *matCellDef="let row">
+                                                {{ row.superficieVuelo }}
+                                            </td>
+                                        </ng-container>
+
+                                        <!-- Precio Column -->
+                                        <ng-container matColumnDef="precioHa">
+                                            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                                                Precio/Ha
+                                            </th>
+                                            <td mat-cell *matCellDef="let row">
+                                                {{ row.precioHa }}
+                                            </td>
+                                        </ng-container>
+
+
+                                        <!-- Piloto Column -->
+                                        <ng-container matColumnDef="pilotoNombreCompleto">
+                                            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                                                Piloto
+                                            </th>
+                                            <td mat-cell *matCellDef="let row">
+                                                {{ row.pilotoNombreCompleto }}
+                                            </td>
+                                        </ng-container>
+
+
+                                        <!-- Remito -->
+                                        <ng-container matColumnDef="numRemito">
+                                            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                                                Remito emitido Nº
+                                            </th>
+                                            <td mat-cell *matCellDef="let row">
+                                                {{ row.numRemito }}
+                                            </td>
+                                        </ng-container>
+
+
+
+                                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                                        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+                                    </table>
+
+                                    <mat-paginator [length]="resultsLength" [pageSize]="500"
+                                        [pageSizeOptions]="pageSizeOptions">
+                                    </mat-paginator>
+
+                                    <div class="botonGenerarRemito">
+                                        <button mat-raised-button color="primary" (click)="verificarYGenerarRemito()"
+                                            *ngIf="flights.length > 0">
+
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round"
+                                                class="icon icon-tabler icons-tabler-outline icon-tabler-receipt">
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                                <path
+                                                    d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16l-3 -2l-2 2l-2 -2l-2 2l-2 -2l-3 2m4 -14h6m-6 4h6m-2 4h2" />
+                                            </svg>&nbsp;
+                                            Generar Remito
+                                        </button>
+                                    </div>
+
+                                </div>
+
+                                <!-- Mensaje cuando no hay vuelos para el propietario seleccionado -->
+                                <div *ngIf="propietarioSeleccionado && flights.length === 0" class="no-results">
+                                    <p>No se encontraron vuelos para el propietario seleccionado.</p>
+                                </div>
+
+                            </div>
+</div>
+                        </div>
+                </mat-tab>
+                <mat-tab label="Consultar Remito">
+                    <div class="tab-content">
+                        <app-remito-consulta></app-remito-consulta>
+                    </div>
+                </mat-tab>
+            </mat-tab-group>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,57 @@
+@use '../0-abstracts/index' as *;
+
+.report__flights {
+    margin-bottom: 2rem;
+
+    p {
+        font-weight: bold;
+        margin-bottom: 3rem;
+
+        @include tablet {
+            min-width: 50rem;
+        }
+    }
+
+    .report__ref {
+        display: grid;
+        grid-template-columns: 1fr 0.75fr 2fr 1fr 3rem;
+        font-size: 0.9rem;
+        text-align: center;
+
+        @include tablet {
+            font-size: 1.2rem;
+        }
+    }
+
+    .report__flight {
+        display: grid;
+        grid-template-columns: 1fr 0.75fr 2fr 1fr 3rem;
+        width: 100%;
+        font-size: 1.3rem;
+
+        @include tablet {
+            font-size: 1.6rem;
+        }
+
+        &:hover {
+            background-color: rgba(255, 255, 255, 0.04);
+        }
+
+        .report__field {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 1rem;
+            border: 1px solid #ffffff20;
+
+            &:last-of-type {
+                cursor: pointer;
+
+                &:hover {
+                    color: $mainColor;
+                }
+            }
+        }
+    }
+}

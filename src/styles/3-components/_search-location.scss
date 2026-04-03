@@ -1,0 +1,62 @@
+@use '../0-abstracts/variables' as *;
+@import 'leaflet-geosearch/dist/geosearch.css';
+
+.leaflet-control-geosearch {
+  font-family: $mainFont;
+  form {
+    background-color: $black-A-85;
+    min-height: 3.6rem;
+    box-shadow: none;
+  }
+  input, a.reset, .results {
+    background-color: transparent;
+    color: white;
+  }
+  a.reset {
+    color: $grey;
+  }
+  input {
+    height: 3.6rem !important;
+  }
+  input::placeholder {
+    font-weight: bold;
+  }
+  .results div:hover, a.reset:hover {
+    background-color: lighten($color: $black-A-85, $amount: 15);
+  }
+  .results div:hover {
+    border: 1px solid transparent;
+  }
+  .results.active {
+    border-top: none;
+  }
+  a.leaflet-bar-part:after {
+    border-color: $grey;
+    transform: translate(0.45rem, 0.45rem);
+  }
+  a.leaflet-bar-part:before {
+    border-color: $grey;
+    transform: rotateZ(45deg) translate(0.7rem, 0px);
+  }
+}
+
+/* Geosearch border radius fix */
+.leaflet-control-geosearch .leaflet-bar-part {
+  border-radius: 0.5rem;
+}
+.leaflet-geosearch-button.active .leaflet-bar-part {
+  border-radius: 0.5rem 0 0 0.5rem !important;
+}
+
+/* Geosearch responsive */
+.leaflet-left {
+  right: 0;
+  .leaflet-control-geosearch.active {
+    width: 100%;
+    form {
+      right: 2rem;
+      max-width: 40rem;
+      overflow: hidden;
+    }
+  }
+}

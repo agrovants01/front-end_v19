@@ -1,0 +1,52 @@
+<!-- Header -->
+<app-search
+    (valueInput)="updateValues($event)"
+    (orderSelection)="orderOwners($event)"
+    [title]="title"
+    [orderOptions]="orderOptions">
+</app-search>
+<!-- END Header -->
+
+<!-- List -->
+
+<mat-selection-list class="content__list" [multiple]="false">
+    <mat-list-option *ngFor="let owner of owners" [value]="owner" (click)="goToOwner(owner.idPropietario)">
+        <div mat-line *ngIf="owner.aliasPropietario">
+            {{ owner.aliasPropietario }}
+        </div>
+        <div mat-line *ngIf="!owner.aliasPropietario">
+            {{ owner.nombrePropietario }} {{ owner.apellidoPropietario || '' }}
+        </div>
+        <div mat-line>Vuelos realizados: {{ owner.cantidadVuelos }}</div>
+        <div mat-line>
+            Último vuelo: {{ owner.ultimoVuelo | date : "dd/MM/yyyy" }}
+        </div>
+    </mat-list-option>
+</mat-selection-list>
+<!-- END List -->
+
+<!-- Footer -->
+<div class="sidebar__footer">
+    <!-- Toggle -->
+    <div [ngClass]="{ 'display-none': this.sidebarService.extendedSidebar }" class="sidebar__toggle"
+        (click)="this.sidebarService.toggleSidebar()">
+        <svg xmlns="https://www.w3.org/2000/svg" class="icon-hover icon icon-tabler icon-tabler-chevrons-right"
+            width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="#ffffff" fill="none"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+            <polyline points="7 7 12 12 7 17" />
+            <polyline points="13 7 18 12 13 17" />
+        </svg>
+    </div>
+    <div [ngClass]="{ 'display-none': !this.sidebarService.extendedSidebar }" class="sidebar__toggle pointer"
+        (click)="this.sidebarService.toggleSidebar()">
+        <svg xmlns="https://www.w3.org/2000/svg" class="icon-hover icon icon-tabler icon-tabler-chevrons-left"
+            width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="#ffffff" fill="none"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+            <polyline points="11 7 6 12 11 17" />
+            <polyline points="17 7 12 12 17 17" />
+        </svg>
+    </div>
+    <!-- END Toggle -->
+</div>

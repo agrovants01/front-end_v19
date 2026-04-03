@@ -1,0 +1,29 @@
+@use "../0-abstracts/index" as *;
+
+.add-observation {
+    background-color: transparent;
+
+    .draw-label {
+        margin-bottom: 3rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        
+        svg {
+            min-width: fit-content;
+        }
+    }
+
+    form {
+        margin-top: 1rem;
+    }
+
+    .mat-stroked-button:enabled {
+        border-color: $mainColor;
+    }
+
+    .mat-form-field {
+        width: 100%;
+    }
+
+}

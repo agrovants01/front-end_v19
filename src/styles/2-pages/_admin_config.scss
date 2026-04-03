@@ -1,0 +1,216 @@
+@use "../0-abstracts/index" as *;
+
+.admin-bg,
+.config-bg {
+    background-color: lighten($color: $backgroundColor, $amount: 5);
+    overflow-y: scroll;
+    overflow-x: hidden;
+    flex: 1;
+}
+
+.admin-cont,
+.config-cont {
+    margin: 8rem 1rem 5rem 1rem;
+    display: flex;
+    flex-direction: column;
+    //max-width: 90rem;
+    max-width: 300rem;
+    overflow: hidden;
+
+    h2 {
+        margin-bottom: 1rem;
+        font-size: 2.8rem; //2.8
+        text-align: center;
+    }
+
+    .admin-table {
+        .mat-table,
+        .mat-paginator {
+            width: 100%;
+            background-color: $backgroundColor;
+        }
+
+        .mat-row:last-of-type {
+            th.mat-header-cell,
+            td.mat-cell,
+            td.mat-footer-cell {
+                border-bottom: none;
+            }
+        }
+    }
+
+    .admin__content {
+        //margin-top: 3rem;
+        margin-top: 3rem;
+        background-color: $backgroundColor;
+        padding: 2rem;
+        border-radius: 0.5rem;
+    }
+
+    @include tablet {
+        h2 {
+            text-align: unset;
+        }
+    }
+
+    @include desktop {
+        margin-left: 5rem;
+        width: auto;
+
+        .admin__content {
+            margin-top: 1rem;
+        }
+
+        h2 {
+            margin-top: 1rem;
+            margin-bottom: 2rem;
+            font-size: 3.2rem;
+        }
+    }
+}
+
+.admin-cont .upload-data {
+    .mat-stepper-horizontal {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .mat-stepper-horizontal,
+    .mat-stepper-vertical {
+        background-color: transparent;
+    }
+
+    .mat-horizontal-stepper-header-container {
+        align-self: center;
+        width: 50rem;
+    }
+
+    .flights-details {
+        overflow-y: scroll;
+        max-height: 50rem;
+        margin-top: 1rem;
+        background-color: lighten($color: $backgroundColor, $amount: 7);
+        border-radius: 0.5rem;
+    }
+
+    .stepper-button {
+        margin-top: 3rem;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .flights-form {
+        margin-top: 2rem;
+    }
+}
+
+.admin-cont .admin__indexes {
+    // Estilos específicos para índices si los hay
+}
+
+/* ============================================ */
+/* ESTILOS UNIFICADOS PARA TODOS LOS COMPONENTES ADMIN */
+/* ============================================ */
+
+/* Estilos base compartidos por users, agrochemicals y adjuvants */
+.admin-cont .admin__users,
+.admin-cont .admin__agrochemicals,
+.admin-cont .admin__adjuvants {
+    /* ← AÑADIDO admin__adjuvants */
+    padding: 0;
+
+    > .mat-form-field {
+        width: 100%;
+        padding: 0 3rem;
+    }
+}
+
+.admin-cont .admin__backup {
+    // Estilos específicos para backup si los hay
+}
+
+/* === Sombras y borde para los contenedores principales === */
+.admin-cont .admin__content.admin__users,
+.admin-cont .admin__content.admin__agrochemicals,
+.admin-cont .admin__content.admin__adjuvants {
+    /* ← AÑADIDO admin__adjuvants */
+    background-color: #182a1e;
+    border-radius: 12px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+    padding: 2rem;
+    transition:
+        box-shadow 0.3s ease,
+        transform 0.2s ease;
+
+    // &:hover {
+    //     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+    //     transform: translateY(-2px);
+    // }
+}
+
+// Admin main page
+.admin-item-container {
+    margin-top: 3rem;
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 2rem;
+    max-width: 100rem;
+
+    @include tablet {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    @include desktop {
+        margin-top: 5rem;
+    }
+
+    @media (min-width: 1400px) {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.admin-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    gap: 1rem;
+    padding: 3rem 0rem;
+    border-radius: 0.5rem;
+    min-width: 23rem;
+    width: 85%;
+    margin: 0 2rem;
+    justify-self: center;
+    background-color: $backgroundColor;
+    text-decoration: none;
+    color: white;
+
+    &:hover {
+        background-color: rgba(250, 250, 250, 0.04);
+        cursor: pointer;
+    }
+
+    @include tablet {
+        width: 100%;
+    }
+}
+
+// Sidebar admin
+.admin-options {
+    flex: 1;
+
+    .mat-list-item {
+        &:hover {
+            background-color: rgba($color: white, $alpha: 0.1);
+        }
+
+        &.list-item-active {
+            background-color: rgba($color: white, $alpha: 0.05);
+        }
+    }
+
+    .mat-list-item-content {
+        gap: 2rem;
+    }
+}

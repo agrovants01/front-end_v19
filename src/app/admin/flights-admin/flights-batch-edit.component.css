@@ -1,0 +1,85 @@
+::ng-deep .mat-form-field-flex>.mat-form-field-infix {
+    padding: 0.5em 0px !important;
+}
+
+::ng-deep .mat-form-field-label-wrapper {
+    top: -1.1em;
+}
+
+::ng-deep .mat-form-field-appearance-outline.mat-form-field-can-float.mat-form-field-should-float .mat-form-field-label {
+    transform: translateY(-1.1em) scale(.75);
+    width: 133.33333%;
+}
+
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline-thick {
+    height: 36px;
+}
+
+::ng-deep .mat-form-field-flex>.mat-form-field-infix {
+    border-top: 5px solid transparent;
+}
+
+::ng-deep .mat-form-field-wrapper {
+    margin-bottom: -0.1em !important;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.row2 {
+    align-items: end;
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+    flex-basis: 100%;
+    flex: 1;
+    padding: 10px;
+}
+
+.example-button-container {
+    display: flex;
+    justify-content: center;
+    width: 120px;
+}
+
+.icon-disabled {
+    pointer-events: none;
+    /* No permite clics */
+    opacity: 0.5;
+    /* Reduce la opacidad */
+    cursor: not-allowed;
+    /* Cambia el cursor a un símbolo de no permitido */
+}
+
+.disabled {
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+::ng-deep .mat-tooltip {
+    font-weight: bold;
+    font-size: 16px;
+    /* Aumenta el tamaño de la letra a 16px */
+}
+
+.contenedorboton {
+    display: flex;
+    justify-content: center;
+    /* Centra horizontalmente */
+    align-items: center;
+    /* Centra verticalmente dentro de su contenedor */
+
+}

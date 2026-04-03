@@ -1,0 +1,67 @@
+<div class="content__header">
+
+    <div *ngIf="admin" class="perfilAdmin">Admin: {{ alias }}</div>
+    <div *ngIf="piloto" class="perfilPiloto">Piloto: {{ alias }}</div>
+    <div *ngIf="contratista" class="perfilContratista">Contratista: {{ alias }}</div>
+
+    <div class="header__options">
+        <div style="width: 1.6rem"></div>
+        <h3>{{ title }}</h3>
+        <!-- Sort Icon -->
+        <svg xmlns="https://www.w3.org/2000/svg" class="sort-icon icon-hover icon icon-tabler icon-tabler-arrows-sort"
+            width="16" height="16" viewBox="0 0 24 24" stroke-width="1.5" stroke="#ffffff" fill="none"
+            stroke-linecap="round" stroke-linejoin="round" [matMenuTriggerFor]="menuSort">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+            <path d="M3 9l4 -4l4 4m-4 -4v14" />
+            <path d="M21 15l-4 4l-4 -4m4 4v-14" />
+        </svg>
+        <!-- END Sort Icon -->
+
+        <!-- Sort options -->
+        <mat-menu #menuSort="matMenu">
+            <div *ngFor="let option of orderOptions">
+                <!-- Option -->
+                <div class="sort__option">
+                    <div class="option__label">{{ option }}</div>
+                    <div class="option__buttons">
+                        <button mat-menu-item (click)="selectOrderOption(option, true)">
+                            <svg xmlns="https://www.w3.org/2000/svg"
+                                class="icon icon-tabler icon-tabler-arrow-narrow-up" width="16" height="16"
+                                viewBox="0 0 24 24" stroke-width="2" stroke="#ffffff" fill="none" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                <line x1="12" y1="5" x2="12" y2="19" />
+                                <line x1="16" y1="9" x2="12" y2="5" />
+                                <line x1="8" y1="9" x2="12" y2="5" />
+                            </svg>
+                        </button>
+                        <button mat-menu-item (click)="selectOrderOption(option, false)">
+                            <svg xmlns="https://www.w3.org/2000/svg"
+                                class="icon icon-tabler icon-tabler-arrow-narrow-down" width="16" height="16"
+                                viewBox="0 0 24 24" stroke-width="2" stroke="#ffffff" fill="none" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                <line x1="12" y1="5" x2="12" y2="19" />
+                                <line x1="16" y1="15" x2="12" y2="19" />
+                                <line x1="8" y1="15" x2="12" y2="19" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <!-- END Option -->
+            </div>
+        </mat-menu>
+        <!-- END Sort options -->
+    </div>
+
+    <!-- Search Input -->
+    <mat-form-field class="search-input" appearance="fill">
+        <mat-label>Buscar {{ title | lowercase }}...</mat-label>
+        <input matInput type="text" [formControl]="searchControl" />
+        <mat-icon *ngIf="searchControl.value" matSuffix mat-icon-button aria-label="Clear"
+            (click)="searchControl.setValue('')">close
+        </mat-icon>
+        <mat-icon *ngIf="!searchControl.value" matSuffix>search</mat-icon>
+    </mat-form-field>
+    <!-- END Search Input -->
+</div>

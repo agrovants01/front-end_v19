@@ -1,0 +1,336 @@
+<div class="root">
+    <app-sidebar></app-sidebar>
+    <div class="admin-bg">
+        <div class="admin-cont">
+            <h2>Gestión Administrativa</h2>
+
+            <div class="botones-exportar">
+                <button mat-raised-button color="primary" (click)="exportarResultadosExcel()"
+                    [disabled]="data.data.length === 0">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="icon icon-tabler icons-tabler-outline icon-tabler-file-type-xls">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                        <path d="M5 12v-7a2 2 0 0 1 2 -2h7l5 5v4" />
+                        <path d="M4 15l4 6" />
+                        <path d="M4 21l4 -6" />
+                        <path
+                            d="M17 20.25c0 .414 .336 .75 .75 .75h1.25a1 1 0 0 0 1 -1v-1a1 1 0 0 0 -1 -1h-1a1 1 0 0 1 -1 -1v-1a1 1 0 0 1 1 -1h1.25a.75 .75 0 0 1 .75 .75" />
+                        <path d="M11 15v6h3" />
+                    </svg>&nbsp;
+                    Exportar a Excel
+                </button>
+
+                <button mat-raised-button color="primary" (click)="exportarResultadosPdf()"
+                    [disabled]="data.data.length === 0">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="icon icon-tabler icons-tabler-outline icon-tabler-file-type-pdf">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                        <path d="M5 12v-7a2 2 0 0 1 2 -2h7l5 5v4" />
+                        <path d="M5 18h1.5a1.5 1.5 0 0 0 0 -3h-1.5v6" />
+                        <path d="M17 18h2" />
+                        <path d="M20 15h-3v6" />
+                        <path d="M11 15v6h1a2 2 0 0 0 2 -2v-2a2 2 0 0 0 -2 -2h-1z" />
+                    </svg>&nbsp;
+                    Exportar a PDF
+                </button>
+            </div>
+
+            <!-- Panel de totales -->
+            <div class="totales-container" *ngIf="data.data.length > 0">
+                <div class="totales-grid">
+                    <div class="total-item">
+                        <span class="total-label">Total Superficie:</span>
+                        <span class="total-value">{{ formatNumber(totalSuperficie) }} Ha</span>
+                    </div>
+                    <div class="total-item">
+                        <span class="total-label">Costo de vuelo (Sup. x Precio/Ha):</span>
+                        <span class="total-value">{{ formatCurrency(totalSubTotal) }}</span>
+                    </div>
+                    <!-- Total Pago Piloto -->
+                    <div class="total-item">
+                        <span class="total-label">Total Pago Piloto:</span>
+                        <span class="total-value">{{ formatCurrency(totalPagoPiloto) }}</span>
+                    </div>
+                    <!-- Total Pago Técnico -->
+                    <div class="total-item">
+                        <span class="total-label">Total Pago Técnico:</span>
+                        <span class="total-value">{{ formatCurrency(totalPagoTecnico) }}</span>
+                    </div>
+                    <!-- Total Pago Contratista -->
+                    <div class="total-item">
+                        <span class="total-label">Total Pago Contratista:</span>
+                        <span class="total-value">{{ formatCurrency(totalPagoContratista) }}</span>
+                    </div>
+                    <!-- Total Pago Administrativo -->
+                    <div class="total-item">
+                        <span class="total-label">Total Pago Administrativo:</span>
+                        <span class="total-value">{{ formatCurrency(totalAdministrativo) }}</span>
+                    </div>
+                    <!-- NUEVO: Total Gastos (antes Total General) -->
+                    <div class="total-item">
+                        <span class="total-label">Total Gastos:</span>
+                        <span class="total-value">
+                            {{ formatCurrency(totalPagoPiloto + totalPagoTecnico + totalPagoContratista + totalAdministrativo) }}
+                        </span>
+                    </div>
+                    <!-- NUEVO: Total Ganancia Neta -->
+                    <div class="total-item">
+                        <span class="total-label">Total Ganancia Neta:</span>
+                        <span class="total-value total-general">
+                            {{ formatCurrency(totalSubTotal - (totalPagoPiloto + totalPagoTecnico + totalPagoContratista + totalAdministrativo)) }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin__content admin__users">
+                <mat-progress-bar *ngIf="isLoadingResults" mode="query"></mat-progress-bar>
+
+                <!-- CONTENEDOR PARA FECHA Y BOTÓN LIMPIAR -->
+                <div class="fecha-y-limpiar">
+                    <!--BUSCADOR POR RANGO DE FECHAS-->
+                    <div class="date-container-wrapper">
+                        <div class="date-container">
+                            <mat-form-field appearance="fill">
+                                <mat-label>Rango de fechas</mat-label>
+                                <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
+                                    <input matStartDate formControlName="start" placeholder="Fecha desde" />
+                                    <input matEndDate formControlName="end" placeholder="Fecha hasta" />
+                                </mat-date-range-input>
+                                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                                <mat-date-range-picker #picker></mat-date-range-picker>
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+                    <!-- BOTÓN LIMPIAR FILTROS (AHORA AL LADO DERECHO) -->
+                    <div class="btn-limpiar-wrapper">
+                        <button mat-raised-button color="warn" (click)="limpiarFiltros()" class="btn-limpiar">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round"
+                                class="icon icon-tabler icons-tabler-outline icon-tabler-filter-x">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                <path
+                                    d="M13.758 19.414l-4.758 1.586v-8.5l-4.48 -4.928a2 2 0 0 1 -.52 -1.345v-2.227h16v2.172a2 2 0 0 1 -.586 1.414l-4.414 4.414v1.5" />
+                                <path d="M22 22l-5 -5" />
+                                <path d="M17 22l5 -5" />
+                            </svg>&nbsp;
+                            Limpiar Filtros
+                        </button>
+                    </div>
+                </div>
+
+                <!-- FILTRO Y TABLA DE RESULTADOS -->
+                <mat-form-field appearance="outline">
+                    <mat-label>Buscar en gestión</mat-label>
+                    <input matInput [formControl]="searchGestion" placeholder="Cliente, Cuadro, Piloto, etc." />
+                </mat-form-field>
+
+                <!-- Selección múltiple -->
+                <div class="selection-actions" *ngIf="selection.hasValue()">
+                    <span>{{ selection.selected.length }} item(s) seleccionado(s)</span>
+                    <button mat-button (click)="selection.clear()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="icon icon-tabler icons-tabler-outline icon-tabler-x">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M18 6l-12 12" />
+                            <path d="M6 6l12 12" />
+                        </svg>
+                        Limpiar selección
+                    </button>
+                </div>
+
+                <div class="admin-table">
+                    <table mat-table [dataSource]="data" matSort>
+
+                        <!-- Checkbox Column -->
+                        <ng-container matColumnDef="select">
+                            <th mat-header-cell *matHeaderCellDef>
+                                <mat-checkbox (change)="$event ? masterToggle() : null"
+                                    [checked]="selection.hasValue() && isAllSelected()"
+                                    [indeterminate]="isIndeterminate()">
+                                </mat-checkbox>
+                            </th>
+                            <td mat-cell *matCellDef="let row">
+                                <mat-checkbox (click)="$event.stopPropagation()"
+                                    (change)="$event ? selection.toggle(row) : null"
+                                    [checked]="selection.isSelected(row)">
+                                </mat-checkbox>
+                            </td>
+                        </ng-container>
+
+                        <!-- Fecha Column -->
+                        <ng-container matColumnDef="fechaVuelo">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                                Fecha
+                            </th>
+                            <td [style.font-size]="'1.2rem'" *matCellDef="let row">
+                                {{ row.fechaVuelo | date:'dd/MM/yyyy' }}
+                            </td>
+                        </ng-container>
+
+                        <!-- Propietario Column -->
+                        <ng-container matColumnDef="propietario">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                                Cliente
+                            </th>
+                            <td [style.font-size]="'1.2rem'" *matCellDef="let row">
+                                {{ row.propietario }}
+                            </td>
+                        </ng-container>
+
+                        <!-- Cuadro Column -->
+                        <ng-container matColumnDef="cuadroVuelo">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                                Cuadro
+                            </th>
+                            <td [style.font-size]="'1.2rem'" *matCellDef="let row">
+                                {{ row.cuadroVuelo }}
+                            </td>
+                        </ng-container>
+
+                        <!-- Superficie Column -->
+                        <ng-container matColumnDef="superficieVuelo">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                                Superficie (Ha)
+                            </th>
+                            <td [style.font-size]="'1.2rem'" *matCellDef="let row" style="text-align: right;">
+                                {{ formatNumber(row.superficieVuelo) }}
+                            </td>
+                        </ng-container>
+
+                        <!-- Piloto Column -->
+                        <ng-container matColumnDef="pilotoNombreCompleto">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                                Piloto
+                            </th>
+                            <td [style.font-size]="'1.2rem'" *matCellDef="let row">
+                                {{ row.pilotoNombreCompleto }}
+                            </td>
+                        </ng-container>
+
+                        <!-- NUEVA COLUMNA: Pago Piloto (después de Piloto) -->
+                        <ng-container matColumnDef="pagoPiloto">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                                Pago Piloto
+                            </th>
+                            <td [style.font-size]="'1.2rem'" *matCellDef="let row" style="text-align: right;">
+                                {{ formatCurrency(row.pagoPiloto) }}
+                            </td>
+                        </ng-container>
+
+                        <!-- Técnico Column -->
+                        <ng-container matColumnDef="tecnicoVuelo">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                                Técnico
+                            </th>
+                            <td [style.font-size]="'1.2rem'" *matCellDef="let row">
+                                {{ row.tecnicoVuelo }}
+                            </td>
+                        </ng-container>
+
+                        <!-- NUEVA COLUMNA: Pago Técnico (después de Técnico) -->
+                        <ng-container matColumnDef="pagoTecnico">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                                Pago Técnico
+                            </th>
+                            <td [style.font-size]="'1.2rem'" *matCellDef="let row" style="text-align: right;">
+                                {{ formatCurrency(row.pagoTecnico) }}
+                            </td>
+                        </ng-container>
+
+                        <!-- Precio/Ha Column -->
+                        <ng-container matColumnDef="precioHa">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                                Precio/Ha
+                            </th>
+                            <td [style.font-size]="'1.2rem'" *matCellDef="let row" style="text-align: right;">
+                                {{ formatCurrency(row.precioHa) }}
+                            </td>
+                        </ng-container>
+
+                        <!-- NUEVA COLUMNA: Pago Contratista -->
+                        <ng-container matColumnDef="pagoContratista">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                                Pago Contratista
+                            </th>
+                            <td [style.font-size]="'1.2rem'" *matCellDef="let row" style="text-align: right;">
+                                {{ formatCurrency(row.pagoContratista) }}
+                            </td>
+                        </ng-container>
+
+                        <!-- Subtotal Column -->
+                        <ng-container matColumnDef="subTotal">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                                Subtotal
+                            </th>
+                            <td [style.font-size]="'1.2rem'" *matCellDef="let row" style="text-align: right;">
+                                {{ formatCurrency(row.subTotal) }}
+                            </td>
+                        </ng-container>
+
+                        <!-- Nº Remito Column -->
+                        <ng-container matColumnDef="numRemito">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                                Nº Remito
+                            </th>
+                            <td [style.font-size]="'1.2rem'" *matCellDef="let row">
+                                {{ row.numRemito }}
+                            </td>
+                        </ng-container>
+
+                        <!-- Aclaración Column -->
+                        <ng-container matColumnDef="aclaracion">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                                Aclaración
+                            </th>
+                            <td [style.font-size]="'1.2rem'" *matCellDef="let row">
+                                {{ row.aclaracion }}
+                            </td>
+                        </ng-container>
+
+                        <!-- Administrativo Column -->
+                        <ng-container matColumnDef="administrativo">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                                Pago Administrativo
+                            </th>
+                            <td [style.font-size]="'1.2rem'" *matCellDef="let row" style="text-align: right;">
+                                {{ formatCurrency(row.administrativo) }}
+                            </td>
+                        </ng-container>
+
+                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+                        <!-- Row shown when there is no matching data. -->
+                        <tr class="mat-row" *matNoDataRow>
+                            <td class="mat-cell" *ngIf="searchGestion.value === '' && !dataError && !isLoadingResults">
+                                No se encontraron datos de gestión
+                            </td>
+                            <td class="mat-cell" *ngIf="searchGestion.value === '' && dataError">
+                                El listado de gestión no se encuentra disponible
+                            </td>
+                            <td class="mat-cell" colspan="4" *ngIf="searchGestion.value !== '' && !isLoadingResults">
+                                No se encuentran datos que coincidan con el
+                                término "{{ searchGestion.value }}"
+                            </td>
+                            <td class="mat-cell" *ngIf="isLoadingResults">
+                                Cargando datos de gestión...
+                            </td>
+                        </tr>
+                    </table>
+
+                    <mat-paginator [length]="resultsLength" [pageSize]="50" [pageSizeOptions]="pageSizeOptions">
+                    </mat-paginator>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

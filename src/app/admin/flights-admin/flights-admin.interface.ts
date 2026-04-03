@@ -1,0 +1,33 @@
+export interface flightList {
+    vueloId: string;
+    propietario: string;
+    fechaVuelo: Date;
+    cuadroVuelo: string;
+    cultivoVuelo: string;
+    superficieVuelo: number;
+    caldohaVuelo: number;
+    pilotoVuelo: string;
+    pilotoNombreCompleto: string;
+    idPilotoVuelo: string;
+    tecnicoVuelo: string;
+    totalCaldoVuelo: number;
+    totalH2OVuelo: number;
+    agq1: string;
+    dosisagq1: number;
+    agq2: string;
+    dosisagq2: number;
+    agq3: string;
+    dosisagq3: number;
+    agq4: string;
+    dosisagq4: number;
+    coad1: string;
+    dosiscoad1: number;
+    coad2: string;
+    dosiscoad2: number;
+    precioHa: number;
+    formaPago: string;
+    aclaracion: string;
+    colorVuelo: string;
+    geometryVuelo: string;
+    [key: string]: any;
+}

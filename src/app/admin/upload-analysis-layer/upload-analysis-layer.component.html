@@ -1,0 +1,119 @@
+<div class="root">
+    <app-sidebar></app-sidebar>
+    <div class="admin-bg">
+        <div class="admin-cont">
+            <h2>Agregar Análisis</h2>
+
+            <div class="admin__content upload-analysis-layer">
+                <form [formGroup]="layerForm" (ngSubmit)="submitLayerForm()">
+                    <div mat-dialog-content>
+                        <mat-form-field appearance="fill">
+                            <mat-label>Seleccione la fecha de realización</mat-label>
+                            <input matInput readonly [matDatepicker]="picker" formControlName="fechaAnalisis" />
+                            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                            <mat-datepicker #picker></mat-datepicker>
+                            <mat-error *ngIf="notValidField('fechaAnalisis')">{{
+                                fechaAnalisisErrorMsg
+                                }}</mat-error>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="fill">
+                            <mat-label>Propietario de análisis</mat-label>
+                            <mat-select formControlName="propietarioAnalisisId">
+                                <mat-option *ngFor="let l of ownersList" [value]="l.propietarioId">
+                                    <!-- Verifica si tiene nombre y apellido, de lo contrario muestra solo el alias -->
+                                    {{ l.nombrePropietario && l.apellidoPropietario
+                                    ? (l.nombrePropietario + ' ' + l.apellidoPropietario + ' - ' + l.aliasPropietario)
+                                    : l.aliasPropietario }}
+                                </mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="notValidField('propietarioAnalisisId')">
+                                {{ propietarioAnalisisIdErrorMsg }}
+                            </mat-error>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="fill">
+                            <mat-label>Índice de análisis</mat-label>
+                            <mat-select formControlName="indiceAnalisisId">
+                                <div *ngFor="let l of layerTypes">
+                                    <mat-option value="{{ l.indiceId }}" (click)="getReference(l)">{{ l.siglasIndice }}
+                                    </mat-option>
+                                </div>
+                            </mat-select>
+                            <mat-error *ngIf="notValidField('indiceAnalisisId')">{{ indiceAnalisisErrorMsg
+                                }}</mat-error>
+                        </mat-form-field>
+
+                        <div class="reference-table" *ngIf="layerForm.get('indiceAnalisisId')?.value">
+                            <h4>Referencias</h4>
+
+                            <p *ngIf="rangeData.length === 0">
+                                No se encuentran refencias para el índice
+                                seleccionado
+                            </p>
+
+                            <table *ngIf="rangeData.length > 0" mat-table [dataSource]="rangeData">
+                                <!-- Color Column -->
+                                <ng-container matColumnDef="colorRango">
+                                    <th mat-header-cell *matHeaderCellDef>
+                                        Color
+                                    </th>
+                                    <td mat-cell *matCellDef="let element">
+                                        {{ element.colorRango }}
+                                        <div [ngStyle]="{
+                                                'background-color':
+                                                    element.colorRango
+                                            }" style="width: 3rem; height: 3rem"></div>
+                                    </td>
+                                </ng-container>
+
+                                <!-- Desde Column -->
+                                <ng-container matColumnDef="desdeRango">
+                                    <th mat-header-cell *matHeaderCellDef>
+                                        Lím. Inferior
+                                    </th>
+                                    <td mat-cell *matCellDef="let element">
+                                        {{ element.desdeRango }}
+                                    </td>
+                                </ng-container>
+
+                                <!-- Hasta Column -->
+                                <ng-container matColumnDef="hastaRango">
+                                    <th mat-header-cell *matHeaderCellDef>
+                                        Lím. Superior
+                                    </th>
+                                    <td mat-cell *matCellDef="let element">
+                                        {{ element.hastaRango }}
+                                    </td>
+                                </ng-container>
+
+                                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                                <tr mat-row *matRowDef="
+                                        let row;
+                                        columns: displayedColumns
+                                    "></tr>
+                            </table>
+                        </div>
+
+                        <mat-form-field appearance="fill">
+                            <mat-label>Capa de análisis</mat-label>
+                            <input matInput placeholder="Ingrese la capa" formControlName="imagenAnalisis" />
+                            <mat-hint align="start">Ingrese el <u>nombre</u> de la capa tal como
+                                aparece en GEOSERVER, cuyo formato es:
+                                <strong>store:layer</strong>
+                            </mat-hint>
+                            <mat-error *ngIf="notValidField('imagenAnalisis')">{{ imagenAnalisisErrorMsg }}</mat-error>
+                        </mat-form-field>
+                    </div>
+
+                    <div mat-dialog-actions>
+                        <button mat-flat-button color="warn">Cancelar</button>
+                        <button mat-flat-button type="submit" color="primary" [disabled]="layerForm.pending">
+                            Guardar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

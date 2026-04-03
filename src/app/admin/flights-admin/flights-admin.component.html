@@ -1,0 +1,263 @@
+<div class="root">
+    <app-sidebar></app-sidebar>
+    <div class="admin-bg">
+        <div class="admin-cont">
+            <h2>Gestión de vuelos{{ authService.auth.perfilUsuario === 'PILOTO' ? ' del piloto ' + this.alias : '' }}
+            </h2>
+
+
+            <div class="botones-exportar">
+                <button *ngIf="['ADMIN', 'ADMINISTRATIVO'].includes(authService.auth.perfilUsuario)" mat-raised-button
+                    color="primary" (click)="exportarResultados()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="icon icon-tabler icons-tabler-outline icon-tabler-file-type-xls">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                        <path d="M5 12v-7a2 2 0 0 1 2 -2h7l5 5v4" />
+                        <path d="M4 15l4 6" />
+                        <path d="M4 21l4 -6" />
+                        <path
+                            d="M17 20.25c0 .414 .336 .75 .75 .75h1.25a1 1 0 0 0 1 -1v-1a1 1 0 0 0 -1 -1h-1a1 1 0 0 1 -1 -1v-1a1 1 0 0 1 1 -1h1.25a.75 .75 0 0 1 .75 .75" />
+                        <path d="M11 15v6h3" />
+                    </svg>&nbsp;
+                    Exportar resultados a Excel
+                </button>
+
+
+                <button *ngIf="['ADMIN', 'ADMINISTRATIVO'].includes(authService.auth.perfilUsuario)" mat-raised-button
+                    color="primary" (click)="exportarResultadosGeoJson()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="icon icon-tabler icons-tabler-outline icon-tabler-json">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <path d="M20 16v-8l3 8v-8" />
+                        <path d="M15 8a2 2 0 0 1 2 2v4a2 2 0 1 1 -4 0v-4a2 2 0 0 1 2 -2z" />
+                        <path d="M1 8h3v6.5a1.5 1.5 0 0 1 -3 0v-.5" />
+                        <path
+                            d="M7 15a1 1 0 0 0 1 1h1a1 1 0 0 0 1 -1v-2a1 1 0 0 0 -1 -1h-1a1 1 0 0 1 -1 -1v-2a1 1 0 0 1 1 -1h1a1 1 0 0 1 1 1" />
+                    </svg>&nbsp;
+                    Exportar resultados a GeoJSON
+                </button>
+
+
+                <button *ngIf="['ADMIN', 'ADMINISTRATIVO'].includes(authService.auth.perfilUsuario)" mat-raised-button
+                    color="primary" (click)="exportarResultadosPdf()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="icon icon-tabler icons-tabler-outline icon-tabler-file-type-pdf">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                        <path d="M5 12v-7a2 2 0 0 1 2 -2h7l5 5v4" />
+                        <path d="M5 18h1.5a1.5 1.5 0 0 0 0 -3h-1.5v6" />
+                        <path d="M17 18h2" />
+                        <path d="M20 15h-3v6" />
+                        <path d="M11 15v6h1a2 2 0 0 0 2 -2v-2a2 2 0 0 0 -2 -2h-1z" />
+                    </svg>&nbsp;
+                    Exportar resultados a PDF
+                </button>
+            </div>
+
+
+
+            <div class="admin__content admin__users">
+                <mat-progress-bar *ngIf="isLoadingResults" mode="query"></mat-progress-bar>
+
+
+                <!--BUSCADOR POR RANGO DE FECHAS-->
+                <div class="date-container">
+                    <mat-form-field appearance="outline">
+                        <mat-label>Rango de fechas</mat-label>
+                        <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
+                            <input matStartDate formControlName="start" placeholder="Fecha desde" />
+                            <input matEndDate formControlName="end" placeholder="Fecha hasta" />
+                        </mat-date-range-input>
+                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-date-range-picker #picker></mat-date-range-picker>
+                        <mat-icon *ngIf="range.get('start')?.value || range.get('end')?.value" class="pointer" matSuffix
+                            mat-icon-button aria-label="Clear" (click)="range.reset()">
+                            close
+                        </mat-icon>
+                    </mat-form-field>
+                </div>
+
+
+                <!-- FILTRO Y TABLA DE RESULTADOS -->
+                <mat-form-field appearance="outline">
+                    <mat-label>Buscar Vuelo</mat-label>
+                    <input matInput [formControl]="searchFlights" placeholder="Buscar..." />
+                </mat-form-field>
+
+                <!-- <button mat-button (click)="exportarResultados()">Exportar resultados a Excel</button> -->
+
+                <div class="admin-table">
+                    <table mat-table [dataSource]="data" matSort>
+
+                        <!-- Checkbox Column -->
+                        <ng-container matColumnDef="select">
+                            <th mat-header-cell *matHeaderCellDef>
+                                <mat-checkbox (change)="$event ? masterToggle() : null"
+                                    [checked]="selection.hasValue() && isAllSelected()"
+                                    [indeterminate]="isIndeterminate()">
+                                </mat-checkbox>
+                            </th>
+                            <td mat-cell *matCellDef="let row">
+                                <mat-checkbox (click)="$event.stopPropagation()"
+                                    (change)="$event ? selection.toggle(row) : null"
+                                    [checked]="selection.isSelected(row)">
+                                </mat-checkbox>
+                            </td>
+                        </ng-container>
+
+                        <!-- Fecha Vuelo Column -->
+                        <ng-container matColumnDef="fechaVuelo">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                                Fecha
+                            </th>
+                            <td [style.font-size]="'1.2rem'" *matCellDef="let row">
+                                {{ row.fechaVuelo }}
+                            </td>
+                        </ng-container>
+
+
+                        <!-- Propietario Column -->
+                        <ng-container matColumnDef="propietario">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                                Propietario
+                            </th>
+                            <td [style.font-size]="'1.2rem'" *matCellDef="let row">
+                                {{ row.propietario }}
+                            </td>
+                        </ng-container>
+
+
+
+                        <!-- Cuadro Vuelo Column -->
+                        <ng-container matColumnDef="cuadroVuelo">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                                Cuadro
+                            </th>
+                            <td [style.font-size]="'1.2rem'" *matCellDef="let row">
+                                {{ row.cuadroVuelo }}
+                            </td>
+                        </ng-container>
+
+                        <!-- Cultivo Vuelo Column -->
+                        <ng-container matColumnDef="cultivoVuelo">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                                Cultivo
+                            </th>
+                            <td [style.font-size]="'1.2rem'" *matCellDef="let row">
+                                {{ row.cultivoVuelo }}
+                            </td>
+                        </ng-container>
+
+                        <!-- Caldo por ha (lts) Vuelo Column -->
+                        <ng-container matColumnDef="caldohaVuelo">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                                Caldo/ha (Lts.)
+                            </th>
+                            <td [style.font-size]="'1.2rem'" *matCellDef="let row">
+                                {{ row.caldohaVuelo }}
+                            </td>
+                        </ng-container>
+
+                        <!-- Superficie Vuelo Column -->
+                        <ng-container matColumnDef="superficieVuelo">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                                Superficie
+                            </th>
+                            <td [style.font-size]="'1.2rem'" *matCellDef="let row">
+                                {{ row.superficieVuelo }}
+                            </td>
+                        </ng-container>
+
+                        <!-- Piloto Vuelo Column -->
+                        <ng-container matColumnDef="pilotoNombreCompleto">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                                Piloto
+                            </th>
+                            <td [style.font-size]="'1.2rem'" *matCellDef="let row">
+                                {{ row.pilotoNombreCompleto }}
+                            </td>
+                        </ng-container>
+
+                        <!-- Tecnico Vuelo Column -->
+                        <ng-container matColumnDef="tecnicoVuelo">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                                Tecnico
+                            </th>
+                            <td [style.font-size]="'1.2rem'" *matCellDef="let row">
+                                {{ row.tecnicoVuelo }}
+                            </td>
+                        </ng-container>
+
+                        <!-- Precio Ha Column -->
+                        <ng-container matColumnDef="precioHa">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                                Precio/ha
+                            </th>
+                            <td [style.font-size]="'1.2rem'" *matCellDef="let row">
+                                {{ row.precioHa }}
+                            </td>
+                        </ng-container>
+
+                        <!-- Forma Pago Column -->
+                        <ng-container matColumnDef="formaPago">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                                Forma de pago
+                            </th>
+                            <td [style.font-size]="'1.2rem'" *matCellDef="let row">
+                                {{ row.formaPago }}
+                            </td>
+                        </ng-container>
+
+
+                        <!-- Aclaracion Column -->
+                        <ng-container matColumnDef="aclaracion">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                                Aclaracion
+                            </th>
+                            <td [style.font-size]="'1.2rem'" *matCellDef="let row">
+                                {{ row.aclaracion }}
+                            </td>
+                        </ng-container>
+
+                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+                        <!-- Row shown when there is no matching data. -->
+                        <tr class="mat-row" *matNoDataRow>
+                            <td class="mat-cell" *ngIf="searchFlights.value === '' && !dataError">
+                                Obteniendo listado de vuelos...
+                            </td>
+                            <td class="mat-cell" *ngIf="searchFlights.value === '' && dataError">
+                                El listado de vuelos no se encuentra disponible
+                            </td>
+                            <td class="mat-cell" colspan="4" *ngIf="searchFlights.value !== ''">
+                                No se encuentran datos que coincidan con el
+                                término "{{ searchFlights.value }}"
+                            </td>
+                        </tr>
+                    </table>
+
+                    <mat-paginator [length]="resultsLength" [pageSize]="50" [pageSizeOptions]="pageSizeOptions">
+                    </mat-paginator>
+                </div>
+
+            </div>
+            <br>
+            <div style="display: flex; justify-content: space-evenly; width: 100%;">
+                <button *ngIf="['ADMIN', 'PILOTO'].includes(authService.auth.perfilUsuario)" mat-raised-button
+                    color="primary" (click)="editSelectedRows()">Editar vuelos seleccionados
+                </button>
+
+                <button *ngIf="authService.auth.perfilUsuario === 'ADMIN'" mat-raised-button color="warn"
+                    (click)="deleteSelectedRows()">Eliminar vuelos seleccionados
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+</div>

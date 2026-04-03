@@ -1,0 +1,435 @@
+// @use "../0-abstracts/index" as *;
+
+// .timeslider {
+//     position: absolute;
+//     bottom: 1.2rem;
+//     left: 1rem;
+//     z-index: 1000;
+//     display: flex;
+//     overflow: hidden;
+//     width: 11rem;
+//     height: 3.6rem;
+// }
+
+// .timeslider__container button.mat-flat-button {
+//     background-color: $mainColor;
+//     position: absolute;
+//     bottom: 0;
+//     left: 0;
+//     display: flex;
+//     align-items: center;
+//     justify-content: center;
+//     width: 11rem;
+//     height: 3.6rem;
+//     transition: width 300ms, height 300ms;
+
+//     .mat-button-wrapper div {
+//         display: flex;
+//         align-items: center;
+//         justify-content: center;
+//     }
+
+//     @include desktop {
+//         padding: 0 1.5rem;
+
+//         .mat-button-wrapper div {
+//             width: auto;
+//         }
+//     }
+// }
+
+// .timeslider__container .timeslider__content {
+//     background-color: $mainColor;
+//     display: flex;
+//     align-items: center;
+//     gap: 2rem;
+//     padding-right: 1rem;
+//     border-radius: 0.5rem;
+//     overflow: hidden;
+//     position: absolute;
+//     bottom: 0;
+//     left: 0;
+//     height: 1rem;
+//     width: 1rem;
+//     visibility: hidden;
+//     transition: width 500ms ease 300ms, padding 300ms ease 200ms, height 300ms;
+
+//     .mat-form-field {
+//         opacity: 0;
+//         transition: opacity 300ms;
+
+//         .mat-form-field-wrapper {
+//             //margin-bottom: -1.34375em;
+//             margin-bottom: 1rem;
+//             margin-top: 2rem;
+//         }
+//     }
+
+//     .example-month-picker {
+//         .mat-calendar-period-button {
+//             pointer-events: none;
+//         }
+//         .mat-calendar-arrow {
+//             display: none;
+//         }
+//     }
+
+//     .mat-form-field.mat-focused .mat-form-field-label,
+//     .mat-form-field.mat-focused.mat-primary .mat-select-arrow,
+//     .mat-datepicker-toggle-active {
+//         color: white;
+//     }
+
+//     .date-format {
+//         text-transform: capitalize;
+//     }
+
+//     .timeslider__request {
+//         cursor: pointer;
+//         display: flex;
+//         align-items: center;
+//         justify-content: center;
+//         height: 75%;
+//         border-radius: 0.4rem;
+//         padding: 1.5rem;
+//         margin-left: -1rem;
+//         background-color: transparent;
+//         border: 0;
+
+//         &:hover {
+//             background-color: rgba(255, 255, 255, 0.1);
+//         }
+//     }
+// }
+
+// .timeslider--active {
+//     height: 8rem;
+
+//     .timeslider__container {
+//         button.mat-flat-button {
+//             border-top-right-radius: 0;
+//             border-bottom-right-radius: 0;
+//             padding: 0 0.4rem;
+//             height: 8rem;
+//             width: 3rem;
+
+//             @include desktop {
+//                 padding: 0 1.5rem;
+//             }
+//         }
+
+//         .timeslider__content {
+//             height: 8rem;
+//             width: 83.6rem;
+//             padding-left: 7rem;
+//             visibility: visible;
+
+//             .mat-form-field {
+//                 opacity: 1;
+//             }
+//         }
+//     }
+// }
+
+// @media (max-width: 1270px) {
+//     .timeslider--active .timeslider__container .timeslider__content {
+//         .mat-form-field:nth-child(1) {
+//             width: 10rem;
+//         }
+
+//         .mat-form-field:nth-child(2) {
+//             width: 18rem;
+//         }
+
+//         .mat-form-field:nth-child(3) {
+//             width: 13rem;
+//         }
+//     }
+// }
+
+// @media (max-width: 1024px) {
+//     .timeslider--active {
+//         left: 1rem;
+//         width: 94%;
+
+//         .timeslider__container {
+//             button.mat-flat-button {
+//                 min-width: 0;
+//                 width: 3.5rem;
+//             }
+
+//             .timeslider__content {
+//                 padding-left: 3.7rem;
+//                 gap: 1rem;
+//                 width: 100%;
+//                 max-width: 33.5rem;
+//                 padding-right: 4rem;
+//                 justify-content: space-evenly;
+
+//                 .mat-form-field:nth-child(1) {
+//                     width: 6rem;
+//                 }
+
+//                 .mat-form-field:nth-child(2) {
+//                     width: 3rem;
+//                 }
+
+//                 .mat-form-field:nth-child(3) {
+//                     width: 9rem;
+//                 }
+
+//                 .mat-form-field {
+//                     font-size: 1.2rem;
+//                     .mat-form-field-wrapper {
+//                         .mat-form-field-flex {
+//                             background-color: transparent;
+//                             padding-left: 0;
+//                             padding-right: 0;
+//                         }
+//                     }
+//                 }
+
+//                 .timeslider__request {
+//                     padding: 0.5rem;
+//                     margin-left: -0.6rem;
+//                     position: absolute;
+//                     right: 0.6rem;
+//                 }
+//             }
+//         }
+//     }
+// }
+
+// @include desktop {
+//     .timeslider--active {
+//         width: 59rem;
+//         .timeslider__container .timeslider__content {
+//             width: 100%;
+//         }
+//     }
+// }
+
+// @include desktopLarge {
+//     .timeslider--active {
+//         width: 83.6rem;
+//     }
+// }
+@use "../0-abstracts/index" as *;
+
+.timeslider {
+    position: absolute;
+    bottom: 1.2rem;
+    left: 1rem;
+    z-index: 1000;
+    display: flex;
+    overflow: hidden;
+    width: 11rem;
+    height: 3.6rem;
+}
+
+.timeslider__container button.mat-flat-button {
+    background-color: $mainColor;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 11rem;
+    height: 3.6rem;
+    transition:
+        width 300ms,
+        height 300ms;
+
+    .mat-button-wrapper div {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    @include desktop {
+        padding: 0 1.5rem;
+
+        .mat-button-wrapper div {
+            width: auto;
+        }
+    }
+}
+
+.timeslider__container .timeslider__content {
+    background-color: $mainColor;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    padding-right: 1rem;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 1rem;
+    width: 1rem;
+    visibility: hidden;
+    transition:
+        width 500ms ease 300ms,
+        padding 300ms ease 200ms,
+        height 300ms;
+
+    .mat-form-field {
+        opacity: 0;
+        transition: opacity 300ms;
+
+        .mat-form-field-wrapper {
+            margin-bottom: -1.34375em;
+        }
+    }
+
+    .example-month-picker {
+        .mat-calendar-period-button {
+            pointer-events: none;
+        }
+        .mat-calendar-arrow {
+            display: none;
+        }
+    }
+
+    .mat-form-field.mat-focused .mat-form-field-label,
+    .mat-form-field.mat-focused.mat-primary .mat-select-arrow,
+    .mat-datepicker-toggle-active {
+        color: white;
+    }
+
+    .date-format {
+        text-transform: capitalize;
+    }
+
+    .timeslider__request {
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 75%;
+        border-radius: 0.4rem;
+        padding: 1.5rem;
+        margin-left: -1rem;
+        background-color: transparent;
+        border: 0;
+
+        &:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+    }
+}
+
+.timeslider--active {
+    height: 8rem;
+
+    .timeslider__container {
+        button.mat-flat-button {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+            padding: 0 0.4rem;
+            height: 8rem;
+            width: 3rem;
+
+            @include desktop {
+                padding: 0 1.5rem;
+            }
+        }
+
+        .timeslider__content {
+            height: 8rem;
+            width: 83.6rem;
+            padding-left: 7rem;
+            visibility: visible;
+
+            .mat-form-field {
+                opacity: 1;
+            }
+        }
+    }
+}
+
+@media (max-width: 1270px) {
+    .timeslider--active .timeslider__container .timeslider__content {
+        .mat-form-field:nth-child(1) {
+            width: 10rem;
+        }
+
+        .mat-form-field:nth-child(2) {
+            width: 18rem;
+        }
+
+        .mat-form-field:nth-child(3) {
+            width: 13rem;
+        }
+    }
+}
+
+@media (max-width: 1024px) {
+    .timeslider--active {
+        left: 1rem;
+        width: 94%;
+
+        .timeslider__container {
+            button.mat-flat-button {
+                min-width: 0;
+                width: 3.5rem;
+            }
+
+            .timeslider__content {
+                padding-left: 3.7rem;
+                gap: 1rem;
+                width: 100%;
+                max-width: 33.5rem;
+                padding-right: 4rem;
+                justify-content: space-evenly;
+
+                .mat-form-field:nth-child(1) {
+                    width: 6rem;
+                }
+
+                .mat-form-field:nth-child(2) {
+                    width: 3rem;
+                }
+
+                .mat-form-field:nth-child(3) {
+                    width: 9rem;
+                }
+
+                .mat-form-field {
+                    font-size: 1.2rem;
+                    .mat-form-field-wrapper {
+                        .mat-form-field-flex {
+                            background-color: transparent;
+                            padding-left: 0;
+                            padding-right: 0;
+                        }
+                    }
+                }
+
+                .timeslider__request {
+                    padding: 0.5rem;
+                    margin-left: -0.6rem;
+                    position: absolute;
+                    right: 0.6rem;
+                }
+            }
+        }
+    }
+}
+
+@include desktop {
+    .timeslider--active {
+        width: 59rem;
+        .timeslider__container .timeslider__content {
+            width: 100%;
+        }
+    }
+}
+
+@include desktopLarge {
+    .timeslider--active {
+        width: 83.6rem;
+    }
+}

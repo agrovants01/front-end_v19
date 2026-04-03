@@ -1,0 +1,140 @@
+<div class="root">
+    <app-sidebar></app-sidebar>
+    <div class="admin-bg">
+        <div class="admin-cont">
+            <h2>Gestionar Coadyuvantes</h2>
+
+            <!-- Contenedor de botones en línea -->
+            <div class="button-container">
+                <button [disabled]="addingAdjuvant" mat-raised-button color="primary" (click)="addAdjuvant()"
+                    class="action-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-plus" width="20"
+                        height="20" viewBox="0 0 24 24" stroke-width="1.5" stroke="#ffffff" fill="none"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <line x1="12" y1="5" x2="12" y2="19" />
+                        <line x1="5" y1="12" x2="19" y2="12" />
+                    </svg>
+                    Agregar nuevo coadyuvante
+                </button>
+
+                <button *ngIf="isAdmin" mat-raised-button color="warn" (click)="eliminarDuplicados()"
+                    matTooltip="Eliminar registros duplicados (solo administración)" class="action-button button-warn">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clean" width="20"
+                        height="20" viewBox="0 0 24 24" stroke-width="1.5" stroke="#ffffff" fill="none"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <path d="M15 15l6 6" />
+                        <path d="M15 21l6 -6" />
+                        <path d="M4 11c2.5 -2.5 5.5 -4 9 -4c2.9 0 5.6 1 8 3" />
+                        <path d="M4 5v6h6" />
+                    </svg>
+                    Eliminar coadyuvantes duplicados
+                </button>
+            </div>
+
+            <div class="admin__content admin__adjuvants">
+                <mat-progress-bar *ngIf="isLoadingResults" mode="query"></mat-progress-bar>
+
+                <mat-form-field appearance="outline">
+                    <mat-label>Buscar coadyuvante</mat-label>
+                    <input matInput [formControl]="searchAdjuvants" placeholder="Buscar..." />
+                </mat-form-field>
+
+                <div class="admin-table" >
+                    <table mat-table [dataSource]="data" matSort>
+
+                        <!-- Nombre Column -->
+                        <ng-container matColumnDef="ListadoCoadNom">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                                Nombre del coadyuvante
+                            </th>
+                            <td [style.font-size]="'1.2rem'" mat-cell *matCellDef="let row">
+                                {{ row.ListadoCoadNom }}
+                            </td>
+                        </ng-container>
+
+                        <!-- Descripción Column -->
+                        <ng-container matColumnDef="ListadoCoadDesc">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                                Descripción
+                            </th>
+                            <td mat-cell *matCellDef="let row" [style.max-width]="'300px'">
+                                <span class="descripcion-cell" [matTooltip]="row.ListadoCoadDesc"
+                                    matTooltipPosition="above">
+                                    {{ row.ListadoCoadDesc || 'Sin descripción' }}
+                                </span>
+                            </td>
+                        </ng-container>
+
+                        <!-- Options Column -->
+                        <ng-container matColumnDef="options">
+                            <th mat-header-cell *matHeaderCellDef></th>
+                            <td mat-cell *matCellDef="let row">
+                                <button [disabled]="addingAdjuvant" mat-button [matMenuTriggerFor]="menu">
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        class="icon icon-tabler icon-tabler-dots-vertical" width="20" height="20"
+                                        viewBox="0 0 24 24" stroke-width="1.5" stroke="#ffffff" fill="none"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                        <circle cx="12" cy="12" r="1" />
+                                        <circle cx="12" cy="19" r="1" />
+                                        <circle cx="12" cy="5" r="1" />
+                                    </svg>
+                                </button>
+                                <mat-menu #menu="matMenu">
+                                    <button mat-menu-item (click)="editAdjuvant(row)">
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            class="icon icon-tabler icon-tabler-pencil iconHover iconTransition"
+                                            width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="#B6B6B6"
+                                            fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                            <path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4" />
+                                            <line x1="13.5" y1="6.5" x2="17.5" y2="10.5" />
+                                        </svg>
+                                        Editar coadyuvante
+                                    </button>
+                                    <button mat-menu-item (click)="deleteAdjuvant(row)">
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            class="icon icon-tabler icon-tabler-trash iconHover--red iconTransition"
+                                            width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="#B6B6B6"
+                                            fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                            <line x1="4" y1="7" x2="20" y2="7" />
+                                            <line x1="10" y1="11" x2="10" y2="17" />
+                                            <line x1="14" y1="11" x2="14" y2="17" />
+                                            <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" />
+                                            <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />
+                                        </svg>
+                                        Eliminar coadyuvante
+                                    </button>
+                                </mat-menu>
+                            </td>
+                        </ng-container>
+
+                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+                        <!-- Row shown when there is no matching data. -->
+                        <tr class="mat-row" *matNoDataRow>
+                            <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+                                <span *ngIf="searchAdjuvants.value === '' && !dataError">
+                                    Obteniendo listado de coadyuvantes...
+                                </span>
+                                <span *ngIf="searchAdjuvants.value === '' && dataError">
+                                    El listado de coadyuvantes no se encuentra disponible
+                                </span>
+                                <span *ngIf="searchAdjuvants.value !== ''">
+                                    No se encuentran datos que coincidan con "{{ searchAdjuvants.value }}"
+                                </span>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <mat-paginator [length]="resultsLength" [pageSize]="50" [pageSizeOptions]="pageSizeOptions">
+                    </mat-paginator>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

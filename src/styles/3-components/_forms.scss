@@ -1,0 +1,27 @@
+@use "../0-abstracts/index" as *;
+
+.mat-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-field {
+  margin-bottom: 1.5rem;
+}
+
+.action-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.file-input {
+  cursor: pointer;
+  padding: 2rem 5rem;
+  border: 2px dashed $darkGrey;
+  border-radius: 0.5rem;
+
+  &:hover {
+    background-color: rgba($color: white, $alpha: 0.05);
+  }
+}

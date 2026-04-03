@@ -1,0 +1,37 @@
+/* Estilos para el checkbox de bloqueo de alias */
+.alias-checkbox-container {
+    margin-top: -16px; /* Reduce el espacio entre el input y el checkbox */
+    margin-bottom: 8px;
+}
+
+.alias-checkbox {
+    font-size: 12px !important; /* Texto más pequeño */
+}
+
+.alias-checkbox .mat-checkbox-label {
+    font-size: 12px !important;
+    line-height: 1.2 !important;
+}
+
+.checkbox-label {
+    font-size: 12px;
+    color: rgba(0, 0, 0, 0.7); /* Color más suave */
+}
+
+.checkbox-hint {
+    font-size: 11px !important;
+    color: #f57c00 !important; /* Color naranja para advertencia */
+    margin-left: 24px; /* Alineado con el texto del checkbox */
+    margin-top: -4px;
+    display: block;
+}
+
+/* Si quieres hacerlo aún más compacto */
+::ng-deep .alias-checkbox .mat-checkbox-inner-container {
+    width: 16px !important;
+    height: 16px !important;
+}
+
+::ng-deep .alias-checkbox .mat-checkbox-frame {
+    border-width: 1px !important;
+}

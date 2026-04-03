@@ -1,0 +1,84 @@
+<div [ngClass]="{'sidebar--extended': this.sidebarService.extendedSidebar}" class="sidebar">
+
+    <!-- Header -->
+    <div class="sidebar__header">
+        <!-- Menu -->
+        <div class="menu-trigger" [matMenuTriggerFor]="menuSidebar">
+            <svg xmlns="https://www.w3.org/2000/svg" class="menu icon-hover icon icon-tabler icon-tabler-menu-2"
+                width="24" height="24" viewBox="0 0 24 24" stroke-width="2"
+                stroke="#ffffff" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <line x1="4" y1="6" x2="20" y2="6" />
+                <line x1="4" y1="12" x2="20" y2="12" />
+                <line x1="4" y1="18" x2="20" y2="18" />
+            </svg>
+        </div>
+
+        <!-- Menu dropdown -->
+        <mat-menu #menuSidebar="matMenu" class="menuSidebar">
+            <ng-container *ngIf="showMapOption()">
+
+                <button *appRole="['ADMIN','PILOTO']" mat-menu-item (click)="this.globalsService.goHome()">
+                    <svg xmlns="https://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-shape" width="16"
+                        height="16" viewBox="0 0 24 24" stroke-width="1.5" stroke="#ffffff" fill="none"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <circle cx="5" cy="5" r="2" />
+                        <circle cx="19" cy="5" r="2" />
+                        <circle cx="5" cy="19" r="2" />
+                        <circle cx="19" cy="19" r="2" />
+                        <line x1="5" y1="7" x2="5" y2="17" />
+                        <line x1="7" y1="5" x2="17" y2="5" />
+                        <line x1="7" y1="19" x2="17" y2="19" />
+                        <line x1="19" y1="7" x2="19" y2="17" />
+                    </svg>
+                    <span>Gestionar mapa</span>
+                </button>
+            </ng-container>
+            <button *appRole="['ADMIN', 'ADMINISTRATIVO', 'PILOTO']" mat-menu-item (click)="goToAdmin()">
+                <svg xmlns="https://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-tool" width="16"
+                    height="16" viewBox="0 0 24 24" stroke-width="1.5" stroke="#ffffff" fill="none"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M7 10h3v-3l-3.5 -3.5a6 6 0 0 1 8 8l6 6a2 2 0 0 1 -3 3l-6 -6a6 6 0 0 1 -8 -8l3.5 3.5" />
+                </svg>
+                <span>Administración</span>
+            </button>
+
+            <button mat-menu-item (click)="goToConfiguration()">
+                <svg xmlns="https://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-settings" width="16"
+                    height="16" viewBox="0 0 24 24" stroke-width="1.5" stroke="#ffffff" fill="none"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path
+                        d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z" />
+                    <circle cx="12" cy="12" r="3" />
+                </svg>
+                <span>Configurar cuenta</span>
+            </button>
+
+            <button mat-menu-item (click)="this.globalsService.goLogin()">
+                <svg xmlns="https://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-logout" width="16"
+                    height="16" viewBox="0 0 24 24" stroke-width="1.5" stroke="#ffffff" fill="none"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" />
+                    <path d="M7 12h14l-3 -3m0 6l3 -3" />
+                </svg>
+                <span>Cerrar sesión</span>
+            </button>
+        </mat-menu>
+        <!-- END Menu -->
+
+        <a style="cursor: pointer;" (click)="this.globalsService.goHome()">
+            <img src="assets/img/agrovants.svg" alt="Agrovants">
+        </a>
+        <div style="width: 2.4rem; height: 2.4rem;"></div>
+    </div>
+
+    <!-- Content -->
+    <div class="sidebar__content">
+        <router-outlet></router-outlet>
+    </div>
+
+</div>

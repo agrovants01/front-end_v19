@@ -1,0 +1,43 @@
+@use "../0-abstracts/index" as *;
+
+.view {
+    @include mapButton;
+    top: 6rem;
+    left: 1rem;
+
+    .view__toggle {
+        @include mapButtonToggle;
+    }
+
+    .view__table {
+        width: 100%;
+        overflow: hidden;
+        opacity: 0;
+
+        table {
+            background-color: transparent;
+            width: 100%;
+
+            .options__cell {
+                display: flex;
+                justify-content: center;
+                gap: 1.5rem;
+            }
+        }
+    }
+}
+
+.view--active {
+    right: 1rem;
+    max-height: 40rem;
+    max-width: 40rem;
+
+    .view__toggle {
+        padding-top: 1.6rem;
+        padding-left: 0.6rem;
+    }
+
+    .view__table {
+        opacity: 1;
+    }
+}

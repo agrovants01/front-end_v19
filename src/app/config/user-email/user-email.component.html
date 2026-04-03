@@ -1,0 +1,28 @@
+<div class="root">
+    <app-sidebar></app-sidebar>
+    <div class="config-bg">
+        <div class="config-cont">
+            <h2>Cambio email</h2>
+
+            <div class="formData">
+
+
+                    <mat-form-field appearance="fill">
+                        <mat-label>Email</mat-label>
+                        <input [formControl]="emailUsuario" matInput placeholder="Ingrese su email" type="email">
+                        <mat-error *ngIf="notValidField()">{{ emailErrorMsg }}</mat-error>
+                    </mat-form-field>
+
+
+
+
+                    <div style="display: flex; align-items: center; justify-content: space-between; width: 700px;">
+                        <button mat-raised-button color="warn" (click)="cancel()">Cancelar</button>
+                        <button mat-raised-button color="primary" type="submit" [disabled]="emailUsuario.pending"
+                            cdkFocusInitial (click)="onSubmit()">Guardar</button>
+                    </div>
+
+            </div>
+        </div>
+    </div>
+</div>

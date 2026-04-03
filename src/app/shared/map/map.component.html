@@ -1,0 +1,23 @@
+<div class="map-container">
+    <div id="map"></div>
+    <!-- BARRA DE ANALISIS DE NDVIS -->
+    <app-timeslider *ngIf="this.mapService.timeslider"></app-timeslider>
+    <!-- TABLA DE CAPAS DE NDVIS -->
+    <app-view *ngIf="this.mapService.viewListLength > 0"></app-view>
+    <!-- REFERENCIAS DE NDVIS -->
+    <app-references *ngIf="this.mapService.references"></app-references>
+
+    <!-- Botón para mostrar/ocultar pronóstico -->
+    <button class="boton-pronostico" (click)="togglePronosticoTiempo()" [class.activo]="mostrarPronostico"
+        title="Pronóstico del tiempo">
+        <span class="material-icons">cloud</span>
+    </button>
+
+</div>
+
+<!-- Componente de pronóstico -->
+<app-weather-forecast *ngIf="mostrarPronostico" [map]="map" (close)="mostrarPronostico = false">
+</app-weather-forecast>
+
+<!-- Location Search input -->
+<app-search-location [map]="map"></app-search-location>

@@ -1,0 +1,105 @@
+<!-- From header -->
+<h1 mat-dialog-title>{{title | titlecase}} Índice</h1>
+<!-- END Form Header -->
+<!-- Form Content -->
+<div mat-dialog-content>
+    <form class="mat-form" [formGroup]="indexForm" autocomplete="off">
+
+        <mat-form-field class="form-field" appearance="fill">
+            <mat-label>Nombre</mat-label>
+            <input matInput type="text" placeholder="Ingrese nombre..." formControlName="nombreIndice">
+            <mat-error *ngIf="notValidField('nombreIndice')">{{ nombreErrorMsg }}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="form-field" appearance="fill">
+            <mat-label>Siglas</mat-label>
+            <input matInput type="text" placeholder="Ingrese siglas..." formControlName="siglasIndice">
+            <mat-error *ngIf="notValidField('siglasIndice')">{{ siglasErrorMsg }}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="form-field" appearance="fill">
+            <mat-label>Bandas</mat-label>
+            <input matInput type="text" placeholder="Ingrese bandas, por ejemplo: B4,B3" formControlName="bandasIndice">
+            <mat-error *ngIf="notValidField('bandasIndice')">{{ bandasErrorMsg }}</mat-error>
+        </mat-form-field>
+
+        <!--References-->
+        <p>Referencias: </p>
+        <div class="admin-references">
+            <button mat-flat-button color="accent" (click)="addReference()">
+                Agregar Referencia
+            </button>
+            <!--Reference Table-->
+            <table class="reference-table" *ngIf="referencias.controls.length > 0">
+                <!-- TODO: Upgrade Styles -->
+                <ng-container formArrayName="referencias">
+                    <tr>
+                        <th>Color</th>
+                        <th>Desde</th>
+                        <th>Hasta</th>
+                        <th>Opciones</th>
+                    </tr>
+                    <ng-container *ngFor="let referenceForm of referencias.controls; let i = index">
+                        <ng-container [formGroupName]="i">
+                            <tr>
+                                <td>
+                                    <div class="color-box"
+                                        [ngStyle]="{'background-color': referenceForm.get('colorRango')?.value}"></div>
+                                    <mat-form-field appearance="outline">
+                                        <mat-label>Color</mat-label>
+                                        <input matInput formControlName="colorRango" placeholder="Ingrese color">
+                                        <mat-error *ngIf="rangeNotValidField('colorRango', i)">{{ colorErrorMsg(i)
+                                            }}</mat-error>
+                                    </mat-form-field>
+                                </td>
+                                <td>
+                                    <mat-form-field appearance="outline">
+                                        <mat-label>Desde Rango</mat-label>
+                                        <input matInput formControlName="desdeRango"
+                                            placeholder="Ingrese valor inicial">
+                                        <mat-error *ngIf="rangeNotValidField('desdeRango', i)">{{ desdeErrorMsg(i)
+                                            }}</mat-error>
+                                    </mat-form-field>
+                                </td>
+                                <td>
+                                    <mat-form-field appearance="outline">
+                                        <mat-label>Hasta Rango</mat-label>
+                                        <input matInput formControlName="hastaRango" placeholder="Ingrese valor final">
+                                        <mat-error *ngIf="rangeNotValidField('hastaRango', i)">{{ hastaErrorMsg(i)
+                                            }}</mat-error>
+                                    </mat-form-field>
+                                </td>
+                                <div class="reference-table-options">
+                                    <td>
+                                        <svg (click)="removeReference(i)" xmlns="https://www.w3.org/2000/svg"
+                                            class="icon icon-tabler icon-tabler-trash" width="16" height="16"
+                                            viewBox="0 0 24 24" stroke-width="1.5" stroke="#ffffff" fill="none"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                            <line x1="4" y1="7" x2="20" y2="7" />
+                                            <line x1="10" y1="11" x2="10" y2="17" />
+                                            <line x1="14" y1="11" x2="14" y2="17" />
+                                            <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" />
+                                            <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />
+                                        </svg>
+                                    </td>
+                                </div>
+                            </tr>
+                        </ng-container>
+                    </ng-container>
+                </ng-container>
+            </table>
+            <!-- END Reference Table -->
+        </div>
+        <!-- END References-->
+
+    </form>
+</div>
+<!-- END Form Content -->
+<!-- Form Actions -->
+<div mat-dialog-actions class="action-buttons">
+    <button mat-raised-button color="warn" (click)="cancel()">Cancelar</button>
+    <button mat-raised-button color="primary" [disabled]="indexForm.pending" cdkFocusInitial
+        (click)="onSubmit()">Guardar</button>
+</div>
+<!-- END Form Actions -->

@@ -1,0 +1,227 @@
+<!-- weather-forecast.component.html -->
+<div class="pronostico-tiempo">
+    <!-- Cabecera -->
+    <div class="pronostico-cabecera">
+        <div class="cabecera-izquierda">
+            <span class="icono-titulo">⛅</span>
+            <div class="titulo-ubicacion">
+                <h3 *ngIf="!mostrarDetalleHorario">Pronóstico 7 días</h3>
+                <h3 *ngIf="mostrarDetalleHorario">
+                    Detalle horario - {{diaSeleccionado?.diaSemana}} {{diaSeleccionado?.fechaCorta}}
+                    <span *ngIf="esDiaSeleccionadoHoy()" class="etiqueta-hoy">(HOY)</span>
+                </h3>
+                <p class="ubicacion">{{ ubicacionActual }}</p>
+            </div>
+        </div>
+
+        <div class="cabecera-derecha">
+            <button class="btn-icono" (click)="recargar()" [disabled]="cargando" title="Actualizar">
+                <span class="material-icons">refresh</span>
+            </button>
+            <button *ngIf="mostrarDetalleHorario" class="btn-icono" (click)="cerrarDetalleHorario()" title="Volver">
+                <span class="material-icons">arrow_back</span>
+            </button>
+            <button class="btn-icono btn-cerrar" (click)="cerrar()" title="Cerrar">
+                <span class="material-icons">close</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Contenido -->
+    <div class="pronostico-contenido">
+        <!-- Estado de carga -->
+        <div *ngIf="cargando" class="estado-carga">
+            <div class="spinner"></div>
+            <p>Cargando pronóstico...</p>
+        </div>
+
+        <!-- Error -->
+        <div *ngIf="error && !cargando" class="estado-error">
+            <span class="material-icons icono-error">error_outline</span>
+            <p>{{ error }}</p>
+            <button class="btn-reintentar" (click)="recargar()">Reintentar</button>
+        </div>
+
+        <!-- Pronóstico de 7 días (Vista principal) -->
+        <div *ngIf="!cargando && !error && pronostico.length > 0 && !mostrarDetalleHorario" class="dias-pronostico">
+            <div *ngFor="let dia of pronostico; let i = index" class="dia-pronostico"
+                [class.seleccionado]="diaSeleccionado === dia" (click)="seleccionarDia(dia)">
+                <div class="dia-cabecera">
+                    <div class="dia-semana" [class.hoy]="i === 0">{{ dia.diaSemana }}</div>
+                    <div class="dia-fecha">{{ dia.fechaCorta }}</div>
+                </div>
+
+                <div class="clima-icono" [title]="dia.descripcionClima">
+                    <span class="emoji-icono">{{ dia.icono }}</span>
+                </div>
+
+                <div class="temperaturas">
+                    <div class="temp-maxima" [style.color]="obtenerColorTemperatura(dia.tempMax)">
+                        {{ dia.tempMax }}°
+                    </div>
+                    <span class="separador-temp">/</span>
+                    <div class="temp-minima">{{ dia.tempMin }}°</div>
+                </div>
+
+                <!-- Precipitación compacta -->
+                <div class="precipitacion-compacta">
+                    <span class="material-icons icono-precipitacion">water_drop</span>
+                    <span class="precipitacion-texto">{{ dia.precipitacion }} mm</span>
+                </div>
+
+                <div class="descripcion-clima">{{ dia.descripcionClima }}</div>
+
+                <!-- Indicador de click -->
+                <div class="click-indicador">
+                    <span class="material-icons">arrow_forward</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detalle horario del día seleccionado -->
+        <div *ngIf="mostrarDetalleHorario && diaSeleccionado" class="detalle-horario">
+            <!-- Resumen del día -->
+            <div class="resumen-dia">
+                <div class="info-dia">
+                    <div class="resumen-icono">
+                        <span class="emoji-icono-grande">{{ diaSeleccionado.icono }}</span>
+                    </div>
+                    <div class="resumen-datos">
+                        <div class="resumen-temperaturas">
+                            <span class="temp-max">Máx: {{ diaSeleccionado.tempMax }}°</span>
+                            <span class="temp-min">Mín: {{ diaSeleccionado.tempMin }}°</span>
+                        </div>
+                        <div class="resumen-precipitacion">
+                            <span class="material-icons">water_drop</span>
+                            <span>Precipitación: {{ diaSeleccionado.precipitacion }} mm</span>
+                        </div>
+                        <div class="resumen-descripcion">{{ diaSeleccionado.descripcionClima }}</div>
+
+                        <!-- Información contextual -->
+                        <div *ngIf="esDiaSeleccionadoHoy() && indiceHoraActual >= 0" class="resumen-hora-actual">
+                            <span class="material-icons">schedule</span>
+                            <span>Hora actual: {{ getHoraActualArgentina() }}</span>
+                        </div>
+
+                        <div *ngIf="mostrarMensajeDiaPasado" class="resumen-dia-completo">
+                            <span class="material-icons">info</span>
+                            <span>Mostrando todas las horas del día</span>
+                        </div>
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+            <!-- Gráfico de temperatura y precipitación -->
+            <div class="grafico-container">
+                <h4>
+                    <span *ngIf="esDiaSeleccionadoHoy() && indiceHoraActual >= 0">
+                        Evolución horaria (Hora actual: {{ getHoraActualArgentina() }})
+                    </span>
+                    <span *ngIf="!esDiaSeleccionadoHoy()">
+                        Evolución horaria - Día completo
+                    </span>
+                    <span *ngIf="esDiaSeleccionadoHoy() && indiceHoraActual === -1">
+                        Evolución horaria (datos completos)
+                    </span>
+                </h4>
+
+                <div class="grafico-wrapper">
+                    <canvas id="grafico-temperatura"></canvas>
+                </div>
+
+                <!-- Mensaje informativo adicional -->
+                <div *ngIf="mostrarMensajeDiaPasado" class="mensaje-dia-completo">
+                    <span class="material-icons">info</span>
+                    <span>Mostrando todas las horas del día seleccionado</span>
+                </div>
+            </div>
+
+            <!-- Tabla de datos horarios -->
+            <div class="tabla-horaria-container">
+                <h4>Detalle por hora
+                    <span class="total-horas">({{ datosHorarios.length }} horas)</span>
+                </h4>
+
+                <div class="tabla-horaria">
+                    <div class="tabla-header">
+                        <div class="col-hora">Hora</div>
+                        <div class="col-temperatura">Temp</div>
+                        <div class="col-precipitacion">Lluvia</div>
+                        <div class="col-humedad">Humedad</div>
+                        <div class="col-viento">Viento</div>
+                        <div class="col-clima">Clima</div>
+                    </div>
+
+                    <div class="tabla-body">
+                        <div *ngFor="let hora of datosHorarios; let i = index" class="tabla-fila"
+                            [class.hora-actual]="esDiaSeleccionadoHoy() && i === indiceHoraActual">
+                            <div class="col-hora">
+                                {{ hora.hora }}
+                                <span *ngIf="esDiaSeleccionadoHoy() && i === indiceHoraActual"
+                                    class="etiqueta-hora-actual">
+                                    <span class="material-icons">schedule</span>
+                                </span>
+                            </div>
+                            <div class="col-temperatura">{{ hora.temperatura }}°</div>
+                            <div class="col-precipitacion">
+                                <span class="material-icons icono-lluvia-small">water_drop</span>
+                                {{ hora.precipitacion }} mm
+                            </div>
+                            <div class="col-humedad">{{ hora.humedad }}%</div>
+                            <div class="col-viento">
+                                <span class="viento-velocidad">{{ formatearVelocidadViento(hora.vientoVelocidad)
+                                    }}</span>
+                                <span class="viento-direccion">
+                                    {{ obtenerDireccionViento(hora.vientoDireccion) }}
+                                    <span class="icono-direccion">{{ obtenerIconoViento(hora.vientoDireccion) }}</span>
+                                </span>
+                            </div>
+                            <div class="col-clima">
+                                <span class="icono-clima-small" [title]="hora.descripcionClima">{{ hora.icono }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resumen de estadísticas -->
+                <div *ngIf="datosHorarios.length > 0" class="resumen-estadisticas">
+                    <div class="estadistica-item">
+                        <span class="estadistica-titulo">Temperatura promedio:</span>
+                        <span class="estadistica-valor">{{ getTemperaturaPromedio() }}°C</span>
+                    </div>
+                    <div class="estadistica-item">
+                        <span class="estadistica-titulo">Precipitación total:</span>
+                        <span class="estadistica-valor">{{ getPrecipitacionTotal() }} mm</span>
+                    </div>
+                    <div class="estadistica-item">
+                        <span class="estadistica-titulo">Rango horario:</span>
+                        <span class="estadistica-valor">{{ getRangoHoras() }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navegación entre días -->
+            <div *ngIf="pronostico.length > 1" class="navegacion-dias">
+                <button class="btn-navegacion" (click)="cambiarDia('anterior')"
+                    [disabled]="getIndiceDiaSeleccionado() <= 0">
+                    <span class="material-icons">chevron_left</span>
+                    Día anterior
+                </button>
+
+                <div class="contador-dias">
+                    Día {{ getIndiceDiaSeleccionado() + 1 }} de {{ pronostico.length }}
+                </div>
+
+                <button class="btn-navegacion" (click)="cambiarDia('siguiente')"
+                    [disabled]="getIndiceDiaSeleccionado() >= pronostico.length - 1">
+                    Día siguiente
+                    <span class="material-icons">chevron_right</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

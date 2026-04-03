@@ -1,0 +1,43 @@
+.admin-cont .upload-analysis-layer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    form {
+        padding: 2.4rem;
+        width: 100%;
+
+        .mat-form-field {
+            max-width: 50rem;
+        }
+
+        .mat-dialog-actions {
+            margin-top: 5rem;
+        }
+    }
+
+    .mat-dialog-content {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .reference-table {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        margin-bottom: 4.5rem;
+        /*4.5rem*/
+        gap: 1rem;
+        max-width: 50rem;
+    }
+
+    .mat-form-field {
+        margin-bottom: 2.5rem;
+    }
+
+    .mat-dialog-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+}

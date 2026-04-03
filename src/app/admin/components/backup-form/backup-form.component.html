@@ -1,0 +1,23 @@
+<!-- From header -->
+<h1 mat-dialog-title>{{title | titlecase}} Backup</h1>
+<!-- END Form Header -->
+<!-- Form Content -->
+<div mat-dialog-content>
+    <form class="mat-form" [formGroup]="backupForm" autocomplete="off">
+
+        <mat-form-field class="form-field" appearance="fill">
+            <mat-label>Nombre</mat-label>
+            <input matInput type="text" placeholder="Ingrese nombre..." formControlName="nombreBackup">
+            <mat-error *ngIf="notValidField('nombreBackup')">{{ nombreErrorMsg }}</mat-error>
+        </mat-form-field>
+
+    </form>
+</div>
+<!-- END Form Content -->
+<!-- Form Actions -->
+<div mat-dialog-actions class="action-buttons">
+    <button mat-raised-button color="warn" (click)="cancel()">Cancelar</button>
+    <button mat-raised-button color="primary" [disabled]="backupForm.pending" cdkFocusInitial
+        (click)="onSubmit()">Guardar</button>
+</div>
+<!-- END Form Actions -->

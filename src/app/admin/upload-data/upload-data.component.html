@@ -1,0 +1,75 @@
+<div class="root">
+    <app-sidebar></app-sidebar>
+    <div class="admin-bg">
+        <div class="admin-cont">
+            <h2>Cargar Vuelos por archivo</h2>
+
+            <div class="admin__content upload-data">
+                <mat-stepper [orientation]="(stepperOrientation | async)!">
+                    <mat-step [stepControl]="flightsForm" label="Cargar vuelos">
+                        <form class="flights-form" [formGroup]="flightsForm">
+                            <!-- Display files names -->
+                            <input
+                                matInput
+                                formControlName="flights"
+                                style="display: none"
+                            />
+                            <!-- Fetch selected filed on change -->
+                            <input
+                                class="file-input"
+                                type="file"
+                                #fileInput
+                                (change)="onFileChanged($event)"
+                            />
+                        </form>
+                        <button
+                            class="stepper-button"
+                            mat-flat-button
+                            color="primary"
+                            matStepperNext
+                        >
+                            Continuar
+                        </button>
+                    </mat-step>
+                    <mat-step label="Visualizar Vuelos">
+                        <div *ngIf="!flights">
+                            <p>No se encuentran vuelos cargados</p>
+                        </div>
+
+                        <mat-label
+                            ><strong
+                                >Propiedades de los vuelos a cargar:</strong
+                            ></mat-label
+                        >
+                        <div
+                            class="flights-object flights-details"
+                            *ngIf="flights"
+                        >
+                            <div *ngFor="let flight of flights?.features">
+                                <ul>
+                                    <li>{{ flight.properties | json }}</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="stepper-button">
+                            <button
+                                mat-flat-button
+                                color="warn"
+                                matStepperPrevious
+                            >
+                                Volver
+                            </button>
+                            <button
+                                mat-flat-button
+                                color="primary"
+                                (click)="uploadFlights(flights)"
+                            >
+                                Confirmar
+                            </button>
+                        </div>
+                    </mat-step>
+                </mat-stepper>
+            </div>
+        </div>
+    </div>
+</div>

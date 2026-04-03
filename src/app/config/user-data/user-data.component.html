@@ -1,0 +1,63 @@
+<div class="root">
+    <app-sidebar></app-sidebar>
+    <div class="config-bg">
+        <div class="config-cont">
+            <h2>Datos del usuario</h2>
+
+
+            <div class="formData">
+                <form class="mat-form" [formGroup]="userDataForm" autocomplete="off">
+
+                    <mat-form-field class="form-field" appearance="fill">
+                        <mat-label>Nombre</mat-label>
+                        <input matInput type="text" placeholder="Ingrese nombre/s..." formControlName="nombreUsuario">
+                        <mat-error *ngIf="notValidField('nombreUsuario')">{{ nombreErrorMsg }}</mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field class="form-field" appearance="fill">
+                        <mat-label>Apellido o Razón Social</mat-label>
+                        <input matInput type="text" placeholder="Ingrese apellido/s..."
+                            formControlName="apellidoUsuario">
+                        <mat-error *ngIf="notValidField('apellidoUsuario')">{{ apellidoErrorMsg }}</mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field class="form-field" appearance="fill">
+                        <mat-label>CUIT</mat-label>
+                        <input matInput type="text" placeholder="Ingrese CUIT..." formControlName="cuitUsuario">
+                        <mat-hint>Sólo se permiten caracteres núméricos</mat-hint>
+                        <mat-error *ngIf="notValidField('cuitUsuario')">{{ cuitErrorMsg }}</mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field class="form-field" appearance="fill">
+                        <mat-label>Domicilio</mat-label>
+                        <input matInput type="text" placeholder="Ingrese Domicilio.."
+                            formControlName="domicilioUsuario">
+                        <mat-hint>Sólo se permiten caracteres núméricos</mat-hint>
+                        <mat-error *ngIf="notValidField('domicilioUsuario')">{{ domicilioErrorMsg }}</mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field class="form-field" appearance="fill">
+                        <mat-label>Teléfono</mat-label>
+                        <input matInput type="text" placeholder="Ingrese teléfono..." formControlName="telefonoUsuario">
+                        <mat-error *ngIf="notValidField('telefonoUsuario')">{{ telefonoErrorMsg }}</mat-error>
+                    </mat-form-field>
+
+                    <button style="margin-bottom: 1rem;" mat-stroked-button color="primary"
+                        (click)="changeEmail()">Cambiar
+                        Email</button>
+                    <button style="margin-bottom: 3rem;" mat-stroked-button color="primary"
+                        (click)="changePass()">Cambiar
+                        Contraseña</button>
+
+                    <div style="display: flex; align-items: center; justify-content: space-between">
+                        <button mat-raised-button color="warn" (click)="cancel()">Cancelar</button>
+                        <button mat-raised-button color="primary" type="submit" [disabled]="userDataForm.pending"
+                            cdkFocusInitial (click)="onSubmit()">Guardar</button>
+                    </div>
+
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>

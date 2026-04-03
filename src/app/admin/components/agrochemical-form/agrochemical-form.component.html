@@ -1,0 +1,38 @@
+<!-- From header -->
+<h1 mat-dialog-title>{{ title | titlecase }} Agroquímico</h1>
+<!-- END Form Header -->
+
+<!-- Form Content -->
+<div mat-dialog-content>
+    <form class="mat-form" [formGroup]="agrochemicalForm" autocomplete="off">
+
+        <mat-form-field class="form-field" appearance="fill">
+            <mat-label>Nombre del Agroquímico</mat-label>
+            <input matInput type="text" placeholder="Ingrese nombre..." formControlName="listadoAgroqNom" />
+            <mat-error *ngIf="notValidField('listadoAgroqNom')">{{ nombreErrorMsg }}</mat-error>
+        </mat-form-field>
+
+        <!-- Nuevo campo de descripción -->
+        <mat-form-field class="form-field" appearance="fill">
+            <mat-label>Descripción (opcional)</mat-label>
+            <textarea matInput type="text" placeholder="Ingrese una descripción..." formControlName="listadoAgroqDesc"
+                rows="3" cdkTextareaAutosize #autosize="cdkTextareaAutosize" cdkAutosizeMinRows="3"
+                cdkAutosizeMaxRows="6">
+            </textarea>
+            <mat-hint align="end">{{ agrochemicalForm.get('listadoAgroqDesc')?.value?.length || 0 }}/500</mat-hint>
+            <mat-error *ngIf="notValidField('listadoAgroqDesc')">{{ descripcionErrorMsg }}</mat-error>
+        </mat-form-field>
+
+    </form>
+</div>
+<!-- END Form Content -->
+
+<!-- Form Actions -->
+<div mat-dialog-actions class="action-buttons">
+    <button mat-raised-button color="warn" (click)="cancel()">Cancelar</button>
+    <button mat-raised-button color="primary" type="submit"
+        [disabled]="agrochemicalForm.invalid || agrochemicalForm.pending" cdkFocusInitial (click)="onSubmit()">
+        Guardar
+    </button>
+</div>
+<!-- END Form Actions -->

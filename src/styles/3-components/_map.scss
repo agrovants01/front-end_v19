@@ -1,0 +1,119 @@
+@use "../0-abstracts/variables" as *;
+
+.map-container {
+    height: 100%;
+    position: relative;
+}
+
+#map {
+    height: 100%;
+}
+
+.leaflet-bar {
+    border: none !important;
+    a:not(.leaflet-pm-action),
+    a:hover:not(.leaflet-pm-action) {
+        background-color: $black-A-85;
+        color: $grey;
+        border: none;
+        width: 3.6rem !important;
+        height: 3.6rem !important;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    a:hover {
+        background-color: lighten($color: $black-A-85, $amount: 10);
+    }
+    a.leaflet-disabled {
+        background-color: $black-A-85;
+        color: #505050;
+    }
+}
+
+/* Leaflet controls border radius */
+.leaflet-touch .leaflet-bar {
+    a:first-child {
+        border-top-left-radius: 0.5rem;
+        border-top-right-radius: 0.5rem;
+    }
+    a:last-child {
+        border-bottom-left-radius: 0.5rem;
+        border-bottom-right-radius: 0.5rem;
+    }
+}
+
+/* Leaflet zoom controls centered */
+.leaflet-right {
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    .leaflet-control-zoom {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin-top: 0;
+    }
+}
+
+/* Leaflet popup */
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+    background: $backgroundColor;
+    color: white;
+}
+
+/* Botón de pronóstico del tiempo */
+.boton-pronostico {
+    position: absolute;
+    top: 10px;
+    right: 10px; /* Ajusta según posición de controles existentes */
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.85);
+    color: #b0b0b0;
+    border: none;
+    border-radius: 4px;
+    width: 3.6rem;
+    height: 3.6rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
+}
+
+.boton-pronostico:hover {
+    background: rgba(30, 30, 30, 0.95);
+    color: white;
+}
+
+.boton-pronostico.activo {
+    background: rgba(40, 40, 40, 0.95);
+    color: #4fc3f7;
+}
+
+.boton-pronostico .material-icons {
+    font-size: 22px;
+    height: 22px;
+    width: 22px;
+}
+
+/* Asegurar que no se imprima */
+@media print {
+    .boton-pronostico {
+        display: none !important;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+}
+
+/* === ELIMINA O COMENTA ESTA LÍNEA === */
+/* .leaflet-right .leaflet-control-zoom {
+    margin-right: 50px;
+} */
