@@ -39,6 +39,7 @@ export class OwnerComponent implements OnInit, OnDestroy {
     piloto = this.authService.auth.perfilUsuario == "PILOTO";
     contratista = this.authService.auth.perfilUsuario == "CONTRATISTA";
     alias = localStorage.getItem('aliasUsuarioLogueado');
+    isPilotView = false;
 
     user: (UserList | undefined);
     nombreCompleto: string = '';
@@ -103,6 +104,10 @@ export class OwnerComponent implements OnInit, OnDestroy {
                 }
                 this.user = user;
 
+                // Detectar si el usuario elegido es piloto
+                const perfilElegido = localStorage.getItem('perfilUsuarioElegido');
+                this.isPilotView = perfilElegido === 'Piloto';
+
                 if (user.aliasUsuario) {
                     this.nombreCompleto = user.aliasUsuario;
                 } else {
@@ -110,6 +115,9 @@ export class OwnerComponent implements OnInit, OnDestroy {
                 }
 
                 localStorage.setItem('nombreCompleto', this.nombreCompleto);
+
+                // Refrescar datos al cambiar de usuario
+                this.formatRangeDates();
             })
     }
 
@@ -127,7 +135,7 @@ export class OwnerComponent implements OnInit, OnDestroy {
         this.mapService.addTimeslider();
 
         const today = new Date();
-        const initStartDate = new Date(today.getFullYear() - 2, today.getMonth(), today.getDate());
+        const initStartDate = new Date(2000, 0, 1);
 
         this.range.reset({
             start: initStartDate,
@@ -200,7 +208,10 @@ export class OwnerComponent implements OnInit, OnDestroy {
                 switchMap((data: any[]) => {
                     return combineLatest([
                         (this.flightsRequired)
-                            ? this.ownerService.getOwnerFlights(data[0].id, range.fechaDesde, range.fechaHasta)
+                            ? (this.isPilotView
+                                ? this.ownerService.getPilotFlights(data[0].id, range.fechaDesde, range.fechaHasta)
+                                : this.ownerService.getOwnerFlights(data[0].id, range.fechaDesde, range.fechaHasta)
+                            )
                                 .pipe(
                                     takeUntil(this.unsubscribe$),
                                     map((data: any[]) => {

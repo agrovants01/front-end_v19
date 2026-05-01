@@ -110,11 +110,15 @@ export class LoginComponent implements OnInit {
             }, (error) => {
                 console.log(error);
 
+                const errorMsg = error.error?.msg || 'Error de conexión o acceso con URL no permitida';
+
                 // Si el error es debido a haber alcanzado el límite de solicitudes (status 429)
                 if (error.status === 429) {
                     errorAlert('Has excedido el límite de intentos de login. Inténtalo nuevamente en 15 minutos.');
+                } else if (error.status === 403) {
+                    errorAlert('URL no permitida', errorMsg);
                 } else {
-                    errorAlert('El inicio de sesión falló', error.error.msg);
+                    errorAlert('El inicio de sesión falló', errorMsg);
                 }
             });
 

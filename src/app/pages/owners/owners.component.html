@@ -2,14 +2,32 @@
 <app-search
     (valueInput)="updateValues($event)"
     (orderSelection)="orderOwners($event)"
-    [title]="title"
+    [title]="admin ? 'Propietarios y Pilotos' : title"
     [orderOptions]="orderOptions">
 </app-search>
 <!-- END Header -->
 
 <!-- List -->
 
-<mat-selection-list class="content__list" [multiple]="false">
+<!-- Admin view: propietarios y pilotos -->
+<mat-selection-list *ngIf="admin" class="content__list" [multiple]="false">
+    <mat-list-option *ngFor="let user of users" [value]="user" (click)="goToOwner(user.idPropietario, user.perfil)">
+        <div mat-line *ngIf="user.aliasPropietario">
+            {{ user.aliasPropietario }} <span [style.color]="user.perfil === 'Piloto' ? '#ff9800' : '#4caf50'">({{ user.perfil }})</span>
+        </div>
+        <div mat-line *ngIf="!user.aliasPropietario">
+            {{ user.nombrePropietario }} {{ user.apellidoPropietario || '' }} <span [style.color]="user.perfil === 'Piloto' ? '#ff9800' : '#4caf50'">({{ user.perfil }})</span>
+        </div>
+        <span *ngIf="!user.activo" style="color: red; margin-left: 8px;">Desactivado</span>
+        <div mat-line>Vuelos realizados: {{ user.cantidadVuelos }}</div>
+        <div mat-line>
+            Último vuelo: {{ user.ultimoVuelo | date : "dd/MM/yyyy" }}
+        </div>
+    </mat-list-option>
+</mat-selection-list>
+
+<!-- Non-admin view: solo propietarios -->
+<mat-selection-list *ngIf="!admin" class="content__list" [multiple]="false">
     <mat-list-option *ngFor="let owner of owners" [value]="owner" (click)="goToOwner(owner.idPropietario)">
         <div mat-line *ngIf="owner.aliasPropietario">
             {{ owner.aliasPropietario }}

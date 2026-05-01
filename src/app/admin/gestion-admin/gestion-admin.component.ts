@@ -3,7 +3,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { merge, of, Subject } from 'rxjs';
-import { catchError, map, startWith, switchMap, takeUntil } from 'rxjs/operators';
+import { catchError, debounceTime, distinctUntilChanged, map, startWith, switchMap, takeUntil } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 import { AdminService } from '../services/admin.service';
 import { errorAlert, successAlert } from '../../shared/services/alerts';
@@ -102,7 +102,10 @@ export class GestionAdminComponent implements AfterViewInit, OnDestroy {
         merge(
             this.sort.sortChange,
             this.paginator.page,
-            this.searchGestion.valueChanges,
+            this.searchGestion.valueChanges.pipe(
+                debounceTime(300),
+                distinctUntilChanged()
+            ),
             this.range.valueChanges
         )
             .pipe(

@@ -4,7 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { merge, of, Subject } from 'rxjs';
-import { catchError, map, startWith, switchMap, takeUntil } from 'rxjs/operators';
+import { catchError, debounceTime, distinctUntilChanged, map, startWith, switchMap, takeUntil } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 import { UserFormComponent } from '../components/user-form/user-form.component';
 import { AdminService } from '../services/admin.service';
@@ -99,7 +99,10 @@ export class FlightsAdminComponent implements AfterViewInit, OnDestroy {
         merge(
             this.sort.sortChange,
             this.paginator.page,
-            this.searchFlights.valueChanges,
+            this.searchFlights.valueChanges.pipe(
+                debounceTime(300),
+                distinctUntilChanged()
+            ),
             this.range.valueChanges // Escucha cambios en el rango de fechas
         )
             .pipe(

@@ -5,7 +5,7 @@ import { forkJoin, MonoTypeOperatorFunction, Observable, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { OwnerDataInfoComponent } from '../components/owner-data-info/owner-data-info.component';
-import { OwnerPreview, OwnerListInput } from '../owner/owner.interface';
+import { OwnerPreview, UserPreview, OwnerListInput } from '../owner/owner.interface';
 import { Piloto } from '../owner/pilot.interface';
 import { Cultivo } from '../owner/cultivo.interface';
 import { Tecnico } from '../owner/tecnico.interface';
@@ -35,6 +35,15 @@ export class OwnerService {
         });
         return this.http.get<OwnerPreview[]>(
             `${this.baseUrl}/busqueda/propietarios`, { params }
+        );
+    }
+
+    searchOwnersAndPilots(value: string = ''): Observable<UserPreview[]> {
+        const params = new HttpParams().appendAll({
+            q: value,
+        });
+        return this.http.get<UserPreview[]>(
+            `${this.baseUrl}/busqueda/propietariosYpilotos`, { params }
         );
     }
 
@@ -103,6 +112,42 @@ export class OwnerService {
         }
     }
 
+    sortUsers(users: UserPreview[], option: string, criterion: boolean) {
+        switch (option) {
+            case 'Propietario':
+                if (criterion) {
+                    users.sort((a, b) => (a.nombrePropietario || a.aliasPropietario).localeCompare(b.nombrePropietario || b.aliasPropietario));
+                } else {
+                    users.sort((a, b) => (a.nombrePropietario || a.aliasPropietario).localeCompare(b.nombrePropietario || b.aliasPropietario)).reverse();
+                }
+                break;
+
+            case 'Piloto':
+                if (criterion) {
+                    users.sort((a, b) => a.perfil.localeCompare(b.perfil));
+                } else {
+                    users.sort((a, b) => a.perfil.localeCompare(b.perfil)).reverse();
+                }
+                break;
+
+            case 'Último Vuelo':
+                if (criterion) {
+                    users.sort((a, b) => <any>new Date(a.ultimoVuelo) - <any>new Date(b.ultimoVuelo));
+                } else {
+                    users.sort((a, b) => <any>new Date(a.ultimoVuelo) - <any>new Date(b.ultimoVuelo)).reverse();
+                }
+                break;
+
+            case 'Cant. Vuelos':
+                if (criterion) {
+                    users.sort((a, b) => a.cantidadVuelos - b.cantidadVuelos);
+                } else {
+                    users.sort((a, b) => a.cantidadVuelos - b.cantidadVuelos).reverse();
+                }
+                break;
+        }
+    }
+
 
     // Este se puede reutilizar para elegir propietario en creacion de vuelo en perfil piloto
     getOwnersList(): Observable<OwnerListInput[]> {
@@ -161,6 +206,18 @@ export class OwnerService {
 
         return this.http.get<any>(
             `${this.baseUrl}/vuelo/piloto/${pilotoId}`, { params }
+        );
+    }
+
+    // Obtener vuelos realizados por un piloto específico (para admin)
+    getPilotFlights(pilotoId: string, fechaDesde: Date, fechaHasta: Date) {
+        const params = new HttpParams().appendAll({
+            fechaDesde: fechaDesde.toString(),
+            fechaHasta: fechaHasta.toString(),
+        });
+
+        return this.http.get<any>(
+            `${this.baseUrl}/vuelo/piloto-vuelos/${pilotoId}`, { params }
         );
     }
 

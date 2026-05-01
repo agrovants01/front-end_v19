@@ -382,8 +382,12 @@ export class AdminService {
     }
 
     // En admin.service.ts
-    getRemitoPorNumero(numRemito: string): Observable<any> {
-        return this.http.get<any>(`${this.baseUrl}/remito/${numRemito}`);
+    getRemitoPorNumero(numRemito: string, fk_Usuario?: string): Observable<any> {
+        let params = new HttpParams();
+        if (fk_Usuario) {
+            params = params.set('fk_Usuario', fk_Usuario);
+        }
+        return this.http.get<any>(`${this.baseUrl}/remito/${numRemito}`, { params });
     }
 
     // Obtener todos los remitos de un propietario (con rango de fechas opcional)

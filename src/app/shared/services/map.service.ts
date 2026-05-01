@@ -911,7 +911,7 @@ export class MapService {
             drawRectangle: false,
             drawPolygon: true,
             drawCircle: false,
-            editMode: false,
+            editMode: true,
             cutPolygon: false,
             rotateMode: false,
             drawText: false,

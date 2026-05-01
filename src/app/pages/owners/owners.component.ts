@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { SidebarService } from 'src/app/shared/services/sidebar.service';
-import { OwnerPreview } from '../owner/owner.interface';
+import { OwnerPreview, UserPreview } from '../owner/owner.interface';
 import { OwnerService } from '../services/owner.service';
 import { OrderCriterion } from '../components/search/orderCriterion.interface';
 import { MapComponent } from '../../shared/map/map.component';
@@ -32,9 +32,10 @@ export class OwnersComponent implements OnInit {
 
 
 
-    orderOptions: string[] = ['Propietario', 'Último Vuelo', 'Cant. Vuelos']; //Options to order menu, in Search Bar
+    orderOptions: string[] = this.admin ? ['Propietario', 'Piloto', 'Último Vuelo', 'Cant. Vuelos'] : ['Propietario', 'Último Vuelo', 'Cant. Vuelos'];
 
     owners: OwnerPreview[] = [];
+    users: UserPreview[] = [];
 
     constructor(
         public authService: AuthService,
@@ -62,13 +63,19 @@ export class OwnersComponent implements OnInit {
                     });
             })
 
-        this.ownerService.searchOwners()
-            .pipe(
-                takeUntil(this.unsubscribe$)
-            )
-            .subscribe((owners) => {
-                this.owners = owners;
-            });
+        if (this.admin) {
+            this.ownerService.searchOwnersAndPilots()
+                .pipe(takeUntil(this.unsubscribe$))
+                .subscribe((users) => {
+                    this.users = users;
+                });
+        } else {
+            this.ownerService.searchOwners()
+                .pipe(takeUntil(this.unsubscribe$))
+                .subscribe((owners) => {
+                    this.owners = owners;
+                });
+        }
 
         //this.mapService.removeAllFeatures();
 
@@ -78,35 +85,35 @@ export class OwnersComponent implements OnInit {
 
     updateValues(value: string): any {
         if (value === '' || !value) {
-            this.ownerService.searchOwners()
-                .pipe(
-                    takeUntil(this.unsubscribe$)
-                )
-                .subscribe((owners) => {
-                    this.owners = owners;
-                });
+            if (this.admin) {
+                this.ownerService.searchOwnersAndPilots()
+                    .pipe(takeUntil(this.unsubscribe$))
+                    .subscribe((users) => {
+                        this.users = users;
+                    });
+            } else {
+                this.ownerService.searchOwners()
+                    .pipe(takeUntil(this.unsubscribe$))
+                    .subscribe((owners) => {
+                        this.owners = owners;
+                    });
+            }
             return;
         }
 
-        /** Server **/
-
-        this.ownerService.searchOwners(value)
-            .pipe(
-                takeUntil(this.unsubscribe$)
-            )
-            .subscribe((data) => {
-                this.owners = data;
-            });
-
-        /** Fake **/
-        /*this.ownerService.searchOwnersFake(value)
-          .pipe(
-            takeUntil(this.unsubscribe$)
-          )
-          .subscribe((data) => {
-            this.owners = [];
-            this.owners = data;
-          });*/
+        if (this.admin) {
+            this.ownerService.searchOwnersAndPilots(value)
+                .pipe(takeUntil(this.unsubscribe$))
+                .subscribe((data) => {
+                    this.users = data;
+                });
+        } else {
+            this.ownerService.searchOwners(value)
+                .pipe(takeUntil(this.unsubscribe$))
+                .subscribe((data) => {
+                    this.owners = data;
+                });
+        }
     }
 
     /** Criterion Order:
@@ -117,7 +124,11 @@ export class OwnersComponent implements OnInit {
     /*Backend*/
     orderOwners(orderCriterion: OrderCriterion) {
         const { option, criterion } = orderCriterion;
-        this.ownerService.sortOwners(this.owners, option, criterion);
+        if (this.admin && this.users.length > 0) {
+            this.ownerService.sortUsers(this.users, option, criterion);
+        } else {
+            this.ownerService.sortOwners(this.owners, option, criterion);
+        }
     }
 
     /** FakeBackend*/
@@ -132,9 +143,13 @@ export class OwnersComponent implements OnInit {
 
     }*/
 
-    goToOwner(id: string): void {
-        // envio el id del usuario
-        localStorage.setItem("idPropietarioElegido",id);
+    goToOwner(id: string, perfil?: string): void {
+        localStorage.setItem("idPropietarioElegido", id);
+        if (perfil) {
+            localStorage.setItem("perfilUsuarioElegido", perfil);
+        } else {
+            localStorage.removeItem("perfilUsuarioElegido");
+        }
         this.router.navigateByUrl(`owner/${id}`);
     }
 

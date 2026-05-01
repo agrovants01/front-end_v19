@@ -247,7 +247,9 @@ export class RemitoConsultaComponent implements OnInit, OnDestroy {
         this.remitoSeleccionado = null;
         this.vuelosDetalle = [];
 
-        this.adminService.getRemitoPorNumero(remito.numRemito).subscribe({
+        const usuarioId = this.propietarioSeleccionado || undefined;
+
+        this.adminService.getRemitoPorNumero(remito.numRemito, usuarioId).subscribe({
             next: (remitoCompleto) => {
                 this.remitoSeleccionado = remitoCompleto;
 

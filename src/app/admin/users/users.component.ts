@@ -4,7 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { merge, of, Subject } from 'rxjs';
-import { catchError, map, startWith, switchMap, takeUntil } from 'rxjs/operators';
+import { catchError, debounceTime, distinctUntilChanged, map, startWith, switchMap, takeUntil } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 import { UserFormComponent } from '../components/user-form/user-form.component';
 import { AdminService } from '../services/admin.service';
@@ -65,7 +65,10 @@ export class UsersComponent implements AfterViewInit, OnDestroy {
         // If the user changes the sort order, reset back to the first page.
         this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
 
-        merge(this.sort.sortChange, this.paginator.page, this.searchUsers.valueChanges)
+        merge(this.sort.sortChange, this.paginator.page, this.searchUsers.valueChanges.pipe(
+                debounceTime(300),
+                distinctUntilChanged()
+            ))
             .pipe(
                 takeUntil(this.unsubscribe$),
                 startWith({}),

@@ -7,6 +7,11 @@ export interface OwnerPreview {
     ultimoVuelo: Date;
 }
 
+export interface UserPreview extends OwnerPreview {
+    perfil: string;
+    activo: boolean;
+}
+
 
 export interface OwnerListInput {
     propietarioId: string;
