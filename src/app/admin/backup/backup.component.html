@@ -3,7 +3,7 @@
     <div class="admin-bg">
         <div class="admin-cont">
             <h2>Copias de Seguridad</h2>
-            <button [disabled]="addingBackup" mat-raised-button color="primary" (click)="addBackup()">
+<button [disabled]="addingBackup" mat-raised-button color="primary" (click)="addBackup()" style="margin-bottom: 8px;">
                 <svg xmlns="https://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-plus" width="20" height="20"
                     viewBox="0 0 24 24" stroke-width="1.5" stroke="#ffffff" fill="none" stroke-linecap="round"
                     stroke-linejoin="round">
@@ -11,6 +11,15 @@
                     <line x1="12" y1="5" x2="12" y2="19" />
                     <line x1="5" y1="12" x2="19" y2="12" />
                 </svg> Generar Copia de Seguridad</button>
+            <button [disabled]="addingBackup" mat-raised-button color="accent" (click)="showDbCount()">
+                <svg xmlns="https://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-database" width="20" height="20"
+                    viewBox="0 0 24 24" stroke-width="1.5" stroke="#ffffff" fill="none" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <ellipse cx="12" cy="6" rx="8" ry="3" />
+                    <path d="M4 6v6c0 1.657 3.582 3 8 3s8-1.343 8-3v-6" />
+                    <path d="M4 12v6c0 1.657 3.582 3 8 3s8-1.343 8-3v-6" />
+                </svg> Registros en BBDD</button>
 
             <div class="admin__content admin__users">
 
@@ -35,8 +44,15 @@
                             <th mat-header-cell *matHeaderCellDef mat-sort-header> Fecha y hora </th>
                             <td mat-cell *matCellDef="let row"> {{ row.fechaHoraBackup | date: 'dd/MM/yyyy HH:mm:ss' }}
                             </td>
-                            <!--fecha | date: 'full'-->
-                            <!--date: 'dd/MM/yyyy hh:mm:ss'-->
+                        </ng-container>
+
+                        <!-- Restoration Date Column -->
+                        <ng-container matColumnDef="fechaRestauracion">
+                            <th mat-header-cell *matHeaderCellDef> Restaurado </th>
+                            <td mat-cell *matCellDef="let row">
+                                <span *ngIf="row.fechaRestauracion" style="color: green;">{{ row.fechaRestauracion | date: 'dd/MM/yyyy HH:mm' }}</span>
+                                <span *ngIf="!row.fechaRestauracion" style="color: #999;">—</span>
+                            </td>
                         </ng-container>
 
                         <!-- Options Column -->
@@ -112,6 +128,5 @@
                 </div>
 
             </div>
-            <p>NOTA PARA ADMIN: Los archivos sql de backups se guardan en el siguiente directorio: '/var/www/geobox.com/backups'.</p>
         </div>
     </div>

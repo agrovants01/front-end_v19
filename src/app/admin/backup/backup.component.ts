@@ -29,6 +29,7 @@ export class BackupComponent implements AfterViewInit, OnDestroy {
     displayedColumns: string[] = [
         'nombreBackup',
         'fechaHoraBackup',
+        'fechaRestauracion',
         'options'
     ];
 
@@ -107,10 +108,13 @@ export class BackupComponent implements AfterViewInit, OnDestroy {
                 this._adminService.restaurarBackup(backup) // ojo con los nombres
                     .pipe(takeUntil(this.unsubscribe$))
                     .subscribe((response: any) => {
-                        this.addingBackup = false; // Restablecer el botón de restaurar backup
-                        this.searchBackup.reset(''); // Restablecer la tabla
+                        this.addingBackup = false;
+                        if (response.fechaRestauracion) {
+                            backup.fechaRestauracion = response.fechaRestauracion;
+                        }
+                        this.searchBackup.reset('');
                         Swal.close();
-                        successAlert(response.message); // Mostrar mensaje de éxito
+                        successAlert(response.message);
                     }, (error) => {
                         console.log(error);
                         errorAlert('No se ha restaurado el backup');
@@ -168,36 +172,95 @@ export class BackupComponent implements AfterViewInit, OnDestroy {
                     return;
                 };
 
-                backupData = backup; //Set the data to recover if there's an error
+                backupData = backup;
 
-                Swal.fire({
-                    title: 'Guardando usuario',
-                    allowEnterKey: false,
-                    allowEscapeKey: false,
-                    allowOutsideClick: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                        this._adminService.saveBackup(backup)
-                            .pipe(
-                                takeUntil(this.unsubscribe$),
-                            )
-                            .subscribe((_) => {
-                                successAlert('El backup ha sido creado')
-                                    .then(() => {
-                                        this.addingBackup = false; //Reset the create backup button
-                                        this.searchBackup.reset(''); //Reset the table
-                                        Swal.close();
-                                    });
-                            }, (error: any) => {
-                                console.log(error);
-                                errorAlert('El backup no ha sido creado');
-                                this.addBackup(backupData); //call the form with the recovered data
-                            })
-                    }
-                })
+                const existingBackup = this.data.find(b => b.nombreBackup === backup.nombreBackup);
+
+                if (existingBackup) {
+                    Swal.fire({
+                        title: 'Backup existente',
+                        text: `Ya existe un backup llamado "${backup.nombreBackup}". ¿Desea reemplazarlo?`,
+                        icon: 'warning',
+                        showDenyButton: true,
+                        confirmButtonText: 'Reemplazar',
+                        denyButtonText: 'Cancelar',
+                        reverseButtons: true,
+                    }).then((result: any) => {
+                        if (result.isConfirmed) {
+                            this._adminService.borrarBackup(existingBackup)
+                                .pipe(takeUntil(this.unsubscribe$))
+                                .subscribe(() => {
+                                    this.saveBackup(backup, backupData);
+                                }, () => {
+                                    errorAlert('No se pudo eliminar el backup existente');
+                                    this.addingBackup = false;
+                                });
+                        } else {
+                            this.addingBackup = false;
+                        }
+                    });
+                } else {
+                    this.saveBackup(backup, backupData);
+                }
             });
     }
-    //TODO: Make backend
+
+    private saveBackup(backup: any, backupData: any): void {
+        Swal.fire({
+            title: 'Guardando backup',
+            allowEnterKey: false,
+            allowEscapeKey: false,
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+                this._adminService.saveBackup(backup)
+                    .pipe(
+                        takeUntil(this.unsubscribe$),
+                    )
+                    .subscribe((_) => {
+                        successAlert('El backup ha sido creado')
+                            .then(() => {
+                                this.addingBackup = false;
+                                this.searchBackup.reset('');
+                                Swal.close();
+                            });
+                    }, (error: any) => {
+                        console.log(error);
+                        errorAlert('El backup no ha sido creado');
+                        this.addBackup(backupData);
+                    })
+            }
+        })
+    }
+
+    showDbCount(): void {
+        this._adminService.getBackupCount()
+            .pipe(takeUntil(this.unsubscribe$))
+            .subscribe((response: any) => {
+                const counts = response.counts;
+                const total = response.total;
+
+                let i = 1;
+                let html = '<table style="margin: auto; text-align: left; border-collapse: collapse;">';
+                html += '<tr style="border-bottom: 1px solid #ccc;"><th style="padding: 4px 8px;">Nº</th><th style="padding: 4px 12px;">Tabla</th><th style="padding: 4px 12px; text-align: right;">Registros</th></tr>';
+                for (const [table, count] of Object.entries(counts)) {
+                    html += `<tr><td style="padding: 4px 8px; text-align: center;">${i}</td><td style="padding: 4px 12px;">${table}</td><td style="padding: 4px 12px; text-align: right;">${count}</td></tr>`;
+                    i++;
+                }
+                html += `<tr style="border-top: 2px solid #333; font-weight: bold;"><td style="padding: 4px 8px;"></td><td style="padding: 4px 12px;">Total</td><td style="padding: 4px 12px; text-align: right;">${total}</td></tr>`;
+                html += '</table>';
+
+                Swal.fire({
+                    title: 'Registros en la Base de Datos',
+                    html: html,
+                    width: 'auto',
+                    confirmButtonText: 'Cerrar',
+                });
+            }, (error) => {
+                console.log(error);
+                errorAlert('No se pudo obtener el conteo de registros');
+            });
+    }
 
     ngOnDestroy(): void {
         this.unsubscribe$.next();

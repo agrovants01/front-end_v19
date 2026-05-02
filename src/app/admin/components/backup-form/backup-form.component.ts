@@ -44,6 +44,13 @@ export class BackupFormComponent implements OnInit {
             this.backupForm.reset({
                 nombreBackup: this.backupData.backup?.nombreBackup,
             })
+        } else {
+            const now = new Date();
+            const day = String(now.getDate()).padStart(2, '0');
+            const months = ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
+            const month = months[now.getMonth()];
+            const year = String(now.getFullYear()).slice(-2);
+            this.backupForm.patchValue({ nombreBackup: `BACKUP${day}${month}${year}` });
         }
     }
 

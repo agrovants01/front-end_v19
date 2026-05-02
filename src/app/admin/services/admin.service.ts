@@ -191,7 +191,8 @@ export class AdminService {
 
     restaurarBackup(backup: Backup) {
         return this.http.post<any>(`${this.baseUrl}/backup/restore`, {
-            nombreBackup: backup.nombreBackup
+            nombreBackup: backup.nombreBackup,
+            backupId: backup.backupId
         })
             .pipe(
                 delay(500)
@@ -203,6 +204,10 @@ export class AdminService {
             .pipe(
                 delay(500)
             )
+    }
+
+    getBackupCount(): Observable<any> {
+        return this.http.get<any>(`${this.baseUrl}/backup/count`);
     }
 
     /* FakeBackend */
