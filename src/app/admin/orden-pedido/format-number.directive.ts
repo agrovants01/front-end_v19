@@ -2,6 +2,7 @@ import { Directive, ElementRef, HostListener, Optional, Renderer2, Self } from '
 import { NgControl } from '@angular/forms';
 
 @Directive({
+    standalone: false,
     selector: '[appFormatNumber]'
 })
 export class FormatNumberDirective {

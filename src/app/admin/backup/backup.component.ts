@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { BackupLoginService } from '../services/backup-login.service';
 
 @Component({
+    standalone: false,
     selector: 'app-backup',
     templateUrl: './backup.component.html',
     styleUrls: ['./backup.component.css']

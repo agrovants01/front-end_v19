@@ -148,8 +148,7 @@
                                     </mat-paginator>
 
                                     <div class="botonGenerarRemito">
-                                        <button mat-raised-button color="primary" (click)="verificarYGenerarRemito()"
-                                            *ngIf="flights.length > 0">
+                                        <button mat-raised-button color="primary" (click)="verificarYGenerarRemito()">
 
                                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
                                                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -164,8 +163,6 @@
                                     </div>
 
                                 </div>
-
-                            </div>
 
                             <!-- Mensaje cuando no hay vuelos para el propietario seleccionado -->
                             <div *ngIf="selectedPropietarioId && dataSource.data.length === 0 && !isLoadingResults" class="no-results">

@@ -17,7 +17,7 @@
             <div class="admin__content admin__users">
                 <mat-progress-bar *ngIf="isLoadingResults" mode="query"></mat-progress-bar>
 
-                <mat-form-field appearance="standard">
+                <mat-form-field appearance="fill">
                     <mat-label>Buscar en órdenes</mat-label>
                     <input matInput [formControl]="searchOrden" placeholder="Cultivo, Forma de pago..." />
                 </mat-form-field>

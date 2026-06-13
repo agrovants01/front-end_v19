@@ -14,6 +14,7 @@ import { OrdenPedido } from './orden-pedido.interface';
 import { OrdenPedidoFormComponent } from './orden-pedido-form.component';
 
 @Component({
+    standalone: false,
     selector: 'app-orden-pedido',
     templateUrl: './orden-pedido.component.html',
     styleUrls: ['./orden-pedido.component.css'],

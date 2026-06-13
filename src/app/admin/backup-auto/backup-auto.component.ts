@@ -4,6 +4,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 @Component({
+    standalone: false,
     selector: 'app-backup-auto',
     templateUrl: './backup-auto.component.html',
     styleUrls: ['./backup-auto.component.css']

@@ -8,6 +8,7 @@ import { AdminService } from '../services/admin.service';
 import { OrdenPedido, UsuarioSelect, ListadoItem } from './orden-pedido.interface';
 
 @Component({
+    standalone: false,
     selector: 'app-orden-pedido-form',
     templateUrl: './orden-pedido-form.component.html',
     styleUrls: ['./orden-pedido-form.component.css'],

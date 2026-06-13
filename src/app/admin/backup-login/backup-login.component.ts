@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { BackupLoginService } from '../services/backup-login.service';
 
 @Component({
+    standalone: false,
     selector: 'app-backup-login',
     templateUrl: './backup-login.component.html',
     styleUrls: ['./backup-login.component.css']

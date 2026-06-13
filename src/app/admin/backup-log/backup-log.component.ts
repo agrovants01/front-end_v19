@@ -15,6 +15,7 @@ interface BackupEvent {
 }
 
 @Component({
+    standalone: false,
     selector: 'app-backup-log',
     templateUrl: './backup-log.component.html',
     styleUrls: ['./backup-log.component.css']

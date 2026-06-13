@@ -13,6 +13,7 @@ import { Backup } from '../backup/backup.interface';
 import { pageSizeOptions } from '../../frameworks/MatTableSettings';
 
 @Component({
+    standalone: false,
     selector: 'app-backup-manual',
     templateUrl: './backup-manual.component.html',
     styleUrls: ['./backup-manual.component.css']
