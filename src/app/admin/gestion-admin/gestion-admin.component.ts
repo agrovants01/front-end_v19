@@ -22,6 +22,7 @@ export interface gestionList {
     fechaVuelo: string | Date;
     propietario: string;
     superficieVuelo: number;
+    formaPago: string;
     pilotoNombreCompleto: string;
     tecnicoVuelo: string;
     precioHa: number;
@@ -50,6 +51,7 @@ export class GestionAdminComponent implements AfterViewInit, OnDestroy {
         'fechaVuelo',
         'propietario',
         'cuadroVuelo',
+        'formaPago',
         'superficieVuelo',
         'pilotoNombreCompleto',
         'pagoPiloto',         // NUEVA COLUMNA después de Piloto
@@ -97,6 +99,8 @@ export class GestionAdminComponent implements AfterViewInit, OnDestroy {
 
     ngAfterViewInit(): void {
 
+        this.sort.disableClear = true;
+
         this.sort.sortChange.subscribe(() => this.paginator.pageIndex = 0);
 
         merge(
@@ -135,7 +139,6 @@ export class GestionAdminComponent implements AfterViewInit, OnDestroy {
             )
             .subscribe(rows => {
                 this.data.data = rows;
-                this.data.sort = this.sort;
             });
     }
 
@@ -292,6 +295,7 @@ export class GestionAdminComponent implements AfterViewInit, OnDestroy {
             this.formatDateForExport(item.fechaVuelo),
             item.propietario || '',
             item.cuadroVuelo || '',
+            item.formaPago || '',
             item.superficieVuelo || 0,
             item.pilotoNombreCompleto || '',
             item.pagoPiloto || 0,              // NUEVO CAMPO
@@ -306,7 +310,7 @@ export class GestionAdminComponent implements AfterViewInit, OnDestroy {
         ]);
 
         dataToExport.push([
-            'TOTALES', '', '',
+            'TOTALES', '', '', '',
             this.totalSuperficie,
             '',
             this.formatCurrencyNumber(this.totalPagoPiloto),     // NUEVO TOTAL
@@ -325,7 +329,7 @@ export class GestionAdminComponent implements AfterViewInit, OnDestroy {
 
     private exportToExcel(dataArray: any[]): void {
         const headers = [
-            'Fecha', 'Propietario', 'Cuadro', 'Superficie',
+            'Fecha', 'Propietario', 'Cuadro', 'Forma de Pago', 'Superficie',
             'Piloto', 'Pago Piloto',           // NUEVO HEADER
             'Técnico', 'Pago Técnico',          // NUEVO HEADER
             'Precio/Ha', 'Pago Contratista',
@@ -341,6 +345,7 @@ export class GestionAdminComponent implements AfterViewInit, OnDestroy {
             { wch: 12 },  // Fecha
             { wch: 25 },  // Propietario
             { wch: 15 },  // Cuadro
+            { wch: 18 },  // Forma de Pago
             { wch: 12 },  // Superficie
             { wch: 20 },  // Piloto
             { wch: 18 },  // Pago Piloto (nuevo)
@@ -391,6 +396,7 @@ export class GestionAdminComponent implements AfterViewInit, OnDestroy {
             this.formatDateForExport(d.fechaVuelo),
             d.propietario || '',
             d.cuadroVuelo || '',
+            d.formaPago || '',
             this.formatNumber(d.superficieVuelo || 0),
             d.pilotoNombreCompleto || '',
             this.formatCurrencyNumber(d.pagoPiloto || 0),        // NUEVO CAMPO
@@ -405,7 +411,7 @@ export class GestionAdminComponent implements AfterViewInit, OnDestroy {
 
         // Agregar fila de totales
         bodyData.push([
-            'TOTALES', '', '',
+            'TOTALES', '', '', '',
             this.formatNumber(this.totalSuperficie),
             '',
             this.formatCurrencyNumber(this.totalPagoPiloto),    // NUEVO TOTAL
@@ -420,7 +426,7 @@ export class GestionAdminComponent implements AfterViewInit, OnDestroy {
 
         autoTable(doc, {
             head: [[
-                'Fecha', 'Propietario', 'Cuadro', 'Sup.(Ha)',
+                'Fecha', 'Propietario', 'Cuadro', 'F.Pago', 'Sup.(Ha)',
                 'Piloto', 'Pago Piloto',        // NUEVO HEADER
                 'Técnico', 'Pago Técnico',      // NUEVO HEADER
                 'Precio/Ha', 'Pago Contratista',
@@ -444,16 +450,17 @@ export class GestionAdminComponent implements AfterViewInit, OnDestroy {
                 0: { cellWidth: 20 },   // Fecha
                 1: { cellWidth: 30 },   // Propietario
                 2: { cellWidth: 20 },   // Cuadro
-                3: { cellWidth: 18, halign: 'right' }, // Sup.
-                4: { cellWidth: 25 },   // Piloto
-                5: { cellWidth: 25, halign: 'right' }, // Pago Piloto (nuevo)
-                6: { cellWidth: 25 },   // Técnico
-                7: { cellWidth: 25, halign: 'right' }, // Pago Técnico (nuevo)
-                8: { cellWidth: 20, halign: 'right' }, // Precio/Ha
-                9: { cellWidth: 25, halign: 'right' }, // Pago Contratista
-                10: { cellWidth: 22, halign: 'right' }, // Subtotal
-                11: { cellWidth: 18 },  // Remito
-                12: { cellWidth: 25, halign: 'right' }  // Admin.
+                3: { cellWidth: 18 },   // F.Pago
+                4: { cellWidth: 18, halign: 'right' }, // Sup.
+                5: { cellWidth: 25 },   // Piloto
+                6: { cellWidth: 25, halign: 'right' }, // Pago Piloto (nuevo)
+                7: { cellWidth: 25 },   // Técnico
+                8: { cellWidth: 25, halign: 'right' }, // Pago Técnico (nuevo)
+                9: { cellWidth: 20, halign: 'right' }, // Precio/Ha
+                10: { cellWidth: 25, halign: 'right' }, // Pago Contratista
+                11: { cellWidth: 22, halign: 'right' }, // Subtotal
+                12: { cellWidth: 18 },  // Remito
+                13: { cellWidth: 25, halign: 'right' }  // Admin.
             },
             didDrawPage: function (data) {
                 // Número de página

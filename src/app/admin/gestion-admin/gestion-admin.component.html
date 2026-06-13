@@ -195,6 +195,16 @@
                             </td>
                         </ng-container>
 
+                        <!-- Forma de Pago Column -->
+                        <ng-container matColumnDef="formaPago">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                                Forma de Pago
+                            </th>
+                            <td [style.font-size]="'1.2rem'" *matCellDef="let row">
+                                {{ row.formaPago }}
+                            </td>
+                        </ng-container>
+
                         <!-- Superficie Column -->
                         <ng-container matColumnDef="superficieVuelo">
                             <th mat-header-cell *matHeaderCellDef mat-sort-header>
