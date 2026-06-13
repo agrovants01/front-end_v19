@@ -37,7 +37,7 @@ export class OrdenPedidoFormComponent implements OnInit, OnDestroy {
         private fb: FormBuilder,
         private _adminService: AdminService,
         public dialogRef: MatDialogRef<OrdenPedidoFormComponent>,
-        @Inject(MAT_DIALOG_DATA) public data: OrdenPedido | null
+        @Inject(MAT_DIALOG_DATA) public data: any
     ) {
         this.form = this.fb.group({
             opFecha: [this._getLocalDateObj(), Validators.required],
@@ -51,14 +51,26 @@ export class OrdenPedidoFormComponent implements OnInit, OnDestroy {
             opFormaPago: ['PAGO PENDIENTE'],
             opPrecioHa: [{ value: null, disabled: true }],
             opPrecioTotal: [{ value: 0, disabled: true }],
+            opAclaracion: [''],
+            opUbicacion: [{ value: '', disabled: true }],
         });
     }
 
     get agroquimicosArray(): FormArray { return this.form.get('agroquimicos') as FormArray; }
     get coadyuvantesArray(): FormArray { return this.form.get('coadyuvantes') as FormArray; }
 
+    fromMap = false;
+
     ngOnInit(): void {
-        this.isEdit = !!this.data;
+        this.isEdit = !!this.data?.opId;
+        this.fromMap = !!this.data?.desdeMapa && !this.isEdit;
+        if (this.data?.coordenadas) {
+            this.form.patchValue({ opUbicacion: this.data.coordenadas });
+        }
+        if (this.fromMap) {
+            this.form.get('propietarioSearch')?.disable();
+            this.form.get('fk_Propietario')?.disable();
+        }
         this.loadData();
         this.setupCalculations();
     }
@@ -95,7 +107,11 @@ export class OrdenPedidoFormComponent implements OnInit, OnDestroy {
         this._adminService.getPropietarios().pipe(takeUntil(this.unsubscribe$)).subscribe(p => {
             this.propietarios = p;
             this.filteredPropietarios = p;
-            if (this.isEdit) this.populateForm();
+            if (this.isEdit) {
+                this.populateForm();
+            } else {
+                this._autoSelectPropietario();
+            }
         });
         this._adminService.getAgroquimicos().pipe(takeUntil(this.unsubscribe$)).subscribe(a => {
             this.agroquimicos = a;
@@ -143,6 +159,7 @@ export class OrdenPedidoFormComponent implements OnInit, OnDestroy {
             opFormaPago: this.data!.opFormaPago,
             opPrecioHa: this.data!.opPrecioHa,
             opPrecioTotal: this.data!.opPrecioTotal,
+            opUbicacion: (this.data as any).opUbicacion || '',
         });
         const prop = this.propietarios.find(p => p.usuarioId === this.data!.fk_Propietario);
         if (prop) {
@@ -247,6 +264,25 @@ export class OrdenPedidoFormComponent implements OnInit, OnDestroy {
         this.coadyuvantesArray.at(index).patchValue({ nombre: coad.ListadoCoadNom });
     }
 
+    private _autoSelectPropietario(): void {
+        const nombreGuardado = this.data?.nombreCompleto || localStorage.getItem('nombreCompleto');
+        if (!nombreGuardado) return;
+        const match = this.propietarios.find(p =>
+            p.aliasUsuario === nombreGuardado ||
+            (p.nombreUsuario + ' ' + p.apellidoUsuario) === nombreGuardado
+        );
+        if (match) {
+            this.form.patchValue({
+                fk_Propietario: match.usuarioId,
+                propietarioSearch: match.aliasUsuario,
+            });
+        }
+    }
+
+    pickLocation(): void {
+        this.dialogRef.close({ pickLocation: true });
+    }
+
     onSubmit(): void {
         if (this.form.invalid) {
             this.form.markAllAsTouched();
@@ -279,6 +315,8 @@ export class OrdenPedidoFormComponent implements OnInit, OnDestroy {
             opFormaPago: formVal.opFormaPago,
             opPrecioHa: formVal.opPrecioHa,
             opPrecioTotal: formVal.opPrecioTotal,
+            opAclaracion: formVal.opAclaracion || null,
+            opUbicacion: formVal.opUbicacion || null,
         };
 
         this.agroquimicosArray.controls.forEach((ctrl, i) => {
