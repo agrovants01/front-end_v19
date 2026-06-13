@@ -1,10 +1,7 @@
 <div class="map-container">
     <div id="map"></div>
-    <!-- BARRA DE ANALISIS DE NDVIS -->
     <app-timeslider *ngIf="this.mapService.timeslider"></app-timeslider>
-    <!-- TABLA DE CAPAS DE NDVIS -->
     <app-view *ngIf="this.mapService.viewListLength > 0"></app-view>
-    <!-- REFERENCIAS DE NDVIS -->
     <app-references *ngIf="this.mapService.references"></app-references>
 
     <!-- Botón para mostrar/ocultar pronóstico -->
@@ -13,11 +10,35 @@
         <span class="material-icons">cloud</span>
     </button>
 
+    <!-- Botón para órdenes de pedido (solo ADMIN o PILOTO) -->
+    <button *ngIf="perfilPermitido" class="boton-pronostico" style="top: 55px" (click)="toggleOrdenesPedido()"
+        [disabled]="!propietarioSeleccionado"
+        [title]="propietarioSeleccionado ? 'Órdenes de pedido' : 'Seleccione un propietario primero'">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+            <path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12" />
+            <path d="M16 3v4" />
+            <path d="M8 3v4" />
+            <path d="M4 11h16" />
+            <path d="M7 14h.013" />
+            <path d="M10.01 14h.005" />
+            <path d="M13.01 14h.005" />
+            <path d="M16.015 14h.005" />
+            <path d="M13.015 17h.005" />
+            <path d="M7.01 17h.005" />
+            <path d="M10.01 17h.005" />
+        </svg>
+    </button>
+
+    <!-- Badge de selección de ubicación -->
+    <div class="location-badge" *ngIf="isPickingLocation">
+        <span>📍 Seleccione ubicación en el mapa</span>
+    </div>
+
 </div>
 
-<!-- Componente de pronóstico -->
 <app-weather-forecast *ngIf="mostrarPronostico" [map]="map" (close)="mostrarPronostico = false">
 </app-weather-forecast>
 
-<!-- Location Search input -->
 <app-search-location [map]="map"></app-search-location>

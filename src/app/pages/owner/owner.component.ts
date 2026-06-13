@@ -63,6 +63,7 @@ export class OwnerComponent implements OnInit, OnDestroy {
 
     flightsRequired: boolean = true;
     analysisRequired = false;
+    ordenesRequired = true;
     observationsRequired: boolean = true;
 
     ownerDataList: any[] = [];
@@ -122,6 +123,8 @@ export class OwnerComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
+        this.mapService.reloadOrdenesPins();
+
         // Filtro de busqueda de cuadros
         this.searchUsers.valueChanges.subscribe((value) => {
             if (value) {
@@ -176,6 +179,7 @@ export class OwnerComponent implements OnInit, OnDestroy {
                     if (flights) {
                         this.mapService.addFlightsToMap(flights);
                     }
+                    this.mapService.reloadOrdenesPins();
                 }),
                 map((userData: any[]) => {
                     const userDataOrdered = this.ownerService.sortOwnerData(userData, true);
@@ -290,7 +294,7 @@ export class OwnerComponent implements OnInit, OnDestroy {
     }
 
     filterElement(element: any) {
-        if (!this.range.get('start')?.value && !this.range.get('end')?.value) {
+        if (element !== 'ordenes' && !this.range.get('start')?.value && !this.range.get('end')?.value) {
             errorAlert('Debe seleccionar una fecha de inicio y una de fin')
             return;
         }
@@ -304,6 +308,11 @@ export class OwnerComponent implements OnInit, OnDestroy {
                 this.analysisRequired = !this.analysisRequired
                 document.getElementById("analysis")?.classList.toggle('disabled');
                 this.formatRangeDates();
+                break;
+            case 'ordenes':
+                this.ordenesRequired = !this.ordenesRequired;
+                document.getElementById("ordenes")?.classList.toggle('disabled');
+                this.mapService.setOrdenesVisible(this.ordenesRequired);
                 break;
         }
     }

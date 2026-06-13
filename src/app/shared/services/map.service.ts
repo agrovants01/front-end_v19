@@ -1,7 +1,7 @@
 import * as L from 'leaflet';
 import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, pipe, Subject, throwError, forkJoin, of } from 'rxjs';
+import { Observable, pipe, Subject, BehaviorSubject, throwError, forkJoin, of } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { GlobalsService } from './globals.service';
 import { Flight } from '../interfaces/flight.interface';
@@ -1101,6 +1101,20 @@ export class MapService {
                 }
             });
         });
+    }
+
+    private _ordenesVisible = new BehaviorSubject<boolean>(true);
+    ordenesVisible$ = this._ordenesVisible.asObservable();
+
+    setOrdenesVisible(visible: boolean): void {
+        this._ordenesVisible.next(visible);
+    }
+
+    private _reloadOrdenesPins = new Subject<void>();
+    reloadOrdenesPins$ = this._reloadOrdenesPins.asObservable();
+
+    reloadOrdenesPins(): void {
+        this._reloadOrdenesPins.next();
     }
 }
 
