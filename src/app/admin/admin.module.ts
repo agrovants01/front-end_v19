@@ -24,6 +24,8 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { RemitoConsultaComponent } from './remito-consulta/remito-consulta.component';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { GestionAdminComponent } from './gestion-admin/gestion-admin.component';
 
 import { AgrochemicalsComponent } from './agrochemicals/agrochemicals.component';

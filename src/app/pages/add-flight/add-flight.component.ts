@@ -294,20 +294,20 @@ export class AddFlightComponent implements OnInit, OnDestroy {
 
     private _filterAgroquimico(value: string): ListadoItem[] {
         const filterValue = value.toLowerCase();
-        return this.listadoAgroquimicos.filter(item => item.listadoAgroqNom.toLowerCase().includes(filterValue));
+        return this.listadoAgroquimicos.filter(item => (item.listadoAgroqNom || '').toLowerCase().includes(filterValue));
     }
 
     private _filterCoadyuvante(value: string): ListadoItem[] {
         const filterValue = value.toLowerCase();
-        return this.listadoCoadyuvantes.filter(item => item.ListadoCoadNom.toLowerCase().includes(filterValue));
+        return this.listadoCoadyuvantes.filter(item => (item.ListadoCoadNom || '').toLowerCase().includes(filterValue));
     }
 
     displayAgroquimico(item?: ListadoItem): string {
-        return item ? item.listadoAgroqNom : '';
+        return item ? (item.listadoAgroqNom || '') : '';
     }
 
     displayCoadyuvante(item?: ListadoItem): string {
-        return item ? item.ListadoCoadNom : '';
+        return item ? (item.ListadoCoadNom || '') : '';
     }
 
     catalogoValidator(campoNombre: string) {
@@ -320,7 +320,7 @@ export class AddFlightComponent implements OnInit, OnDestroy {
         };
     }
 
-
+    cargarOrdenesPropietario() {
         const idPropietario = this.idPropietarioElegido;
         if (!idPropietario) return;
 
