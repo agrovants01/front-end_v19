@@ -12,7 +12,7 @@ export class ConfigService {
     private baseUrl: string = environment.baseUrl;
 
     changePassword(password: any): Observable<any> {
-        const userId: string = localStorage.getItem('id') || '';
+        const userId: string = localStorage.getItem('idUsuarioLogueado') || '';
         return this.http.put<any>(
             `${this.baseUrl}/usuario/editContrasenia/${userId}`, password
         );
@@ -26,7 +26,7 @@ export class ConfigService {
 
 
     updateUser(user: any): Observable<any> {
-        const userId: string = localStorage.getItem('id') || '';
+        const userId: string = localStorage.getItem('idUsuarioLogueado') || '';
         return this.http.put<any>(
             `${this.baseUrl}/usuario/editUsuario/${userId}`, user
         );

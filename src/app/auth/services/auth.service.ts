@@ -41,7 +41,7 @@ export class AuthService {
     }
     verifyOwner(urlId: string | undefined): Observable<boolean> {
 
-        const id = localStorage.getItem('id');
+        const id = localStorage.getItem('idUsuarioLogueado');
 
         if (!id) {
             return of(false)

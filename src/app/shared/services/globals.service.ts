@@ -101,7 +101,7 @@ export class GlobalsService {
                 this.router.navigateByUrl('/admin');
                 break;
             case 'PROPIETARIO':
-                this.router.navigateByUrl(`/owner/${localStorage.getItem('id')}`);
+                this.router.navigateByUrl(`/owner/${localStorage.getItem('idUsuarioLogueado')}`);
                 break;
             case 'PILOTO':
                 this.router.navigateByUrl('/owners');

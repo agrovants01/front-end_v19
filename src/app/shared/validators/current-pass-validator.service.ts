@@ -16,7 +16,7 @@ export class CurrentPassValidatorService implements AsyncValidator {
 
   validate(control: AbstractControl): Observable<ValidationErrors | null> {
     const password = control.value;
-    const id = localStorage.getItem('id') || '';
+    const id = localStorage.getItem('idUsuarioLogueado') || '';
     const data = {
       contraseniaUsuario: password,
       usuarioId: id
