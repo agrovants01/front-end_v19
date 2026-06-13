@@ -1,0 +1,40 @@
+.orden-form-container {
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 0 10px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.section-title {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #ccc;
+}
+
+.agroq-row {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.agroq-nombre { flex: 3; }
+.agroq-dosis { flex: 1; }
+
+.error-msg {
+    color: #f43131;
+    font-size: 0.85rem;
+    margin-top: -8px;
+    grid-column: 1 / -1;
+}

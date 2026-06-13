@@ -1,0 +1,124 @@
+<div class="root">
+    <app-sidebar></app-sidebar>
+    <div class="admin-bg">
+        <div class="admin-cont">
+            <h2>Órdenes de Pedido</h2>
+
+            <div class="botones-exportar">
+                <button mat-raised-button color="primary" (click)="openFormDialog()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 5v14M5 12h14" />
+                    </svg>&nbsp;
+                    Nueva Orden
+                </button>
+            </div>
+
+            <div class="admin__content admin__users">
+                <mat-progress-bar *ngIf="isLoadingResults" mode="query"></mat-progress-bar>
+
+                <mat-form-field appearance="standard">
+                    <mat-label>Buscar en órdenes</mat-label>
+                    <input matInput [formControl]="searchOrden" placeholder="Cultivo, Forma de pago, Estado..." />
+                </mat-form-field>
+
+                <div class="admin-table">
+                    <table mat-table [dataSource]="data" matSort>
+
+                        <ng-container matColumnDef="opFecha">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>Fecha</th>
+                            <td [style.font-size]="'1.2rem'" *matCellDef="let row">
+                                {{ row.opFecha | date:'dd/MM/yyyy' }}
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="pilotoAlias">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>Piloto</th>
+                            <td [style.font-size]="'1.2rem'" *matCellDef="let row">{{ row.pilotoAlias || row.fk_Piloto }}</td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="propietarioAlias">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>Propietario</th>
+                            <td [style.font-size]="'1.2rem'" *matCellDef="let row">{{ row.propietarioAlias || row.fk_Propietario }}</td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="opCultivo">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>Cultivo</th>
+                            <td [style.font-size]="'1.2rem'" *matCellDef="let row">{{ row.opCultivo }}</td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="opSuperficie">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>Superficie (Ha)</th>
+                            <td [style.font-size]="'1.2rem'" *matCellDef="let row" style="text-align:right;">
+                                {{ row.opSuperficie | number:'1.2-2' }}
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="opPrecioHa">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>Precio/Ha</th>
+                            <td [style.font-size]="'1.2rem'" *matCellDef="let row" style="text-align:right;">
+                                $ {{ row.opPrecioHa | number:'1.2-2' }}
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="opPrecioTotal">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>Precio Total</th>
+                            <td [style.font-size]="'1.2rem'" *matCellDef="let row" style="text-align:right;">
+                                $ {{ row.opPrecioTotal | number:'1.2-2' }}
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="opFormaPago">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>Forma de Pago</th>
+                            <td [style.font-size]="'1.2rem'" *matCellDef="let row">{{ row.opFormaPago }}</td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="opEstado">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
+                            <td [style.font-size]="'1.2rem'" *matCellDef="let row">
+                                <span [ngClass]="{
+                                    'estado-pendiente': row.opEstado === 'PENDIENTE',
+                                    'estado-confirmada': row.opEstado === 'CONFIRMADA',
+                                    'estado-completada': row.opEstado === 'COMPLETADA'
+                                }">{{ row.opEstado }}</span>
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="actions">
+                            <th mat-header-cell *matHeaderCellDef>Acciones</th>
+                            <td *matCellDef="let row">
+                                <button mat-icon-button color="primary" (click)="openFormDialog(row)" matTooltip="Editar">
+                                    <mat-icon>edit</mat-icon>
+                                </button>
+                                <button mat-icon-button color="warn" (click)="deleteOrden(row)" matTooltip="Eliminar">
+                                    <mat-icon>delete</mat-icon>
+                                </button>
+                            </td>
+                        </ng-container>
+
+                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+                        <tr class="mat-row" *matNoDataRow>
+                            <td class="mat-cell" *ngIf="searchOrden.value === '' && !dataError && !isLoadingResults">
+                                No se encontraron órdenes de pedido
+                            </td>
+                            <td class="mat-cell" *ngIf="searchOrden.value === '' && dataError">
+                                El listado de órdenes no se encuentra disponible
+                            </td>
+                            <td class="mat-cell" *ngIf="searchOrden.value !== '' && !isLoadingResults">
+                                No se encuentran datos que coincidan con "{{ searchOrden.value }}"
+                            </td>
+                            <td class="mat-cell" *ngIf="isLoadingResults">
+                                Cargando órdenes...
+                            </td>
+                        </tr>
+                    </table>
+
+                    <mat-paginator [length]="resultsLength" [pageSize]="50" [pageSizeOptions]="pageSizeOptions">
+                    </mat-paginator>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -32,6 +32,9 @@ import { AgrochemicalFormComponent } from './components/agrochemical-form/agroch
 import { AdjuvantsComponent } from './adjuvants/adjuvants.component';
 import { AdjuvantFormComponent } from './components/adjuvant-form/adjuvant-form.component';
 
+import { OrdenPedidoComponent } from './orden-pedido/orden-pedido.component';
+import { OrdenPedidoFormComponent } from './orden-pedido/orden-pedido-form.component';
+
 
 @NgModule({
     declarations: [
@@ -53,7 +56,9 @@ import { AdjuvantFormComponent } from './components/adjuvant-form/adjuvant-form.
         AgrochemicalsComponent,
         AgrochemicalFormComponent,
         AdjuvantsComponent,
-        AdjuvantFormComponent
+        AdjuvantFormComponent,
+        OrdenPedidoComponent,
+        OrdenPedidoFormComponent
     ],
     imports: [
         CommonModule,

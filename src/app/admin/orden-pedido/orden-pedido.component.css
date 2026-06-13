@@ -1,0 +1,3 @@
+.estado-pendiente { color: #f43131; font-weight: bold; }
+.estado-confirmada { color: #00afef; font-weight: bold; }
+.estado-completada { color: #0b8d38; font-weight: bold; }

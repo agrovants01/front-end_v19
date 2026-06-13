@@ -14,6 +14,7 @@ import { RemitoAdminComponent } from './remito-admin/remito-admin.component';
 import { GestionAdminComponent } from './gestion-admin/gestion-admin.component';
 import { AgrochemicalsComponent } from './agrochemicals/agrochemicals.component';
 import { AdjuvantsComponent } from './adjuvants/adjuvants.component';
+import { OrdenPedidoComponent } from './orden-pedido/orden-pedido.component';
 
 const routes: Routes = [
     {
@@ -91,6 +92,14 @@ const routes: Routes = [
     {
         path: 'gestion-admin',
         component: GestionAdminComponent,
+        canActivate: [AuthGuard],
+        children: [
+            { path: '', component: SidebarAdminComponent },
+        ]
+    },
+    {
+        path: 'orden-pedido',
+        component: OrdenPedidoComponent,
         canActivate: [AuthGuard],
         children: [
             { path: '', component: SidebarAdminComponent },

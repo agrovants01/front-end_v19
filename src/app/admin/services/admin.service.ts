@@ -12,6 +12,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { throwError } from 'rxjs';
 import { AgrochemicalList } from '../agrochemicals/agrochemicals.interface';
 import { AdjuvantList } from '../adjuvants/adjuvants.interface';
+import { OrdenPedido, UsuarioSelect, ListadoItem } from '../orden-pedido/orden-pedido.interface';
 
 @Injectable({
     providedIn: 'root'
@@ -742,6 +743,60 @@ export class AdminService {
     // Eliminar duplicados de coadyuvantes
     eliminarDuplicadosCoadyuvantes(): Observable<any> {
         return this.http.delete<any>(`${this.baseUrl}/listado-coadyuvantes/eliminar-duplicados`);
+    }
+
+    // ===============================
+    // ORDEN DE PEDIDO
+    // ===============================
+
+    getOrdenesList(
+        sortActive: string,
+        sortDirection: 'asc' | 'desc',
+        pageIndex: number,
+        search: string = '',
+        pageSize: number = 50
+    ): Observable<{ items: OrdenPedido[]; total_count: number }> {
+        const params = new HttpParams()
+            .set('sortActive', sortActive)
+            .set('sortDirection', sortDirection)
+            .set('pageIndex', pageIndex.toString())
+            .set('search', search)
+            .set('pageSize', pageSize.toString());
+        return this.http.get<{ items: OrdenPedido[]; total_count: number }>(
+            `${this.baseUrl}/orden-pedido`, { params }
+        );
+    }
+
+    saveOrden(orden: OrdenPedido): Observable<OrdenPedido> {
+        return this.http.post<OrdenPedido>(`${this.baseUrl}/orden-pedido`, orden);
+    }
+
+    updateOrden(orden: OrdenPedido): Observable<OrdenPedido> {
+        return this.http.put<OrdenPedido>(`${this.baseUrl}/orden-pedido/${orden.opId}`, orden);
+    }
+
+    deleteOrden(orden: OrdenPedido): Observable<OrdenPedido> {
+        return this.http.delete<OrdenPedido>(`${this.baseUrl}/orden-pedido/${orden.opId}`);
+    }
+
+    getPilotos(): Observable<UsuarioSelect[]> {
+        return this.http.get<UsuarioSelect[]>(`${this.baseUrl}/orden-pedido/pilotos`);
+    }
+
+    getPropietarios(): Observable<UsuarioSelect[]> {
+        return this.http.get<UsuarioSelect[]>(`${this.baseUrl}/orden-pedido/propietarios`);
+    }
+
+    getAgroquimicos(): Observable<ListadoItem[]> {
+        return this.http.get<ListadoItem[]>(`${this.baseUrl}/orden-pedido/agroquimicos`);
+    }
+
+    getCoadyuvantes(): Observable<ListadoItem[]> {
+        return this.http.get<ListadoItem[]>(`${this.baseUrl}/orden-pedido/coadyuvantes`);
+    }
+
+    calcularTarifa(cultivo: string, superficie: number): Observable<any> {
+        return this.http.post<any>(`${this.baseUrl}/orden-pedido/calcular-tarifa`, { cultivo, superficie });
     }
 
 }
