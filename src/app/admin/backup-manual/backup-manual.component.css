@@ -1,0 +1,10 @@
+.tab-content {
+    margin-top: 2rem;
+}
+
+.buttons-container {
+    display: flex;
+    justify-content: flex-start;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+}

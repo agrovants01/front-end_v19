@@ -1,0 +1,85 @@
+<div class="auto-container">
+    <div *ngIf="isLoading" class="loading">
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        <p>Cargando configuración...</p>
+    </div>
+
+    <div *ngIf="!isLoading && status" class="status-card">
+        <div class="status-header">
+            <div class="status-indicator" [class.active]="status.activo"></div>
+            <h3>Backups Automáticos {{ status.activo ? 'Activos' : 'Inactivos' }}</h3>
+        </div>
+
+        <div class="status-details">
+            <div class="detail-item">
+                <span class="label">Horario:</span>
+                <span class="value">{{ status.horario }}</span>
+            </div>
+            <div class="detail-item">
+                <span class="label">Frecuencia:</span>
+                <span class="value">{{ status.frecuencia }}</span>
+            </div>
+            <div class="detail-item">
+                <span class="label">Retención:</span>
+                <span class="value">{{ status.retencion }}</span>
+            </div>
+            <div class="detail-item">
+                <span class="label">Total backups automáticos:</span>
+                <span class="value">{{ status.totalAutoBackups }}</span>
+            </div>
+        </div>
+
+        <div *ngIf="status.ultimoBackup" class="last-backup">
+            <h4>Último Backup</h4>
+            <p><strong>Nombre:</strong> {{ status.ultimoBackup.nombreBackup }}</p>
+            <p><strong>Fecha:</strong> {{ status.ultimoBackup.fechaHoraBackup | date: 'dd/MM/yyyy HH:mm:ss' }}</p>
+        </div>
+
+        <div class="next-backup">
+            <h4>Próximo Backup</h4>
+            <p>{{ status.proximoBackup | date: 'dd/MM/yyyy HH:mm' }}</p>
+        </div>
+    </div>
+
+    <div *ngIf="!isLoading && !status" class="error">
+        <p>No se pudo cargar la información de backups automáticos.</p>
+    </div>
+
+    <div class="auto-logs-section" *ngIf="!isLoadingLogs">
+        <h3>Historial de Backups Automáticos</h3>
+
+        <div *ngIf="autoLogs.length === 0" class="empty-logs">
+            <p>No hay registros de backups automáticos.</p>
+        </div>
+
+        <div *ngIf="autoLogs.length > 0" class="logs-table-wrapper">
+            <table class="logs-table">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Backup</th>
+                        <th>Resultado</th>
+                        <th>Detalle</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let log of autoLogs" [class.log-error]="log.tipo === 'error'">
+                        <td class="fecha">{{ log.fecha | date: 'dd/MM/yyyy HH:mm:ss' }}</td>
+                        <td class="nombre">{{ log.nombreBackup }}</td>
+                        <td class="resultado">
+                            <span class="badge" [class.badge-success]="log.tipo === 'backup'" [class.badge-error]="log.tipo === 'error'">
+                                {{ log.tipo === 'backup' ? 'Éxito' : 'Error' }}
+                            </span>
+                        </td>
+                        <td class="nota">{{ log.nota || '—' }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div *ngIf="isLoadingLogs" class="loading-logs">
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        <p>Cargando logs...</p>
+    </div>
+</div>

@@ -803,4 +803,12 @@ export class AdminService {
         return this.http.get<OrdenPedido[]>(`${this.baseUrl}/orden-pedido/propietario/${fk_Propietario}`);
     }
 
+    getBackupLog(): Observable<any> {
+        return this.http.get<any>(`${this.baseUrl}/backup/log`);
+    }
+
+    getAutoBackupStatus(): Observable<any> {
+        return this.http.get<any>(`${this.baseUrl}/backup/auto/status`);
+    }
+
 }

@@ -1,0 +1,49 @@
+<div class="log-container">
+    <div class="log-header">
+        <h3>Historial de Eventos</h3>
+        <div class="controls">
+            <button mat-button (click)="loadLog()" [disabled]="isLoading">
+                <mat-icon>refresh</mat-icon> Actualizar
+            </button>
+            <mat-slide-toggle [(ngModel)]="autoRefresh" color="primary">
+                Auto-refresh
+            </mat-slide-toggle>
+        </div>
+    </div>
+
+    <div *ngIf="isLoading" class="loading">
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        <p>Cargando log...</p>
+    </div>
+
+    <div *ngIf="!isLoading && eventos.length === 0" class="empty">
+        <p>No hay eventos registrados.</p>
+    </div>
+
+    <div *ngIf="!isLoading && eventos.length > 0" class="log-table-wrapper" #tableWrapper>
+        <table class="log-table">
+            <thead>
+                <tr>
+                    <th>Fecha y Hora</th>
+                    <th>Tipo</th>
+                    <th>Backup</th>
+                    <th>Usuario</th>
+                    <th>IP</th>
+                    <th>Detalle</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let evento of eventos" [class]="getTipoClass(evento.tipo)">
+                    <td class="fecha">{{ evento.fecha | date: 'dd/MM/yyyy HH:mm:ss' }}</td>
+                    <td class="tipo">
+                        <span class="tipo-badge">{{ getTipoLabel(evento.tipo) }}</span>
+                    </td>
+                    <td class="nombre">{{ evento.nombreBackup }}</td>
+                    <td class="usuario">{{ evento.usuarioAlias || 'Sistema' }}</td>
+                    <td class="ip">{{ evento.ip || '—' }}</td>
+                    <td class="nota">{{ evento.nota || '—' }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

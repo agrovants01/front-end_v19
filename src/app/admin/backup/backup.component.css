@@ -1,0 +1,21 @@
+.backup-header {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 2rem !important;
+    gap: 2rem !important;
+    width: 100% !important;
+}
+
+.backup-header h2 {
+    margin: 0 !important;
+    flex-grow: 1 !important;
+    text-align: left !important;
+}
+
+.backup-header button {
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+    margin-left: auto !important;
+}

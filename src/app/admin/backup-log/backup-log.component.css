@@ -1,0 +1,132 @@
+.log-container {
+    padding: 1rem;
+}
+
+.log-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.log-header h3 {
+    margin: 0;
+    color: #e0e0e0;
+}
+
+.controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.loading, .empty {
+    text-align: center;
+    padding: 2rem;
+    color: #999;
+}
+
+.log-table-wrapper {
+    overflow-x: auto;
+    overflow-y: auto;
+    border-radius: 0.5rem;
+    background-color: #1e1e1e;
+    max-height: 55vh;
+}
+
+.log-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 1.3rem;
+}
+
+.log-table th {
+    background-color: #2d2d2d;
+    color: #e0e0e0;
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 2px solid #404040;
+    white-space: nowrap;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.log-table td {
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid #333;
+    color: #ccc;
+}
+
+.log-table tr:hover {
+    background-color: #2a2a2a;
+}
+
+.log-table .fecha {
+    white-space: nowrap;
+    font-family: monospace;
+    color: #aaa;
+}
+
+.log-table .tipo {
+    white-space: nowrap;
+}
+
+.tipo-badge {
+    padding: 0.3rem 0.8rem;
+    border-radius: 0.3rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05rem;
+}
+
+.tipo-backup .tipo-badge {
+    background-color: #1b5e20;
+    color: #81c784;
+}
+
+.tipo-restauracion .tipo-badge {
+    background-color: #0d47a1;
+    color: #64b5f6;
+}
+
+.tipo-eliminacion .tipo-badge {
+    background-color: #b71c1c;
+    color: #ef5350;
+}
+
+.log-table .nombre {
+    font-weight: 500;
+    color: #e0e0e0;
+}
+
+.log-table .usuario {
+    color: #ffd54f;
+}
+
+.log-table .ip {
+    font-family: monospace;
+    font-size: 1.1rem;
+    color: #aaa;
+}
+
+.log-table .nota {
+    font-style: italic;
+    color: #888;
+    font-size: 1.2rem;
+}
+
+@media (max-width: 768px) {
+    .log-table {
+        font-size: 1.1rem;
+    }
+
+    .log-table th,
+    .log-table td {
+        padding: 0.5rem;
+    }
+}

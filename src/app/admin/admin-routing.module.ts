@@ -5,7 +5,7 @@ import { IndexesComponent } from './indexes/indexes.component';
 import { SidebarAdminComponent } from './sidebar-admin/sidebar-admin.component';
 import { UploadAnalysisLayerComponent } from './upload-analysis-layer/upload-analysis-layer.component';
 import { UploadDataComponent } from './upload-data/upload-data.component';
-import { BackupComponent } from './backup/backup.component';
+import { BackupAdminComponent } from './backup/backup.component';
 import { UsersComponent } from './users/users.component';
 import { OwnerGuard } from '../auth/guards/owner.guard';
 import { AuthGuard } from '../auth/guards/auth.guard';
@@ -15,6 +15,7 @@ import { GestionAdminComponent } from './gestion-admin/gestion-admin.component';
 import { AgrochemicalsComponent } from './agrochemicals/agrochemicals.component';
 import { AdjuvantsComponent } from './adjuvants/adjuvants.component';
 import { OrdenPedidoComponent } from './orden-pedido/orden-pedido.component';
+import { BackupLoginComponent } from './backup-login/backup-login.component';
 
 const routes: Routes = [
     {
@@ -66,8 +67,16 @@ const routes: Routes = [
         ]
     },
     {
+        path: 'backup-login',
+        component: BackupLoginComponent,
+        canActivate: [AuthGuard],
+        children: [
+            { path: '', component: SidebarAdminComponent },
+        ]
+    },
+    {
         path: 'backups',
-        component: BackupComponent,
+        component: BackupAdminComponent,
         canActivate: [AuthGuard],
         children: [
             { path: '', component: SidebarAdminComponent },

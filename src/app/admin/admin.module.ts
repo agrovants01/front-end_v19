@@ -9,7 +9,7 @@ import { AdminComponent } from './admin.component';
 import { SharedModule } from '../shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IndexesComponent } from './indexes/indexes.component';
-import { BackupComponent } from './backup/backup.component';
+import { BackupAdminComponent } from './backup/backup.component';
 import { UsersComponent } from './users/users.component';
 import { UserFormComponent } from './components/user-form/user-form.component';
 import { IndexFormComponent } from './components/index-form/index-form.component';
@@ -37,6 +37,11 @@ import { OrdenPedidoFormComponent } from './orden-pedido/orden-pedido-form.compo
 import { NumberSeparatorPipe } from './orden-pedido/number-separator.pipe';
 import { FormatNumberDirective } from './orden-pedido/format-number.directive';
 
+import { BackupManualComponent } from './backup-manual/backup-manual.component';
+import { BackupAutoComponent } from './backup-auto/backup-auto.component';
+import { BackupLogComponent } from './backup-log/backup-log.component';
+import { BackupLoginComponent } from './backup-login/backup-login.component';
+
 
 @NgModule({
     declarations: [
@@ -45,7 +50,7 @@ import { FormatNumberDirective } from './orden-pedido/format-number.directive';
         UploadDataComponent,
         AdminComponent,
         IndexesComponent,
-        BackupComponent,
+        BackupAdminComponent,
         UsersComponent,
         UserFormComponent,
         IndexFormComponent,
@@ -62,7 +67,11 @@ import { FormatNumberDirective } from './orden-pedido/format-number.directive';
         OrdenPedidoComponent,
         OrdenPedidoFormComponent,
         NumberSeparatorPipe,
-        FormatNumberDirective
+        FormatNumberDirective,
+        BackupManualComponent,
+        BackupAutoComponent,
+        BackupLogComponent,
+        BackupLoginComponent
     ],
     imports: [
         CommonModule,
@@ -77,7 +86,8 @@ import { FormatNumberDirective } from './orden-pedido/format-number.directive';
         MatTabsModule,
         MatSelectModule,
         MatTooltipModule,
-        MatMenuModule
+        MatMenuModule,
+        MatSlideToggleModule
     ],
     exports: [
         SidebarAdminComponent, // <-- AGREGAR ESTO

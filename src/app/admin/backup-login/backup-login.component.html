@@ -1,0 +1,40 @@
+<div class="root">
+    <app-sidebar></app-sidebar>
+    <div class="admin-bg">
+        <div class="admin-cont backup-login-page">
+            <div class="backup-login-wrapper">
+                <div class="backup-login-card">
+                    <h3>Acceso a Copias de Seguridad</h3>
+
+                    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+                        <mat-form-field appearance="fill" class="full-width">
+                            <mat-label>Contraseña de seguridad</mat-label>
+                            <input
+                                formControlName="password"
+                                matInput
+                                placeholder="Ingrese la contraseña"
+                                type="password"
+                            />
+                            <mat-error *ngIf="loginForm.get('password')?.hasError('required')">
+                                La contraseña es obligatoria
+                            </mat-error>
+                        </mat-form-field>
+
+                        <div *ngIf="errorMsg" class="backup-login-error">
+                            {{ errorMsg }}
+                        </div>
+
+                        <button mat-flat-button type="submit" color="primary">
+                            Acceder
+                        </button>
+                    </form>
+
+                    <div class="backup-login-notice">
+                        <mat-icon>info</mat-icon>
+                        <span>Solo usuarios con perfil <strong>ADMIN</strong> pueden acceder a este módulo.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
