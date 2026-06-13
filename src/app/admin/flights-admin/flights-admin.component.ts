@@ -92,6 +92,8 @@ export class FlightsAdminComponent implements AfterViewInit, OnDestroy {
     ) { }
 
     ngAfterViewInit() {
+        this.sort.disableClear = true;
+
         // Reset page index if sort order changes
         this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
 
@@ -123,8 +125,8 @@ export class FlightsAdminComponent implements AfterViewInit, OnDestroy {
 
                     // Llama al servicio con los parámetros necesarios
                     return this._adminService.getFlightsAdminList(
-                        this.sort.active,
-                        this.sort.direction,
+                        this.sort.active || 'fechaVuelo',
+                        this.sort.direction || 'asc',
                         this.paginator.pageIndex,
                         this.searchFlights.value,
                         this.paginator.pageSize,
@@ -153,7 +155,6 @@ export class FlightsAdminComponent implements AfterViewInit, OnDestroy {
             )
             .subscribe(data => {
                 this.data.data = data;  // Actualiza el MatTableDataSource
-                this.data.sort = this.sort;  // Asigna MatSort al MatTableDataSource
             });
     }
 
