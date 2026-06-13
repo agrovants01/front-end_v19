@@ -736,6 +736,7 @@ export class MapService {
         const c = `${flight.colorVuelo}`;
 
         const geometry: any = flight.geometryVuelo;
+        geometry.crs = geometry.crs || { properties: {} };
         geometry.crs.properties.type = "flight";
 
         const polygonStyle = {
