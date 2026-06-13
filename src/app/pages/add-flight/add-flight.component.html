@@ -46,6 +46,18 @@
                 </mat-form-field>
 
                 <mat-form-field appearance="fill">
+                    <mat-label>Orden de Pedido</mat-label>
+                    <mat-select formControlName="ordenPedidoFlight" (selectionChange)="seleccionarOrden($event.value)">
+                        <mat-option *ngIf="ordenesPropietario.length === 0" [disabled]="true" class="disabled-option">
+                            Sin órdenes de pedido
+                        </mat-option>
+                        <mat-option *ngFor="let orden of ordenesPropietario" [value]="orden">
+                            {{ orden.opNomenclatura || orden.opId }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
                     <mat-label>Propietario</mat-label>
                     <input matInput formControlName="propietarioFlight" placeholder="Propietario" required>
                 </mat-form-field>

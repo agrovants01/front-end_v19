@@ -14,6 +14,8 @@ import { Piloto } from 'src/app/pages/owner/pilot.interface';
 import { OwnerService } from 'src/app/pages/services/owner.service';
 import { Cultivo } from '../owner/cultivo.interface';
 import { Tecnico } from '../owner/tecnico.interface';
+import { AdminService } from 'src/app/admin/services/admin.service';
+import { OrdenPedido } from 'src/app/admin/orden-pedido/orden-pedido.interface';
 
 
 @Component({
@@ -67,10 +69,13 @@ export class AddFlightComponent implements OnInit, OnDestroy {
 
     aliasUsuarioLogueado = localStorage.getItem('aliasUsuarioLogueado');
 
+    ordenesPropietario: OrdenPedido[] = [];
+    ordenSeleccionada: OrdenPedido | null = null;
 
     flightForm: FormGroup = this.fb.group({
         markersFlight: ['', [Validators.required]],
         dateFlight: [new Date(), [Validators.required], [this.dateValidator]],
+        ordenPedidoFlight: ['', []],
 
         // sintaxis para deshabilitar un campo de formulario con formulario reactivo
         propietarioFlight: [{ value: this.nombreCompleto, disabled: true }, [Validators.required]], // ADMIN: ve nombre completo de propietario elegido
@@ -117,6 +122,7 @@ export class AddFlightComponent implements OnInit, OnDestroy {
         private dateValidator: LessThanTodayService,
         private route: ActivatedRoute,
         private ownerService: OwnerService,
+        private adminService: AdminService,
     ) {
 
     }
@@ -141,6 +147,8 @@ export class AddFlightComponent implements OnInit, OnDestroy {
         this.ownerService.getPilotos().subscribe((response: Piloto[]) => {
             this.pilotos = response;
         });
+
+        this.cargarOrdenesPropietario();
 
 
         // Cargar lista de cultivos
@@ -228,6 +236,46 @@ export class AddFlightComponent implements OnInit, OnDestroy {
         this.flightForm.get('pilotoNombreCompletoFlight')?.setValue(`${pilotoSeleccionado?.nombrePiloto} ${pilotoSeleccionado?.apellidoPiloto}`);
     }
 
+
+    cargarOrdenesPropietario() {
+        const idPropietario = this.idPropietarioElegido;
+        if (!idPropietario) return;
+
+        this.adminService.getOrdenesPorPropietario(idPropietario)
+            .pipe(takeUntil(this.unsubscribe$))
+            .subscribe((ordenes: OrdenPedido[]) => {
+                this.ordenesPropietario = ordenes;
+            });
+    }
+
+    seleccionarOrden(orden: OrdenPedido) {
+        this.ordenSeleccionada = orden;
+
+        if (this.isAdmin()) {
+            this.flightForm.get('pilotoFlight')?.setValue(orden.fk_Piloto);
+            this.flightForm.get('idPilotoCreateFlight')?.setValue(orden.fk_Piloto);
+            this.flightForm.get('pilotoNombreCompletoFlight')?.setValue(orden.fk_Piloto);
+        }
+
+        this.flightForm.get('areaFlight')?.setValue(orden.opSuperficie);
+
+        this.flightForm.get('agq1Flight')?.setValue(orden.opAgroq1 || '-');
+        this.flightForm.get('dosisagq1Flight')?.setValue(orden.opDosisAgroq1 || 0);
+        this.flightForm.get('agq2Flight')?.setValue(orden.opAgroq2 || '-');
+        this.flightForm.get('dosisagq2Flight')?.setValue(orden.opDosisAgroq2 || 0);
+        this.flightForm.get('agq3Flight')?.setValue(orden.opAgroq3 || '-');
+        this.flightForm.get('dosisagq3Flight')?.setValue(orden.opDosisAgroq3 || 0);
+        this.flightForm.get('agq4Flight')?.setValue(orden.opAgroq4 || '-');
+        this.flightForm.get('dosisagq4Flight')?.setValue(orden.opDosisAgroq4 || 0);
+
+        this.flightForm.get('coad1Flight')?.setValue(orden.opCoad1 || '-');
+        this.flightForm.get('dosiscoad1Flight')?.setValue(orden.opDosisCoad1 || 0);
+        this.flightForm.get('coad2Flight')?.setValue(orden.opCoad2 || '-');
+        this.flightForm.get('dosiscoad2Flight')?.setValue(orden.opDosisCoad2 || 0);
+
+        this.flightForm.get('formaPagoFlight')?.setValue(orden.opFormaPago);
+        this.flightForm.get('precioHaFlight')?.setValue(orden.opPrecioHa);
+    }
 
     saveFlight() {
         if (this.flightForm.invalid) {

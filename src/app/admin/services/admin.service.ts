@@ -799,4 +799,8 @@ export class AdminService {
         return this.http.post<any>(`${this.baseUrl}/orden-pedido/calcular-tarifa`, { cultivo, superficie });
     }
 
+    getOrdenesPorPropietario(fk_Propietario: string): Observable<OrdenPedido[]> {
+        return this.http.get<OrdenPedido[]>(`${this.baseUrl}/orden-pedido/propietario/${fk_Propietario}`);
+    }
+
 }

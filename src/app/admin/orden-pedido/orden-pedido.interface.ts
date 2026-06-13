@@ -1,5 +1,6 @@
 export interface OrdenPedido {
     opId: string;
+    opNomenclatura?: string;
     opFecha: string | Date;
     fk_Piloto: string;
     fk_Propietario: string;
