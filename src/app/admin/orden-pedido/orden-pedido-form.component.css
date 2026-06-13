@@ -55,6 +55,10 @@
     transition: background-color 0.2s;
 }
 
+.form-grid > mat-form-field:nth-child(-n+2) {
+    margin-top: 8px;
+}
+
 .add-btn:hover:not(:disabled) {
     background-color: #303f9f;
 }
