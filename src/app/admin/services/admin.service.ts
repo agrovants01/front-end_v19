@@ -123,10 +123,30 @@ export class AdminService {
 
 
     // Obtener vuelos de un propietario por usuarioId
-    getOwnerFlightsRemito(usuarioId: string) {
+    getOwnerFlightsRemito(
+        usuarioId: string,
+        sort: string = 'fechaVuelo',
+        order: SortDirection = 'asc',
+        page: number = 0,
+        limit: number = 500,
+        range?: { fechaDesde: string; fechaHasta: string }
+    ) {
+        let params = new HttpParams()
+            .set('sort', sort)
+            .set('order', order)
+            .set('page', page.toString())
+            .set('limit', limit.toString());
 
-        return this.http.get<any>(`${this.baseUrl}/vuelo/remito/${usuarioId}`);
+        if (range) {
+            params = params
+                .set('fechaDesde', range.fechaDesde)
+                .set('fechaHasta', range.fechaHasta);
+        }
 
+        return this.http.get<{ count: number; rows: any[] }>(
+            `${this.baseUrl}/vuelo/remito/${usuarioId}`,
+            { params }
+        );
     }
     // Fin obtener vuelos de un propietario por usuarioId
 
@@ -809,6 +829,10 @@ export class AdminService {
 
     getAutoBackupStatus(): Observable<any> {
         return this.http.get<any>(`${this.baseUrl}/backup/auto/status`);
+    }
+
+    getUbicacionesOrdenes(): Observable<{ opId: string; opNomenclatura: string; opUbicacion: string }[]> {
+        return this.http.get<{ opId: string; opNomenclatura: string; opUbicacion: string }[]>(`${this.baseUrl}/orden-pedido/ubicaciones`);
     }
 
 }

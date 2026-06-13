@@ -1,7 +1,7 @@
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output, SimpleChanges, OnChanges } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import { OrderCriterion } from './orderCriterion.interface';
 import { AuthService } from 'src/app/auth/services/auth.service';
 
@@ -43,7 +43,11 @@ export class SearchComponent implements OnInit {
     ) { }
     ngOnInit(): void {
         this.searchControl.valueChanges
-            .pipe(takeUntil(this.unsubscribe$))
+            .pipe(
+                debounceTime(300),
+                distinctUntilChanged(),
+                takeUntil(this.unsubscribe$)
+            )
             .subscribe((value: string) => {
                 this.changeValue(value);
             })

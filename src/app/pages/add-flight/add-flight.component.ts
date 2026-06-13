@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { of, Subject } from 'rxjs';
-import { switchMap, takeUntil } from 'rxjs/operators';
+import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
+import { of, Subject, Observable } from 'rxjs';
+import { switchMap, takeUntil, startWith, map } from 'rxjs/operators';
 import { GlobalsService } from 'src/app/shared/services/globals.service';
 import { MapService } from 'src/app/shared/services/map.service';
 import { SidebarService } from 'src/app/shared/services/sidebar.service';
@@ -15,7 +15,7 @@ import { OwnerService } from 'src/app/pages/services/owner.service';
 import { Cultivo } from '../owner/cultivo.interface';
 import { Tecnico } from '../owner/tecnico.interface';
 import { AdminService } from 'src/app/admin/services/admin.service';
-import { OrdenPedido } from 'src/app/admin/orden-pedido/orden-pedido.interface';
+import { OrdenPedido, ListadoItem } from 'src/app/admin/orden-pedido/orden-pedido.interface';
 
 
 @Component({
@@ -72,6 +72,16 @@ export class AddFlightComponent implements OnInit, OnDestroy {
     ordenesPropietario: OrdenPedido[] = [];
     ordenSeleccionada: OrdenPedido | null = null;
 
+    listadoAgroquimicos: ListadoItem[] = [];
+    listadoCoadyuvantes: ListadoItem[] = [];
+
+    filteredAgq1!: Observable<ListadoItem[]>;
+    filteredAgq2!: Observable<ListadoItem[]>;
+    filteredAgq3!: Observable<ListadoItem[]>;
+    filteredAgq4!: Observable<ListadoItem[]>;
+    filteredCoad1!: Observable<ListadoItem[]>;
+    filteredCoad2!: Observable<ListadoItem[]>;
+
     flightForm: FormGroup = this.fb.group({
         markersFlight: ['', [Validators.required]],
         dateFlight: [new Date(), [Validators.required], [this.dateValidator]],
@@ -95,17 +105,17 @@ export class AddFlightComponent implements OnInit, OnDestroy {
         //pilotoNombreCompletoFlight2:[''],
 
         tecnicoFlight: ['', [Validators.required]],
-        agq1Flight: ['-', [Validators.required]],
+        agq1Flight: ['-', [Validators.required, this.catalogoValidator('listadoAgroqNom')]],
         dosisagq1Flight: [0, [Validators.required]],
-        agq2Flight: ['-', []],
+        agq2Flight: ['-', [this.catalogoValidator('listadoAgroqNom')]],
         dosisagq2Flight: [0, [Validators.minLength(0)]],
-        agq3Flight: ['-', []],
+        agq3Flight: ['-', [this.catalogoValidator('listadoAgroqNom')]],
         dosisagq3Flight: [0, [Validators.minLength(0)]],
-        agq4Flight: ['-', []],
+        agq4Flight: ['-', [this.catalogoValidator('listadoAgroqNom')]],
         dosisagq4Flight: [0, [Validators.minLength(0)]],
-        coad1Flight: ['-', [Validators.required]],
+        coad1Flight: ['-', [Validators.required, this.catalogoValidator('ListadoCoadNom')]],
         dosiscoad1Flight: [0, [Validators.required, Validators.minLength(0)]],
-        coad2Flight: ['-', []],
+        coad2Flight: ['-', [this.catalogoValidator('ListadoCoadNom')]],
         dosiscoad2Flight: [0, [Validators.minLength(0)]],
         formaPagoFlight: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(80)]],
         precioHaFlight: [0, [Validators.required, Validators.minLength(0)]],
@@ -164,6 +174,21 @@ export class AddFlightComponent implements OnInit, OnDestroy {
             .pipe(takeUntil(this.unsubscribe$))
             .subscribe((tecnico: Tecnico[]) => {
                 this.tecnicosList = tecnico;
+            });
+
+        // Cargar catálogos maestros de agroquímicos y coadyuvantes
+        this.adminService.getAgroquimicos()
+            .pipe(takeUntil(this.unsubscribe$))
+            .subscribe((items: ListadoItem[]) => {
+                this.listadoAgroquimicos = items;
+                this.setupAgroquimicosAutocomplete();
+            });
+
+        this.adminService.getCoadyuvantes()
+            .pipe(takeUntil(this.unsubscribe$))
+            .subscribe((items: ListadoItem[]) => {
+                this.listadoCoadyuvantes = items;
+                this.setupCoadyuvantesAutocomplete();
             });
 
 
@@ -237,7 +262,65 @@ export class AddFlightComponent implements OnInit, OnDestroy {
     }
 
 
-    cargarOrdenesPropietario() {
+    setupAgroquimicosAutocomplete() {
+        const setup = (ctrlName: string, obsName: 'filteredAgq1' | 'filteredAgq2' | 'filteredAgq3' | 'filteredAgq4') => {
+            (this as any)[obsName] = this.flightForm.get(ctrlName)!.valueChanges.pipe(
+                startWith(''),
+                map(value => {
+                    const name = typeof value === 'string' ? value : value?.listadoAgroqNom;
+                    return name ? this._filterAgroquimico(name) : this.listadoAgroquimicos.slice();
+                })
+            );
+        };
+        setup('agq1Flight', 'filteredAgq1');
+        setup('agq2Flight', 'filteredAgq2');
+        setup('agq3Flight', 'filteredAgq3');
+        setup('agq4Flight', 'filteredAgq4');
+    }
+
+    setupCoadyuvantesAutocomplete() {
+        const setup = (ctrlName: string, obsName: 'filteredCoad1' | 'filteredCoad2') => {
+            (this as any)[obsName] = this.flightForm.get(ctrlName)!.valueChanges.pipe(
+                startWith(''),
+                map(value => {
+                    const name = typeof value === 'string' ? value : value?.ListadoCoadNom;
+                    return name ? this._filterCoadyuvante(name) : this.listadoCoadyuvantes.slice();
+                })
+            );
+        };
+        setup('coad1Flight', 'filteredCoad1');
+        setup('coad2Flight', 'filteredCoad2');
+    }
+
+    private _filterAgroquimico(value: string): ListadoItem[] {
+        const filterValue = value.toLowerCase();
+        return this.listadoAgroquimicos.filter(item => item.listadoAgroqNom.toLowerCase().includes(filterValue));
+    }
+
+    private _filterCoadyuvante(value: string): ListadoItem[] {
+        const filterValue = value.toLowerCase();
+        return this.listadoCoadyuvantes.filter(item => item.ListadoCoadNom.toLowerCase().includes(filterValue));
+    }
+
+    displayAgroquimico(item?: ListadoItem): string {
+        return item ? item.listadoAgroqNom : '';
+    }
+
+    displayCoadyuvante(item?: ListadoItem): string {
+        return item ? item.ListadoCoadNom : '';
+    }
+
+    catalogoValidator(campoNombre: string) {
+        return (control: AbstractControl): ValidationErrors | null => {
+            const value = control.value;
+            if (!value || typeof value === 'object') return null;
+            const existe = this.listadoAgroquimicos.some((item: any) => item[campoNombre] === value)
+                || this.listadoCoadyuvantes.some((item: any) => item[campoNombre] === value);
+            return existe ? { existsInCatalog: true } : null;
+        };
+    }
+
+
         const idPropietario = this.idPropietarioElegido;
         if (!idPropietario) return;
 
@@ -310,7 +393,7 @@ export class AddFlightComponent implements OnInit, OnDestroy {
 
                                 idPilotoVuelo: this.isAdmin() ? this.flightForm.value.idPilotoCreateFlight : this.idUsuarioPilotoLogueado,
 
-                                pilotoNombreCompleto: this.isAdmin() ? this.flightForm.value.pilotoNombreCompletoFlight : this.aliasUsuarioLogueado,
+                                pilotoNombreCompleto: String(this.isAdmin() ? this.flightForm.value.pilotoNombreCompletoFlight : this.aliasUsuarioLogueado),
 
 
                                 tecnicoVuelo: this.flightForm.value.tecnicoFlight, // (asistenteVuelo)

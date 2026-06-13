@@ -2,7 +2,7 @@ import * as L from 'leaflet';
 import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { debounceTime, switchMap, takeUntil } from 'rxjs/operators';
 import { SidebarService } from 'src/app/shared/services/sidebar.service';
 import { OwnerPreview, UserPreview } from '../owner/owner.interface';
 import { OwnerService } from '../services/owner.service';
@@ -24,6 +24,7 @@ export class OwnersComponent implements OnInit {
     flights: any[] = [];
 
     private unsubscribe$ = new Subject<void>();
+    private searchTerms$ = new Subject<string>();
 
     title: string = 'Propietarios'; //Title of the Search Bar
 
@@ -81,39 +82,34 @@ export class OwnersComponent implements OnInit {
 
 
 
+        // Search con debounce + switchMap para cancelar requests previos
+        this.searchTerms$
+            .pipe(
+                debounceTime(300),
+                switchMap((value: string) => {
+                    if (!value || value === '') {
+                        return this.admin
+                            ? this.ownerService.searchOwnersAndPilots()
+                            : this.ownerService.searchOwners();
+                    }
+                    return this.admin
+                        ? this.ownerService.searchOwnersAndPilots(value)
+                        : this.ownerService.searchOwners(value);
+                }),
+                takeUntil(this.unsubscribe$)
+            )
+            .subscribe((data: any) => {
+                if (this.admin) {
+                    this.users = data;
+                } else {
+                    this.owners = data;
+                }
+            });
+
     }
 
-    updateValues(value: string): any {
-        if (value === '' || !value) {
-            if (this.admin) {
-                this.ownerService.searchOwnersAndPilots()
-                    .pipe(takeUntil(this.unsubscribe$))
-                    .subscribe((users) => {
-                        this.users = users;
-                    });
-            } else {
-                this.ownerService.searchOwners()
-                    .pipe(takeUntil(this.unsubscribe$))
-                    .subscribe((owners) => {
-                        this.owners = owners;
-                    });
-            }
-            return;
-        }
-
-        if (this.admin) {
-            this.ownerService.searchOwnersAndPilots(value)
-                .pipe(takeUntil(this.unsubscribe$))
-                .subscribe((data) => {
-                    this.users = data;
-                });
-        } else {
-            this.ownerService.searchOwners(value)
-                .pipe(takeUntil(this.unsubscribe$))
-                .subscribe((data) => {
-                    this.owners = data;
-                });
-        }
+    updateValues(value: string): void {
+        this.searchTerms$.next(value);
     }
 
     /** Criterion Order:

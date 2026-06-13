@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, EventEmitter, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { ControlContainer, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ControlContainer, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil, startWith, map } from 'rxjs/operators';
@@ -17,6 +17,8 @@ import { Cultivo } from '../../owner/cultivo.interface';
 import { Tecnico } from '../../owner/tecnico.interface';
 import { Agroquimico } from 'src/app/pages/owner/agroquimico.interface';
 import { Coadyuvante } from 'src/app/pages/owner/coadyuvante.interface';
+import { AdminService } from 'src/app/admin/services/admin.service';
+import { OrdenPedido, ListadoItem } from 'src/app/admin/orden-pedido/orden-pedido.interface';
 import * as moment from 'moment';
 
 

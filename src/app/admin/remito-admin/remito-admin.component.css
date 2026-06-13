@@ -241,3 +241,10 @@ html, body {
 /* .admin-bg {
     transition: overflow 0.3s ease;
 } */
+
+.loading-results {
+    text-align: center;
+    padding: 2rem;
+    color: #b0bec5;
+    font-style: italic;
+}

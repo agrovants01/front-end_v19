@@ -31,9 +31,9 @@
                                     <mat-label>Definir rango de fechas...</mat-label>
                                     <mat-date-range-input [rangePicker]="picker">
                                         <input matStartDate formControlName="startDate" placeholder="Fecha de inicio"
-                                            (dateInput)="onDateRangeChange($event)">
+                                            (dateInput)="onDateRangeChange()">
                                         <input matEndDate formControlName="endDate" placeholder="Fecha de fin"
-                                            (dateInput)="onDateRangeChange($event)">
+                                            (dateInput)="onDateRangeChange()">
                                     </mat-date-range-input>
                                     <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                                     <mat-date-range-picker #picker></mat-date-range-picker>
@@ -44,11 +44,10 @@
 
 
                         <!-- TABLA DE RESULTADOS -->
-                        <div *ngIf="propietarioSeleccionado">
-
-                            <div class="admin__content admin__users">
-                                <div class="admin-table" *ngIf="flights.length > 0">
-                                    <table mat-table [dataSource]="flights" matSort>
+                        <div class="admin__content admin__users">
+                            <div class="admin-table"
+                                [hidden]="!selectedPropietarioId || (dataSource.data.length === 0 && !isLoadingResults)">
+                                <table mat-table [dataSource]="dataSource" matSort>
 
                                         <!-- Checkbox Column -->
                                         <ng-container matColumnDef="select">
@@ -144,8 +143,8 @@
                                         <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
                                     </table>
 
-                                    <mat-paginator [length]="resultsLength" [pageSize]="500"
-                                        [pageSizeOptions]="pageSizeOptions">
+                                    <mat-paginator [length]="resultsLength" [pageSize]="50"
+                                        [pageSizeOptions]="pageSizeOptions" showFirstLastButtons>
                                     </mat-paginator>
 
                                     <div class="botonGenerarRemito">
@@ -166,13 +165,18 @@
 
                                 </div>
 
-                                <!-- Mensaje cuando no hay vuelos para el propietario seleccionado -->
-                                <div *ngIf="propietarioSeleccionado && flights.length === 0" class="no-results">
-                                    <p>No se encontraron vuelos para el propietario seleccionado.</p>
-                                </div>
-
                             </div>
-</div>
+
+                            <!-- Mensaje cuando no hay vuelos para el propietario seleccionado -->
+                            <div *ngIf="selectedPropietarioId && dataSource.data.length === 0 && !isLoadingResults" class="no-results">
+                                <p>No se encontraron vuelos para el propietario seleccionado.</p>
+                            </div>
+
+                            <div *ngIf="isLoadingResults" class="loading-results">
+                                <p>Cargando vuelos...</p>
+                            </div>
+
+                        </div>
                         </div>
                 </mat-tab>
                 <mat-tab label="Consultar Remito">

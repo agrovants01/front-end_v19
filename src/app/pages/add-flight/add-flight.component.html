@@ -157,7 +157,14 @@
 
                 <mat-form-field appearance="fill">
                     <mat-label>Agroquímico 1</mat-label>
-                    <input matInput formControlName="agq1Flight" placeholder="Nombre de agroquímico Nº1 ..." required>
+                    <input matInput formControlName="agq1Flight" [matAutocomplete]="autoAgq1" placeholder="Nombre de agroquímico Nº1 ..." required>
+                    <mat-autocomplete #autoAgq1="matAutocomplete" [displayWith]="displayAgroquimico">
+                        <mat-option *ngFor="let item of filteredAgq1 | async" [value]="item">
+                            {{ item.listadoAgroqNom }}
+                        </mat-option>
+                    </mat-autocomplete>
+                    <mat-error *ngIf="flightForm.get('agq1Flight')?.hasError('required')">El agroquímico 1 es requerido</mat-error>
+                    <mat-error *ngIf="flightForm.get('agq1Flight')?.hasError('existsInCatalog')">Este agroquímico ya existe en el catálogo. Por favor selecciónelo de la lista.</mat-error>
                 </mat-form-field>
 
                 <mat-form-field appearance="fill">
@@ -168,7 +175,13 @@
 
                 <mat-form-field appearance="fill">
                     <mat-label>Agroquímico 2</mat-label>
-                    <input matInput formControlName="agq2Flight" placeholder="Nombre de agroquímico Nº2 ...">
+                    <input matInput formControlName="agq2Flight" [matAutocomplete]="autoAgq2" placeholder="Nombre de agroquímico Nº2 ...">
+                    <mat-autocomplete #autoAgq2="matAutocomplete" [displayWith]="displayAgroquimico">
+                        <mat-option *ngFor="let item of filteredAgq2 | async" [value]="item">
+                            {{ item.listadoAgroqNom }}
+                        </mat-option>
+                    </mat-autocomplete>
+                    <mat-error *ngIf="flightForm.get('agq2Flight')?.hasError('existsInCatalog')">Este agroquímico ya existe en el catálogo. Por favor selecciónelo de la lista.</mat-error>
                 </mat-form-field>
 
                 <mat-form-field appearance="fill">
@@ -179,7 +192,13 @@
 
                 <mat-form-field appearance="fill">
                     <mat-label>Agroquímico 3</mat-label>
-                    <input matInput formControlName="agq3Flight" placeholder="Nombre de agroquímico Nº3 ...">
+                    <input matInput formControlName="agq3Flight" [matAutocomplete]="autoAgq3" placeholder="Nombre de agroquímico Nº3 ...">
+                    <mat-autocomplete #autoAgq3="matAutocomplete" [displayWith]="displayAgroquimico">
+                        <mat-option *ngFor="let item of filteredAgq3 | async" [value]="item">
+                            {{ item.listadoAgroqNom }}
+                        </mat-option>
+                    </mat-autocomplete>
+                    <mat-error *ngIf="flightForm.get('agq3Flight')?.hasError('existsInCatalog')">Este agroquímico ya existe en el catálogo. Por favor selecciónelo de la lista.</mat-error>
                 </mat-form-field>
 
                 <mat-form-field appearance="fill">
@@ -190,7 +209,13 @@
 
                 <mat-form-field appearance="fill">
                     <mat-label>Agroquímico 4</mat-label>
-                    <input matInput formControlName="agq4Flight" placeholder="Nombre de agroquímico Nº4 ...">
+                    <input matInput formControlName="agq4Flight" [matAutocomplete]="autoAgq4" placeholder="Nombre de agroquímico Nº4 ...">
+                    <mat-autocomplete #autoAgq4="matAutocomplete" [displayWith]="displayAgroquimico">
+                        <mat-option *ngFor="let item of filteredAgq4 | async" [value]="item">
+                            {{ item.listadoAgroqNom }}
+                        </mat-option>
+                    </mat-autocomplete>
+                    <mat-error *ngIf="flightForm.get('agq4Flight')?.hasError('existsInCatalog')">Este agroquímico ya existe en el catálogo. Por favor selecciónelo de la lista.</mat-error>
                 </mat-form-field>
 
                 <mat-form-field appearance="fill">
@@ -201,7 +226,14 @@
 
                 <mat-form-field appearance="fill">
                     <mat-label>Coadyuvante 1</mat-label>
-                    <input matInput formControlName="coad1Flight" placeholder="Nombre de coadyuvante Nº1 ..." required>
+                    <input matInput formControlName="coad1Flight" [matAutocomplete]="autoCoad1" placeholder="Nombre de coadyuvante Nº1 ..." required>
+                    <mat-autocomplete #autoCoad1="matAutocomplete" [displayWith]="displayCoadyuvante">
+                        <mat-option *ngFor="let item of filteredCoad1 | async" [value]="item">
+                            {{ item.ListadoCoadNom }}
+                        </mat-option>
+                    </mat-autocomplete>
+                    <mat-error *ngIf="flightForm.get('coad1Flight')?.hasError('required')">El coadyuvante 1 es requerido</mat-error>
+                    <mat-error *ngIf="flightForm.get('coad1Flight')?.hasError('existsInCatalog')">Este coadyuvante ya existe en el catálogo. Por favor selecciónelo de la lista.</mat-error>
                 </mat-form-field>
 
                 <mat-form-field appearance="fill">
@@ -212,7 +244,13 @@
 
                 <mat-form-field appearance="fill">
                     <mat-label>Coadyuvante 2</mat-label>
-                    <input matInput formControlName="coad2Flight" placeholder="Nombre de coadyuvante Nº2 ...">
+                    <input matInput formControlName="coad2Flight" [matAutocomplete]="autoCoad2" placeholder="Nombre de coadyuvante Nº2 ...">
+                    <mat-autocomplete #autoCoad2="matAutocomplete" [displayWith]="displayCoadyuvante">
+                        <mat-option *ngFor="let item of filteredCoad2 | async" [value]="item">
+                            {{ item.ListadoCoadNom }}
+                        </mat-option>
+                    </mat-autocomplete>
+                    <mat-error *ngIf="flightForm.get('coad2Flight')?.hasError('existsInCatalog')">Este coadyuvante ya existe en el catálogo. Por favor selecciónelo de la lista.</mat-error>
                 </mat-form-field>
 
                 <mat-form-field appearance="fill">

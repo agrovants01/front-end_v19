@@ -1,6 +1,6 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { forkJoin, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { forkJoin, Subject, merge, of } from 'rxjs';
+import { catchError, debounceTime, distinctUntilChanged, map, startWith, switchMap, takeUntil } from 'rxjs/operators';
 import { OwnerListInput } from 'src/app/pages/owner/owner.interface';
 import { OwnerService } from 'src/app/pages/services/owner.service';
 import { FormGroup, FormControl, FormBuilder } from '@angular/forms';
@@ -15,6 +15,9 @@ import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
 import { MatTabGroup } from '@angular/material/tabs';
 import { MatDateRangePicker } from '@angular/material/datepicker';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
 
 @Component({
     standalone: false,
@@ -22,18 +25,19 @@ import { MatDateRangePicker } from '@angular/material/datepicker';
     templateUrl: './remito-admin.component.html',
     styleUrls: ['./remito-admin.component.css']
 })
-export class RemitoAdminComponent implements OnInit {
+export class RemitoAdminComponent implements OnInit, AfterViewInit {
 
     private unsubscribe$ = new Subject<void>();
     private sweetAlert = Swal;
 
     ownersList: OwnerListInput[] = [];
-    selectedPropietario: string | undefined;
+    selectedPropietarioId: string | null = null;
     remitoForm!: FormGroup;
     resultsLength: number = 0;
-    pageSizeOptions: number[] = [500, 1000];
-    flights: any[] = [];
-    originalFlights: any[] = []; // Para guardar los vuelos originales
+    pageSizeOptions: number[] = [50, 100, 500];
+    dataSource = new MatTableDataSource<any>([]);
+    isLoadingResults = false;
+    dataError = false;
 
     displayedColumns: string[] = [
         'select',
@@ -46,6 +50,9 @@ export class RemitoAdminComponent implements OnInit {
         'numRemito',
     ];
     selection = new SelectionModel<any>(true, []);
+    private refreshTrigger$ = new Subject<void>();
+    @ViewChild(MatSort) sort!: MatSort;
+    @ViewChild(MatPaginator) paginator!: MatPaginator;
 
     constructor(
         private ownerService: OwnerService,
@@ -71,8 +78,6 @@ export class RemitoAdminComponent implements OnInit {
             this.adminService.getUltimoRemito().subscribe((response: any) => {
                 let ultimoRemito = response.ultimoRemito;
 
-                // Asegurarse de que el último remito tenga el prefijo R
-                // Si viene sin R de la base de datos, agregarlo
                 if (ultimoRemito && !ultimoRemito.startsWith('R')) {
                     ultimoRemito = 'R' + ultimoRemito;
                 }
@@ -82,51 +87,68 @@ export class RemitoAdminComponent implements OnInit {
         }
     }
 
-    // FILTRADO POR FECHA CORREGIDO =============================================
-    filterFlightsByDateRange(startDate: any, endDate: any) {
-        if (!startDate || !endDate) {
-            // Si no hay fechas, mostrar todos los vuelos ordenados
-            this.flights = [...this.originalFlights];
-            this.resultsLength = this.flights.length;
-            return;
-        }
+    ngAfterViewInit(): void {
+        this.sort.disableClear = true;
+        this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
 
-        // Crear fechas a medianoche en UTC
-        const start = new Date(startDate);
-        const startUTC = new Date(Date.UTC(start.getFullYear(), start.getMonth(), start.getDate()));
+        merge(
+            this.sort.sortChange,
+            this.paginator.page,
+            this.refreshTrigger$
+        )
+            .pipe(
+                takeUntil(this.unsubscribe$),
+                startWith({}),
+                switchMap(() => {
+                    if (!this.selectedPropietarioId) return of(null);
 
-        const end = new Date(endDate);
-        const endUTC = new Date(Date.UTC(end.getFullYear(), end.getMonth(), end.getDate(), 23, 59, 59, 999));
+                    this.isLoadingResults = true;
 
-        const filteredFlights = this.originalFlights.filter(flight => {
-            // Convertir la fecha del vuelo a UTC para comparación
-            const flightDateStr = flight.dateOriginal || flight.date;
-            const flightDate = new Date(flightDateStr.includes('T') ? flightDateStr : `${flightDateStr}T00:00:00`);
-            const flightUTC = new Date(Date.UTC(
-                flightDate.getFullYear(),
-                flightDate.getMonth(),
-                flightDate.getDate()
-            ));
+                    const startDate = this.remitoForm.get('startDate')?.value;
+                    const endDate = this.remitoForm.get('endDate')?.value;
 
-            return flightUTC >= startUTC && flightUTC <= endUTC;
-        });
+                    let range: { fechaDesde: string; fechaHasta: string } | undefined;
 
-        this.flights = filteredFlights;
-        this.resultsLength = filteredFlights.length;
-    }
+                    if (startDate && endDate) {
+                        const pad = (n: number) => n.toString().padStart(2, '0');
+                        const fmtDate = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+                        range = {
+                            fechaDesde: fmtDate(new Date(startDate)),
+                            fechaHasta: fmtDate(new Date(endDate)),
+                        };
+                    }
 
-    onDateRangeChange(event: any) {
-        const startDate = this.remitoForm.get('startDate')?.value;
-        const endDate = this.remitoForm.get('endDate')?.value;
-
-        // Verifica si ambos campos tienen valores
-        if (startDate && endDate) {
-            this.filterFlightsByDateRange(startDate, endDate);
-        } else {
-            // Si falta alguna fecha, mostrar todos los vuelos
-            this.flights = [...this.originalFlights];
-            this.resultsLength = this.flights.length;
-        }
+                    return this.adminService.getOwnerFlightsRemito(
+                        this.selectedPropietarioId,
+                        this.sort.active || 'fechaVuelo',
+                        this.sort.direction || 'asc',
+                        this.paginator.pageIndex,
+                        this.paginator.pageSize,
+                        range
+                    ).pipe(
+                        catchError(() => {
+                            this.dataError = true;
+                            return of(null);
+                        })
+                    );
+                }),
+                map((data) => {
+                    if (!data) return [];
+                    this.isLoadingResults = false;
+                    this.resultsLength = data.count;
+                    this.dataError = false;
+                    return data.rows.map(flight => ({
+                        ...flight,
+                        date: this.formatDate(flight.date),
+                        numRemito: flight.numRemito && flight.numRemito !== 'Ninguno' && flight.numRemito !== null && flight.numRemito !== ''
+                            ? (flight.numRemito.startsWith('R') ? flight.numRemito : 'R' + flight.numRemito)
+                            : flight.numRemito
+                    }));
+                })
+            )
+            .subscribe(data => {
+                this.dataSource.data = data;
+            });
     }
 
     //=======================================================================
@@ -134,12 +156,12 @@ export class RemitoAdminComponent implements OnInit {
     masterToggle(): void {
         this.isAllSelected() ?
             this.selection.clear() :
-            this.flights.forEach(row => this.selection.select(row));
+            this.dataSource.data.forEach(row => this.selection.select(row));
     }
 
     isAllSelected(): boolean {
         const numSelected = this.selection.selected.length;
-        const numRows = this.flights.length;
+        const numRows = this.dataSource.data.length;
         return numSelected === numRows;
     }
 
@@ -155,63 +177,30 @@ export class RemitoAdminComponent implements OnInit {
             })
     }
 
-    propietarioSeleccionado: boolean = false;
-
     onPropietarioSelected(): void {
         const propietarioControl = this.remitoForm?.get('propietarioFlight');
         if (propietarioControl) {
             const selectedPropietario = propietarioControl.value;
 
             if (selectedPropietario && selectedPropietario.id) {
-                this.propietarioSeleccionado = true;
-
-                const idPropietario = selectedPropietario.id;
-                this.adminService.getOwnerFlightsRemito(idPropietario)
-                    .subscribe((flights: any[]) => {
-                        // ORDENAR LOS VUELOS POR FECHA ASCENDENTE (más antiguo primero)
-                        const sortedFlights = flights.sort((a, b) => {
-                            const dateA = new Date(a.date).getTime();
-                            const dateB = new Date(b.date).getTime();
-                            return dateA - dateB; // Orden ascendente (antiguo primero)
-                        });
-
-                        // FORMATO DE FECHA: convertir de "2025-10-21" a "21/10/2025"
-                        const formattedFlights = sortedFlights.map(flight => {
-                            return {
-                                ...flight,
-                                // Mantener el date original para filtros pero mostrar formateado
-                                date: this.formatDate(flight.date),
-                                // Guardar la fecha original para filtros
-                                dateOriginal: flight.date,
-                                // Agregar prefijo R al número de remito si existe y no lo tiene
-                                numRemito: flight.numRemito && flight.numRemito !== 'Ninguno' && flight.numRemito !== null && flight.numRemito !== ''
-                                    ? (flight.numRemito.startsWith('R') ? flight.numRemito : 'R' + flight.numRemito)
-                                    : flight.numRemito
-                            };
-                        });
-
-                        // Guardar en ambas propiedades
-                        this.originalFlights = [...formattedFlights];
-                        this.flights = [...formattedFlights];
-                        this.resultsLength = flights.length;
-
-                        // Limpiar selección al cambiar propietario
-                        this.selection.clear();
-                        // Limpiar filtros de fecha
-                        this.remitoForm.get('startDate')?.setValue(null);
-                        this.remitoForm.get('endDate')?.setValue(null);
-                    });
+                this.selectedPropietarioId = selectedPropietario.id;
+                this.selection.clear();
+                this.remitoForm.get('startDate')?.setValue(null);
+                this.remitoForm.get('endDate')?.setValue(null);
+                this.refreshTrigger$.next();
             } else {
-                this.propietarioSeleccionado = false;
-                this.flights = [];
-                this.originalFlights = [];
+                this.selectedPropietarioId = null;
+                this.dataSource.data = [];
                 this.resultsLength = 0;
                 this.selection.clear();
             }
         }
     }
 
-    // Agrega este método para formatear la fecha - CORREGIDO
+    onDateRangeChange(): void {
+        this.refreshTrigger$.next();
+    }
+
     private formatDate(dateString: string): string {
         if (!dateString) return '';
 
@@ -253,36 +242,6 @@ export class RemitoAdminComponent implements OnInit {
 
         const continuarProceso = () => {
             // =========================
-            // VERIFICAR Y GENERAR NÚMERO DE REMITO
-            // =========================
-            let textoRemito = localStorage.getItem('numeroRemito');
-
-            // Solo generar nuevo número si no existe uno temporal
-            if (!textoRemito) {
-                const ultimoRemito = localStorage.getItem('ultimoRemito');
-                if (!ultimoRemito) {
-                    console.error('❌ No se encontró el último remito en localStorage');
-                    errorAlert('Error', 'No se encontró el último número de remito registrado');
-                    return;
-                }
-
-                // Obtener la parte izquierda del último remito y mantener el formato con 4 dígitos
-                // Si el último remito ya tiene la R, la eliminamos para el procesamiento
-                const ultimoRemitoSinR = ultimoRemito.startsWith('R') ? ultimoRemito.substring(1) : ultimoRemito;
-                const parteIzquierda = ultimoRemitoSinR.split('-')[0].padStart(4, '0');
-
-                // Incrementar la parte derecha del número de remito
-                const numeroRemito = parseInt(ultimoRemitoSinR.split('-')[1]) + 1;
-                const parteDerecha = numeroRemito.toString().padStart(4, '0');
-
-                // Unir ambas partes para obtener el nuevo número de remito con prefijo R (ej: R0025-0047)
-                textoRemito = `R${parteIzquierda}-${parteDerecha}`;
-                localStorage.setItem('numeroRemito', textoRemito);
-            } else {
-                console.log('ℹ️ Usando número de remito temporal existente:', textoRemito);
-            }
-
-            // =========================
             // CALCULAR TOTALES
             // =========================
             let totalHectareas = 0;
@@ -301,13 +260,10 @@ export class RemitoAdminComponent implements OnInit {
             const propietario = this.remitoForm.get('propietarioFlight')?.value;
             if (!propietario || !propietario.id) {
                 errorAlert('Error', 'No se encontró un propietario válido para el remito');
-                // Limpiar el número temporal si hay error
-                localStorage.removeItem('numeroRemito');
                 return;
             }
 
             const nuevoRemito = {
-                numRemito: textoRemito,
                 fechaRemito: new Date(),
                 fk_Usuario: propietario.id,
                 creadorId: localStorage.getItem('idUsuarioLogueado'),
@@ -317,9 +273,6 @@ export class RemitoAdminComponent implements OnInit {
                 vuelosIds: this.selection.selected.map(vuelo => vuelo.vueloId)
             };
 
-            // 🧠 DEPURACIÓN FRONTEND
-            console.log('📦 Objeto enviado al backend (nuevoRemito):', nuevoRemito);
-
             // =========================
             // GUARDAR REMITO EN BACKEND
             // =========================
@@ -327,23 +280,26 @@ export class RemitoAdminComponent implements OnInit {
                 next: (response) => {
                     console.log('✅ Remito guardado en base de datos:', response);
 
-                    // ✅ ACTUALIZAR localStorage con el nuevo remito recién creado
-                    localStorage.setItem('ultimoRemito', nuevoRemito.numRemito);
+                    const numeroRemitoGenerado = response.remito.numRemito;
+
+                    // ✅ ACTUALIZAR localStorage con el número devuelto por el backend
+                    localStorage.setItem('numeroRemito', numeroRemitoGenerado);
+                    localStorage.setItem('ultimoRemito', numeroRemitoGenerado);
 
                     // =========================
                     // ACTUALIZAR LOS VUELOS CON EL NUEVO NÚMERO DE REMITO
                     // =========================
                     const peticiones = this.selection.selected.map(vuelo => {
-                        return this.adminService.actualizaNumRemito(vuelo.vueloId, textoRemito!);
+                        return this.adminService.actualizaNumRemito(vuelo.vueloId, numeroRemitoGenerado);
                     });
 
                     forkJoin(peticiones).subscribe({
                         next: () => {
                             console.log('✈️ Vuelos actualizados con número de remito');
-                            this.onPropietarioSelected(); // refresca la lista
 
-                            // GENERAR EL PDF PRIMERO Y LUEGO LIMPIAR
-                            this.generateRemito(); // genera el PDF
+                            // GENERAR EL PDF Y LUEGO REFRESCAR
+                            this.generateRemito();
+                            this.onPropietarioSelected();
 
                             // ✅ LIMPIAR el número de remito temporal DESPUÉS de generar el PDF
                             localStorage.removeItem('numeroRemito');
@@ -351,10 +307,6 @@ export class RemitoAdminComponent implements OnInit {
                         error: (error) => {
                             console.error('❌ Error al actualizar vuelos:', error);
                             errorAlert('Error', 'No se pudieron actualizar los vuelos con el número de remito');
-
-                            // Aunque falló la actualización de vuelos, el remito ya se guardó
-                            // pero NO limpiamos numeroRemito para permitir reintentos o diagnóstico
-                            console.warn('⚠️ numeroRemito se mantiene para diagnóstico:', textoRemito);
                         }
                     });
                 },
@@ -362,7 +314,6 @@ export class RemitoAdminComponent implements OnInit {
                     console.error('❌ Error al guardar el remito:', error);
                     errorAlert('Error', 'No se pudo guardar el remito en la base de datos');
 
-                    // Limpiar el número temporal si falló el guardado
                     localStorage.removeItem('numeroRemito');
                 }
             });
