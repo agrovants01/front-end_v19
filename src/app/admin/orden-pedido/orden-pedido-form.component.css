@@ -1,25 +1,79 @@
 .orden-form-container {
     max-height: 90vh;
     overflow-y: auto;
+    overflow-x: hidden;
     padding: 0 10px;
+    box-sizing: border-box;
+}
+
+.orden-form-container::-webkit-scrollbar {
+    width: 1.2rem;
+}
+
+.orden-form-container::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.65);
+    border-radius: 0.5rem;
+}
+
+.orden-form-container::-webkit-scrollbar-track {
+    background: transparent;
 }
 
 .form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 12px;
+    gap: 8px;
+    overflow-x: hidden;
 }
 
 .section-title {
     grid-column: 1 / -1;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     font-weight: bold;
-    font-size: 1.1rem;
-    margin-top: 8px;
-    padding-top: 8px;
+    font-size: 1.35rem;
+    margin-top: 2px;
+    padding-top: 2px;
     border-top: 1px solid #ccc;
+}
+
+.add-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: none;
+    background-color: #3f51b5;
+    color: #fff;
+    font-size: 1.3rem;
+    font-weight: bold;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+
+.add-btn:hover:not(:disabled) {
+    background-color: #303f9f;
+}
+
+.add-btn:disabled {
+    background-color: #9fa8da;
+    cursor: default;
+}
+
+.add-btn--accent {
+    background-color: #e91e63;
+}
+
+.add-btn--accent:hover:not(:disabled) {
+    background-color: #c2185b;
+}
+
+.add-btn--accent:disabled {
+    background-color: #f48fb1;
 }
 
 .agroq-row {
@@ -27,14 +81,20 @@
     gap: 8px;
     align-items: flex-start;
     width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
 }
 
 .agroq-nombre { flex: 3; }
+.agroq-nombre .mat-form-field-wrapper {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+}
 .agroq-dosis { flex: 1; }
 
-.error-msg {
+.error-msg-inline {
     color: #f43131;
-    font-size: 0.85rem;
-    margin-top: -8px;
-    grid-column: 1 / -1;
+    font-size: 1.3rem;
+    font-weight: bold;
+    margin-top: 2px;
 }

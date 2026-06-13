@@ -14,7 +14,9 @@ export interface OrdenPedido {
     opAgroq4?: string;
     opDosisAgroq4?: number;
     opCoad1?: string;
+    opDosisCoad1?: number;
     opCoad2?: string;
+    opDosisCoad2?: number;
     opFormaPago: string;
     opPrecioHa: number;
     opPrecioTotal: number;

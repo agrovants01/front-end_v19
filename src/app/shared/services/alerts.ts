@@ -41,7 +41,7 @@ export const successAlert = (title: string) => {
         allowEscapeKey: false,
         allowEnterKey: false,
         width: 'auto',
-        timer: 3000,
+        timer: 2000,
     });
 }
 

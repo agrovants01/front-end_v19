@@ -34,6 +34,8 @@ import { AdjuvantFormComponent } from './components/adjuvant-form/adjuvant-form.
 
 import { OrdenPedidoComponent } from './orden-pedido/orden-pedido.component';
 import { OrdenPedidoFormComponent } from './orden-pedido/orden-pedido-form.component';
+import { NumberSeparatorPipe } from './orden-pedido/number-separator.pipe';
+import { FormatNumberDirective } from './orden-pedido/format-number.directive';
 
 
 @NgModule({
@@ -58,7 +60,9 @@ import { OrdenPedidoFormComponent } from './orden-pedido/orden-pedido-form.compo
         AdjuvantsComponent,
         AdjuvantFormComponent,
         OrdenPedidoComponent,
-        OrdenPedidoFormComponent
+        OrdenPedidoFormComponent,
+        NumberSeparatorPipe,
+        FormatNumberDirective
     ],
     imports: [
         CommonModule,
@@ -72,7 +76,8 @@ import { OrdenPedidoFormComponent } from './orden-pedido/orden-pedido-form.compo
         MatInputModule,
         MatTabsModule,
         MatSelectModule,
-        MatTooltipModule
+        MatTooltipModule,
+        MatMenuModule
     ],
     exports: [
         SidebarAdminComponent, // <-- AGREGAR ESTO

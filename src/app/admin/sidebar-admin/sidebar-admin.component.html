@@ -106,6 +106,27 @@
         Gestionar vuelos
     </a>
 
+    <a *ngIf="authService.auth.perfilUsuario === 'ADMIN' || authService.auth.perfilUsuario === 'PILOTO'"
+        mat-list-item [routerLink]="['/admin/orden-pedido']" routerLinkActive="list-item-active">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            class="icon icon-tabler icons-tabler-outline icon-tabler-calendar-week">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+            <path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12" />
+            <path d="M16 3v4" />
+            <path d="M8 3v4" />
+            <path d="M4 11h16" />
+            <path d="M7 14h.013" />
+            <path d="M10.01 14h.005" />
+            <path d="M13.01 14h.005" />
+            <path d="M16.015 14h.005" />
+            <path d="M13.015 17h.005" />
+            <path d="M7.01 17h.005" />
+            <path d="M10.01 17h.005" />
+        </svg>
+        Órdenes de Pedido
+    </a>
+
     <!-- *ngIf="authService.auth.perfilUsuario === 'ADMINISTRATIVO'" -->
     <a *ngIf="authService.auth.perfilUsuario === 'ADMIN' || authService.auth.perfilUsuario === 'ADMINISTRATIVO'"
         mat-list-item [routerLink]="['/admin/remito-admin']" routerLinkActive="list-item-active">
@@ -169,20 +190,6 @@
             <path d="M4 12v6a8 3 0 0 0 16 0v-6" />
         </svg>
         Copias de Seguridad
-    </a>
-
-    <a *ngIf="authService.auth.perfilUsuario === 'ADMIN' || authService.auth.perfilUsuario === 'PILOTO'"
-        mat-list-item [routerLink]="['/admin/orden-pedido']" routerLinkActive="list-item-active">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M14 3v4a1 1 0 0 0 1 1h4" />
-            <path d="M5 12v-7a2 2 0 0 1 2 -2h7l5 5v4" />
-            <path d="M5 18h1.5a1.5 1.5 0 0 0 0 -3h-1.5v6" />
-            <path d="M17 18h2" />
-            <path d="M20 15h-3v6" />
-            <path d="M11 15v6h1a2 2 0 0 0 2 -2v-2a2 2 0 0 0 -2 -2h-1z" />
-        </svg>
-        Órdenes de Pedido
     </a>
 
 </mat-nav-list>

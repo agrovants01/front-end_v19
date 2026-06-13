@@ -24,7 +24,7 @@ export class OrdenPedidoComponent implements AfterViewInit, OnDestroy {
 
     displayedColumns: string[] = [
         'opFecha', 'pilotoAlias', 'propietarioAlias', 'opCultivo',
-        'opSuperficie', 'opPrecioHa', 'opPrecioTotal', 'opFormaPago', 'opEstado', 'actions'
+        'opSuperficie', 'opPrecioHa', 'opPrecioTotal', 'opFormaPago', 'actions'
     ];
 
     data = new MatTableDataSource<OrdenPedido>();

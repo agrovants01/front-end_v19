@@ -52,17 +52,19 @@
 
             <mat-form-field appearance="fill">
                 <mat-label>Precio por Ha</mat-label>
-                <input matInput type="number" step="0.01" formControlName="opPrecioHa">
+                <span matPrefix>$&nbsp;</span>
+                <input matInput [value]="(form.get('opPrecioHa')?.value | numberSeparator)" readonly>
             </mat-form-field>
 
             <mat-form-field appearance="fill">
-                <mat-label>Precio Total</mat-label>
-                <input matInput formControlName="opPrecioTotal" readonly>
+                <mat-label>Precio Total (+10.5% IVA)</mat-label>
+                <span matPrefix>$&nbsp;</span>
+                <input matInput [value]="(form.get('opPrecioTotal')?.value | numberSeparator)" readonly>
             </mat-form-field>
 
             <div class="section-title">
                 Agroquímicos
-                <button type="button" mat-mini-fab color="primary" (click)="addAgroquimico()"
+                <button type="button" class="add-btn" color="primary" (click)="addAgroquimico()"
                     [disabled]="agroquimicosArray.length >= 4" matTooltip="Agregar agroquímico">
                     +
                 </button>
@@ -70,17 +72,21 @@
 
             <div formArrayName="agroquimicos">
                 <div *ngFor="let agq of agroquimicosArray.controls; let i = index" [formGroupName]="i" class="agroq-row">
-                    <mat-form-field appearance="fill" class="agroq-nombre">
-                        <mat-label>Agroquímico {{ i + 1 }}</mat-label>
-                        <input type="text" matInput formControlName="nombre"
-                            [matAutocomplete]="autoAgq" (input)="filterAgroquimicos(agq.get('nombre')?.value, i)">
-                        <mat-autocomplete #autoAgq="matAutocomplete"
-                            (optionSelected)="onAgroquimicoSelected($event.option.value, i)">
-                            <mat-option *ngFor="let a of filteredAgroquimicos" [value]="a">
-                                {{ a.listadoAgroqNom }}
-                            </mat-option>
-                        </mat-autocomplete>
-                    </mat-form-field>
+                    <div class="agroq-nombre">
+                        <mat-form-field appearance="fill">
+                            <mat-label>Agroquímico {{ i + 1 }}</mat-label>
+                            <input type="text" matInput formControlName="nombre"
+                                [matAutocomplete]="autoAgq" (input)="filterAgroquimicos(agq.get('nombre')?.value, i)"
+                                (focus)="filteredAgroquimicos = []">
+                            <mat-autocomplete #autoAgq="matAutocomplete"
+                                (optionSelected)="onAgroquimicoSelected($event.option.value, i)">
+                                <mat-option *ngFor="let a of filteredAgroquimicos" [value]="a">
+                                    {{ a.listadoAgroqNom }}
+                                </mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                        <div *ngIf="agroqError" class="error-msg-inline">{{ agroqError }}</div>
+                    </div>
                     <mat-form-field appearance="fill" class="agroq-dosis">
                         <mat-label>Dosis</mat-label>
                         <input matInput type="number" step="0.01" formControlName="dosis">
@@ -90,11 +96,10 @@
                     </button>
                 </div>
             </div>
-            <div *ngIf="agroqError" class="error-msg">{{ agroqError }}</div>
 
             <div class="section-title">
                 Coadyuvantes
-                <button type="button" mat-mini-fab color="accent" (click)="addCoadyuvante()"
+                <button type="button" class="add-btn add-btn--accent" (click)="addCoadyuvante()"
                     [disabled]="coadyuvantesArray.length >= 4" matTooltip="Agregar coadyuvante">
                     +
                 </button>
@@ -102,16 +107,24 @@
 
             <div formArrayName="coadyuvantes">
                 <div *ngFor="let coad of coadyuvantesArray.controls; let i = index" [formGroupName]="i" class="agroq-row">
-                    <mat-form-field appearance="fill" class="agroq-nombre">
-                        <mat-label>Coadyuvante {{ i + 1 }}</mat-label>
-                        <input type="text" matInput formControlName="nombre"
-                            [matAutocomplete]="autoCoad" (input)="filterCoadyuvantes(coad.get('nombre')?.value)">
-                        <mat-autocomplete #autoCoad="matAutocomplete"
-                            (optionSelected)="onCoadyuvanteSelected($event.option.value, i)">
-                            <mat-option *ngFor="let c of filteredCoadyuvantes" [value]="c">
-                                {{ c.ListadoCoadNom }}
-                            </mat-option>
-                        </mat-autocomplete>
+                    <div class="agroq-nombre">
+                        <mat-form-field appearance="fill">
+                            <mat-label>Coadyuvante {{ i + 1 }}</mat-label>
+                            <input type="text" matInput formControlName="nombre"
+                                [matAutocomplete]="autoCoad" (input)="filterCoadyuvantes(coad.get('nombre')?.value, i)"
+                                (focus)="filteredCoadyuvantes = []">
+                            <mat-autocomplete #autoCoad="matAutocomplete"
+                                (optionSelected)="onCoadyuvanteSelected($event.option.value, i)">
+                                <mat-option *ngFor="let c of filteredCoadyuvantes" [value]="c">
+                                    {{ c.ListadoCoadNom }}
+                                </mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                        <div *ngIf="coadError" class="error-msg-inline">{{ coadError }}</div>
+                    </div>
+                    <mat-form-field appearance="fill" class="agroq-dosis">
+                        <mat-label>Dosis</mat-label>
+                        <input matInput type="number" step="0.01" formControlName="dosis">
                     </mat-form-field>
                     <button type="button" mat-icon-button color="warn" (click)="removeCoadyuvante(i)">
                         <mat-icon>close</mat-icon>
@@ -121,8 +134,8 @@
 
         </div>
 
-        <div mat-dialog-actions align="end">
-            <button type="button" mat-button (click)="onCancel()">Cancelar</button>
+        <div mat-dialog-actions class="action-buttons">
+            <button type="button" mat-raised-button color="warn" (click)="onCancel()">Cancelar</button>
             <button type="submit" mat-raised-button color="primary" [disabled]="form.invalid">
                 {{ isEdit ? 'Actualizar' : 'Crear' }}
             </button>
