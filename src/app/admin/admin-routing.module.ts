@@ -16,6 +16,7 @@ import { AgrochemicalsComponent } from './agrochemicals/agrochemicals.component'
 import { AdjuvantsComponent } from './adjuvants/adjuvants.component';
 import { OrdenPedidoComponent } from './orden-pedido/orden-pedido.component';
 import { BackupLoginComponent } from './backup-login/backup-login.component';
+import { BackupGuard } from './guards/backup.guard';
 
 const routes: Routes = [
     {
@@ -67,16 +68,16 @@ const routes: Routes = [
         ]
     },
     {
-        path: 'backup-login',
-        component: BackupLoginComponent,
-        canActivate: [AuthGuard],
+        path: 'backups',
+        component: BackupAdminComponent,
+        canActivate: [AuthGuard, BackupGuard],
         children: [
             { path: '', component: SidebarAdminComponent },
         ]
     },
     {
-        path: 'backups',
-        component: BackupAdminComponent,
+        path: 'backup-login',
+        component: BackupLoginComponent,
         canActivate: [AuthGuard],
         children: [
             { path: '', component: SidebarAdminComponent },
