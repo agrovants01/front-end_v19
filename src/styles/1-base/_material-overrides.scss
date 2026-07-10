@@ -38,9 +38,10 @@ mat-list {
         .mat-list-item-content,
         .mat-list-option-content {
             padding: 0 !important;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            gap: 8px !important;
         }
 
         [mat-line],
@@ -336,6 +337,38 @@ mat-list {
 .mat-mdc-dialog-container,
 .mat-dialog-container {
     font-family: 'Nunito', sans-serif !important;
+    font-size: 16px !important;
+}
+
+.mat-mdc-dialog-title,
+.mat-dialog-title {
+    font-family: 'Nunito', sans-serif !important;
+    font-size: 20px !important;
+}
+
+.mat-mdc-dialog-content,
+.mat-dialog-content {
+    font-family: 'Nunito', sans-serif !important;
+    font-size: 14px !important;
+}
+
+.mat-mdc-dialog-actions,
+.mat-dialog-actions {
+    justify-content: space-between !important;
+}
+
+.mat-mdc-dialog-actions .mat-mdc-raised-button,
+.mat-dialog-actions .mat-raised-button {
+    font-family: 'Nunito', sans-serif !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+}
+
+.mat-mdc-dialog-actions .mat-mdc-raised-button .mdc-button__label,
+.mat-dialog-actions .mat-raised-button .mat-button-wrapper {
+    font-family: 'Nunito', sans-serif !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
 }
 
 .mat-mdc-menu-panel,

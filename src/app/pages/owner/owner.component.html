@@ -24,9 +24,11 @@
         <ng-container *ngIf="user">
             <h3 *ngIf="user.nombreUsuario && user.apellidoUsuario">
                 {{ user.nombreUsuario }} {{ user.apellidoUsuario }}
+                <span *ngIf="!user.activo" class="badge-desactivado">(Desactivado)</span>
             </h3>
             <h3 *ngIf="!(user.nombreUsuario && user.apellidoUsuario)">
                 {{ user.aliasUsuario }}
+                <span *ngIf="!user.activo" class="badge-desactivado">(Desactivado)</span>
             </h3>
         </ng-container>
 
@@ -103,14 +105,12 @@
             </mat-icon>
         </mat-form-field>
     </div>
-    <br>
     <!-- FILTRO DE BÚSQUEDA-->
     <mat-form-field appearance="fill">
         <mat-label>Buscar por cuadro de vuelo</mat-label>
         <input matInput [formControl]="searchUsers" placeholder="Ingrese cuadro de vuelo...">
         <mat-icon matSuffix>search</mat-icon>
     </mat-form-field>
-    <br>
 
 </div>
 <!-- END Header -->
@@ -129,56 +129,53 @@
                 [class.flight-selected]="selectedFlight?.vueloId === data.vueloId"
                 [class.flight-editing]="isEditingSingleFlight && editingFlightId === data.vueloId">
 
-                <!-- imagen mini del vuelo -->
-                <div class="list__img">
-                    <svg [ngStyle]="{
-                            fill: data.colorVuelo,
-                            stroke: data.colorVuelo
-                        }" width="30" height="30">
-                        <path [attr.d]="data.path" fill-opacity="0.25" stroke-width="2px" stroke-opacity="0.75" />
-                    </svg>
-                </div>
-
-                <!-- info del vuelo -->
-                <div class="list__text">
-                    <div mat-line><strong>Vuelo</strong></div>
-                    <div mat-line>{{ data.date | date : "dd/MM/yyyy" }}</div>
-                    <div mat-line>
-                        {{ data.cuadroVuelo }}
-                    </div>
-                    <div mat-line>{{ data.cultivoVuelo }} - {{ data.superficieVuelo | number }} ha</div>
-                </div>
-
-                <!-- Iconos alineados a la derecha -->
-                <div class="flight-actions">
-                    <!-- Botón de edición individual del polígono -->
-                    <button *ngIf="admin || piloto" mat-icon-button
-                        (click)="$event.stopPropagation(); editSingleFlight(data)"
-                        [attr.aria-label]="'Editar polígono de vuelo'" matTooltip="Editar polígono de este vuelo"
-                        [disabled]="isEditingPolygon && !isEditingSingleFlight" class="edit-flight-btn">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            class="icon icon-tabler icons-tabler-outline icon-tabler-edit">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                            <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" />
-                            <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" />
-                            <path d="M16 5l3 3" />
+                <div class="flight-row">
+                    <!-- Col 1: imagen mini del vuelo -->
+                    <div class="list__img">
+                        <svg [ngStyle]="{
+                                fill: data.colorVuelo,
+                                stroke: data.colorVuelo
+                            }" width="30" height="30">
+                            <path [attr.d]="data.path" fill-opacity="0.25" stroke-width="2px" stroke-opacity="0.75" />
                         </svg>
-                    </button>
+                    </div>
 
-                    <!-- icono de ojo para mostrar/ocultar vuelo -->
-                    <button mat-icon-button (click)="$event.stopPropagation(); hideShowLayer($event, data)"
-                        [attr.aria-label]="'Ocultar Elemento'" matTooltip="Ocultar o mostrar este vuelo" [attr.aria-pressed]="!data.visibility"
-                        [disabled]="isEditingPolygon">
-                        <mat-icon style="font-weight: 400">
-                            {{ data.visibility ? "visibility" : "visibility_off" }}</mat-icon>
-                    </button>
+                    <!-- Col 2: info del vuelo -->
+                    <div class="list__text">
+                        <div mat-line><strong>Vuelo</strong></div>
+                        <div mat-line>{{ data.date | date : "dd/MM/yyyy" }}</div>
+                        <div mat-line>{{ data.cuadroVuelo }}</div>
+                        <div mat-line>{{ data.cultivoVuelo }} - {{ data.superficieVuelo | number }} ha</div>
+                    </div>
 
-                    <!-- icono de impresora -->
-                    <button mat-icon-button (click)="$event.stopPropagation(); imprimirVuelo(data)" matTooltip="Imprimir este vuelo"
-                        [disabled]="selectedFlight && selectedFlight.vueloId !== data.vueloId || isEditingPolygon">
-                        <mat-icon style="font-weight: 400">print</mat-icon>
-                    </button>
+                    <!-- Col 3: iconos de acciones -->
+                    <div class="flight-actions">
+                        <button *ngIf="admin || piloto" mat-icon-button
+                            (click)="$event.stopPropagation(); editSingleFlight(data)"
+                            [attr.aria-label]="'Editar polígono de vuelo'" matTooltip="Editar polígono de este vuelo"
+                            [disabled]="isEditingPolygon && !isEditingSingleFlight" class="edit-flight-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                class="icon icon-tabler icons-tabler-outline icon-tabler-edit">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" />
+                                <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" />
+                                <path d="M16 5l3 3" />
+                            </svg>
+                        </button>
+
+                        <button mat-icon-button (click)="$event.stopPropagation(); hideShowLayer($event, data)"
+                            [attr.aria-label]="'Ocultar Elemento'" [attr.aria-pressed]="!data.visibility"
+                            [disabled]="isEditingPolygon">
+                            <mat-icon style="font-weight: 400">
+                                {{ data.visibility ? "visibility" : "visibility_off" }}</mat-icon>
+                        </button>
+
+                        <button mat-icon-button (click)="$event.stopPropagation(); imprimirVuelo(data)"
+                            [disabled]="selectedFlight && selectedFlight.vueloId !== data.vueloId || isEditingPolygon">
+                            <mat-icon style="font-weight: 400">print</mat-icon>
+                        </button>
+                    </div>
                 </div>
 
             </mat-list-option>

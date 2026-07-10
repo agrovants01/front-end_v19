@@ -145,8 +145,9 @@
                         width: 3rem;
                         height: 3rem;
                         border-radius: 0.5rem;
-                    }
-                }
+    }
+}
+
 
                 .list__text {
                     flex: 1;
@@ -228,6 +229,11 @@
     }
 }
 
+.content__header > .mat-mdc-form-field:last-of-type,
+.content__header > .mat-form-field:last-of-type {
+    margin-bottom: 1rem;
+}
+
 .sort__option {
     display: flex;
     justify-content: space-between;
@@ -272,29 +278,48 @@
     }
 }
 
-.content__header .header__elements .mat-mdc-stroked-button.mdc-button--outlined,
-.content__header .header__elements .mat-mdc-stroked-button,
+.content__header .header__elements {
+    gap: 0.8rem;
+}
+
+.content__header .header__elements .mat-mdc-outlined-button,
 .content__header .header__elements .mat-stroked-button {
     border: 1px solid $mainColor !important;
-    padding: 0 15px !important;
-    line-height: 34px !important;
+    --mdc-outlined-button-container-height: 36px !important;
+    --mdc-outlined-button-label-text-size: 13px !important;
+    --mat-outlined-button-horizontal-padding: 14px !important;
+    --mat-outlined-button-touch-target-display: none !important;
+    padding: 0 14px !important;
+    line-height: 36px !important;
     color: $mainColor !important;
     font-size: 13px !important;
     border-color: $mainColor !important;
+    background-color: rgba($mainColor, 0.2) !important;
+    min-height: 0 !important;
+    min-width: 0 !important;
+    height: 36px !important;
+}
+
+.content__header .header__elements .mat-mdc-outlined-button.disabled,
+.content__header .header__elements .mat-stroked-button.disabled {
+    border-color: $darkGrey !important;
+    color: $darkGrey !important;
     background-color: transparent !important;
 }
 
-.content__header .header__elements .mat-mdc-stroked-button.mdc-button--outlined .mdc-button__label,
-.content__header .header__elements .mat-mdc-stroked-button .mdc-button__label,
+.content__header .header__elements .mat-mdc-outlined-button .mdc-button__label,
+.content__header .header__elements .mat-mdc-outlined-button .mdc-button__label,
 .content__header .header__elements .mat-stroked-button .mat-button-wrapper,
-.content__header .header__elements .mat-mdc-stroked-button span,
-.content__header .header__elements button.mat-mdc-stroked-button span {
+.content__header .header__elements .mat-mdc-outlined-button span,
+.content__header .header__elements button.mat-mdc-outlined-button span {
     color: $mainColor !important;
+    font-size: 13px !important;
+    line-height: 36px !important;
 }
 
 .content__header .header__elements .mat-mdc-outlined-button .mdc-button__outline,
-.content__header .header__elements .mat-mdc-stroked-button .mdc-button__outline,
-.content__header .header__elements .mat-mdc-stroked-button::before {
+.content__header .header__elements .mat-mdc-outlined-button .mdc-button__outline,
+.content__header .header__elements .mat-mdc-outlined-button::before {
     border-color: $mainColor !important;
     border: 1px solid $mainColor !important;
 }
@@ -309,31 +334,50 @@
     border: 1px solid $mainColor !important;
 }
 
-button#flights.mat-mdc-stroked-button,
-button#analysis.mat-mdc-stroked-button {
+button#flights.mat-mdc-outlined-button,
+button#analysis.mat-mdc-outlined-button,
+button#ordenes.mat-mdc-outlined-button {
     border: 1px solid $mainColor !important;
     border-color: $mainColor !important;
     color: $mainColor !important;
-    background: transparent !important;
-    padding: 0 15px !important;
-    line-height: 34px !important;
+    background-color: rgba($mainColor, 0.2) !important;
+    --mdc-outlined-button-container-height: 36px !important;
+    --mdc-outlined-button-label-text-size: 13px !important;
+    --mat-outlined-button-horizontal-padding: 14px !important;
+    --mat-outlined-button-touch-target-display: none !important;
+    padding: 0 14px !important;
+    line-height: 36px !important;
     font-family: 'Nunito', sans-serif !important;
     font-weight: 700 !important;
-    font-size: 12px !important;
+    font-size: 13px !important;
+    min-height: 0 !important;
+    min-width: 0 !important;
+    height: 36px !important;
 }
 
-button#flights.mat-mdc-stroked-button .mdc-button__label,
-button#analysis.mat-mdc-stroked-button .mdc-button__label,
-button#flights.mat-mdc-stroked-button span,
-button#analysis.mat-mdc-stroked-button span {
+button#flights.mat-mdc-outlined-button.disabled,
+button#analysis.mat-mdc-outlined-button.disabled,
+button#ordenes.mat-mdc-outlined-button.disabled {
+    border-color: $darkGrey !important;
+    color: $darkGrey !important;
+    background-color: transparent !important;
+}
+
+button#flights.mat-mdc-outlined-button .mdc-button__label,
+button#analysis.mat-mdc-outlined-button .mdc-button__label,
+button#ordenes.mat-mdc-outlined-button .mdc-button__label,
+button#flights.mat-mdc-outlined-button span,
+button#analysis.mat-mdc-outlined-button span,
+button#ordenes.mat-mdc-outlined-button span {
     color: $mainColor !important;
     font-family: 'Nunito', sans-serif !important;
     font-weight: 700 !important;
-    font-size: 12px !important;
+    font-size: 13px !important;
 }
 
-button#flights.mat-mdc-stroked-button .mdc-button__outline,
-button#analysis.mat-mdc-stroked-button .mdc-button__outline {
+button#flights.mat-mdc-outlined-button .mdc-button__outline,
+button#analysis.mat-mdc-outlined-button .mdc-button__outline,
+button#ordenes.mat-mdc-outlined-button .mdc-button__outline {
     border-color: $mainColor !important;
 }
 
@@ -344,7 +388,7 @@ button#analysis.mat-mdc-stroked-button .mdc-button__outline {
     transition: max-height 300ms;
     gap: 1.5rem;
     flex: 1;
-    //padding-bottom: 0.5rem;
+    margin-bottom: 1.2rem;
 
     .mat-form-field,
     .mat-mdc-form-field {
@@ -375,6 +419,7 @@ button#analysis.mat-mdc-stroked-button .mdc-button__outline {
     gap: 1.5rem;
     flex: 1;
     padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
 
     .mat-form-field,
     .mat-mdc-form-field {
@@ -420,6 +465,7 @@ button#analysis.mat-mdc-stroked-button .mdc-button__outline {
     display: flex;
     justify-content: flex-start;
     align-items: center;
+    padding-right: 2rem;
 
     .sidebar__toggle {
         min-width: 3rem;
@@ -434,79 +480,38 @@ button#analysis.mat-mdc-stroked-button .mdc-button__outline {
     .footer__buttons {
         flex: 1;
         display: flex;
-        gap: 1rem;
-        justify-content: center;
+        gap: 1.5rem;
         align-items: center;
-        width: 100%;
 
         button.mat-flat-button {
-            flex: 0 0 auto !important;
-            height: 3rem !important;
-            font-family: 'Nunito', sans-serif !important;
+            flex: 1 !important;
+            --mdc-filled-button-container-height: 28px !important;
+            height: 28px !important;
+            font-size: 11px !important;
             font-weight: 700 !important;
-            font-size: 13px !important;
-            line-height: 36px !important;
-            color: rgb(255, 255, 255) !important;
-            min-height: unset !important;
-            padding: 0 12px !important;
-            white-space: nowrap !important;
+            padding: 0 4px !important;
+            min-height: 0 !important;
+            min-width: 0 !important;
+            line-height: 28px !important;
 
-            .mat-button-wrapper,
-            .mat-button-wrapper *,
-            .mdc-button__label,
-            span,
-            div {
-                font-family: 'Nunito', sans-serif !important;
+            .mdc-button__label {
+                font-size: 11px !important;
                 font-weight: 700 !important;
-                font-size: 13px !important;
-                line-height: 36px !important;
-                color: rgb(255, 255, 255) !important;
-                white-space: nowrap !important;
-            }
-
-            .mat-button-wrapper div {
-                display: flex !important;
-                align-items: center !important;
-                justify-content: center !important;
+                line-height: 28px !important;
             }
         }
     }
     
     .btn-secondary {
         background-color: #f4b631 !important;
-        white-space: nowrap !important;
-        
-        .mat-button-wrapper,
-        .mat-button-wrapper *,
-        .mdc-button__label,
-        span,
-        div {
-            color: black !important;
-            font-weight: 700 !important;
-            font-size: 13px !important;
-            line-height: 36px !important;
-            white-space: nowrap !important;
+        color: white !important;
+
+        .mdc-button__label {
+            color: white !important;
         }
         
         &:hover {
             background-color: #e5a52c !important;
-        }
-    }
-    
-    button[mat-flat-button],
-    button.mat-mdc-unelevated-button,
-    button.mat-mdc-button {
-        font-weight: 700 !important;
-        font-size: 13px !important;
-        line-height: 36px !important;
-        white-space: nowrap !important;
-        
-        .mat-button-wrapper,
-        .mdc-button__label {
-            font-weight: 700 !important;
-            font-size: 13px !important;
-            line-height: 36px !important;
-            white-space: nowrap !important;
         }
     }
 

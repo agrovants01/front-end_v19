@@ -2,6 +2,20 @@
 /* ESTILOS PARA LISTA DE VUELOS */
 /* =========================================== */
 
+.list__element .list__img {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+}
+
+.list__element .list__text {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+}
+
 .list__text div:nth-child(3) {
     white-space: nowrap;
     overflow: hidden;
@@ -17,7 +31,41 @@
 }
 
 /* =========================================== */
-/* ICONOS DE VUELO ALINEADOS A LA DERECHA */
+/* FILA HORIZONTAL: icono | texto | acciones */
+/* =========================================== */
+
+.flight-row {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    width: 100% !important;
+}
+
+.flight-row .list__img {
+    flex-shrink: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 40px !important;
+    margin-right: 10px !important;
+}
+
+.flight-row .list__text {
+    flex: 1 !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+}
+
+.flight-row .flight-actions {
+    display: flex !important;
+    flex-shrink: 0 !important;
+    align-items: center !important;
+    gap: 2px !important;
+    margin-left: auto !important;
+}
+
+/* =========================================== */
+/* ICONOS DE ACCIONES */
 /* =========================================== */
 
 .flight-actions {
@@ -25,6 +73,7 @@
     align-items: center;
     gap: 4px;
     margin-left: auto;
+    flex-shrink: 0;
 }
 
 .flight-actions button {
@@ -36,9 +85,32 @@
     color: #1976d2;
 }
 
-.flight-actions button[disabled] {
-    color: #ccc;
-    cursor: not-allowed;
+.flight-row .flight-actions button {
+    color: white !important;
+}
+
+.flight-row .flight-actions button mat-icon {
+    color: white !important;
+}
+
+.flight-row .flight-actions button[disabled] {
+    color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.flight-row .flight-actions button[disabled] mat-icon {
+    color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* =========================================== */
+/* BADGE DESACTIVADO */
+/* =========================================== */
+
+.badge-desactivado {
+    display: inline-block;
+    font-size: 0.6em;
+    font-weight: normal;
+    color: #f44336;
+    margin-left: 8px;
 }
 
 /* =========================================== */
@@ -189,7 +261,6 @@
 .normal-buttons, .editing-buttons {
     display: flex;
     gap: 10px;
-    width: 100%;
     transition: all 0.3s ease;
 }
 
@@ -214,6 +285,11 @@
     .list__text div:nth-child(3),
     .list__text div:nth-child(4) {
         max-width: 100px;
+    }
+
+    /* En móviles, flight-row sigue en fila pero con menos espacio */
+    .flight-row .flight-actions {
+        gap: 0px !important;
     }
 }
 
@@ -364,19 +440,6 @@
 
 /* SOLUCIÓN SIMPLE - Solo ajustar anchos */
 
-/* Para los 3 botones normales */
-.normal-buttons button {
-    width: calc(33.333% - 6px) !important;
-    /* 33% menos el gap */
-    flex: 0 0 auto !important;
-}
-
-/* Para los 2 botones de edición */
-.editing-buttons button {
-    width: calc(50% - 4px) !important;
-    /* 50% menos el gap */
-    flex: 0 0 auto !important;
-}
 
 /* Reducir padding interno */
 .mat-flat-button {
@@ -595,4 +658,25 @@
     100% {
         border-left-color: #4caf50;
     }
+}
+
+/* === FOOTER BOTONES: override final === */
+.footer__buttons .normal-buttons,
+.footer__buttons .editing-buttons {
+    display: flex !important;
+    gap: 1.5rem !important;
+    width: 100% !important;
+}
+
+.footer__buttons .normal-buttons button,
+.footer__buttons .editing-buttons button {
+    flex: 1 !important;
+    width: auto !important;
+    max-width: none !important;
+    flex-basis: auto !important;
+    height: 3.6rem !important;
+    min-height: 0 !important;
+    min-width: 0 !important;
+    --mdc-filled-button-label-text-size: 1.3rem !important;
+    --mdc-filled-button-label-text-weight: 700 !important;
 }

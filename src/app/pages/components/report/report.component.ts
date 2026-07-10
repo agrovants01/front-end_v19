@@ -253,7 +253,8 @@ export class ReportComponent implements OnInit {
                             transformOrigin: 'top left'
                         },
                         filter: (node) => {
-                            return !(node as HTMLElement).classList.contains('no-print');
+                            if (!(node instanceof HTMLElement)) return true;
+                            return !node.classList.contains('no-print');
                         }
                     });
 
