@@ -60,6 +60,8 @@ export class OwnerComponent implements OnInit, OnDestroy {
     public isEditingPolygon: boolean = false;
     public isSavingChanges: boolean = false;
     public isCancelling: boolean = false;
+    public isPrinting: boolean = false;
+    public printingFlightId: string | null = null;
 
     flightsRequired: boolean = true;
     analysisRequired = false;
@@ -728,10 +730,16 @@ export class OwnerComponent implements OnInit, OnDestroy {
     // ======================================================================
 
     imprimirVuelo(data: any) {
+        this.isPrinting = true;
+        this.printingFlightId = data.vueloId;
         this.imprimirVueloService.imprimirVuelo(data, this.ownerDataList).then((ownerDataList) => {
             this.ownerDataList = ownerDataList;
+            this.isPrinting = false;
+            this.printingFlightId = null;
         }).catch((error) => {
             console.error('Error al imprimir el vuelo', error);
+            this.isPrinting = false;
+            this.printingFlightId = null;
         });
     }
 

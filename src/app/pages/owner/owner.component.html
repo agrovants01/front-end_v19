@@ -153,7 +153,8 @@
                         <button *ngIf="admin || piloto" mat-icon-button
                             (click)="$event.stopPropagation(); editSingleFlight(data)"
                             [attr.aria-label]="'Editar polígono de vuelo'" matTooltip="Editar polígono de este vuelo"
-                            [disabled]="isEditingPolygon && !isEditingSingleFlight" class="edit-flight-btn">
+                            [disabled]="isEditingPolygon && !isEditingSingleFlight" class="edit-flight-btn btn-action-edit"
+                            [class.btn-active-red]="isEditingSingleFlight && editingFlightId === data.vueloId">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                                 class="icon icon-tabler icons-tabler-outline icon-tabler-edit">
@@ -165,14 +166,22 @@
                         </button>
 
                         <button mat-icon-button (click)="$event.stopPropagation(); hideShowLayer($event, data)"
-                            [attr.aria-label]="'Ocultar Elemento'" [attr.aria-pressed]="!data.visibility"
-                            [disabled]="isEditingPolygon">
+                            [attr.aria-label]="'Ocultar/Mostrar polígono de vuelo'"
+                            matTooltip="Ocultar/Mostrar polígono de este vuelo"
+                            [attr.aria-pressed]="!data.visibility"
+                            [disabled]="isEditingPolygon"
+                            class="btn-action-eye"
+                            [class.btn-active-blue]="!data.visibility">
                             <mat-icon style="font-weight: 400">
                                 {{ data.visibility ? "visibility" : "visibility_off" }}</mat-icon>
                         </button>
 
                         <button mat-icon-button (click)="$event.stopPropagation(); imprimirVuelo(data)"
-                            [disabled]="selectedFlight && selectedFlight.vueloId !== data.vueloId || isEditingPolygon">
+                            [attr.aria-label]="'Imprimir polígono de vuelo'"
+                            matTooltip="Imprimir polígono de este vuelo"
+                            [disabled]="selectedFlight && selectedFlight.vueloId !== data.vueloId || isEditingPolygon || isPrinting"
+                            class="btn-action-print"
+                            [class.btn-active-orange]="isPrinting && printingFlightId === data.vueloId">
                             <mat-icon style="font-weight: 400">print</mat-icon>
                         </button>
                     </div>

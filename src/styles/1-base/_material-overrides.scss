@@ -16,7 +16,7 @@ mat-list {
     mat-list-option {
         height: auto !important;
         min-height: unset !important;
-        padding: 20px 0 12px 24px !important;
+        padding: 20px 8px 12px 8px !important;
         border-bottom: none !important;
         font-family: 'Nunito', sans-serif !important;
 
@@ -71,6 +71,10 @@ mat-list {
         }
 
         .mdc-list-item__graphic {
+            display: none !important;
+        }
+
+        .mdc-list-item__end {
             display: none !important;
         }
 
@@ -361,14 +365,16 @@ mat-list {
 .mat-dialog-actions .mat-raised-button {
     font-family: 'Nunito', sans-serif !important;
     font-size: 14px !important;
-    font-weight: 500 !important;
+    font-weight: 700 !important;
+    --mdc-protected-button-label-text-weight: 700 !important;
 }
 
 .mat-mdc-dialog-actions .mat-mdc-raised-button .mdc-button__label,
 .mat-dialog-actions .mat-raised-button .mat-button-wrapper {
     font-family: 'Nunito', sans-serif !important;
     font-size: 14px !important;
-    font-weight: 500 !important;
+    font-weight: 700 !important;
+    --mdc-protected-button-label-text-weight: 700 !important;
 }
 
 .mat-mdc-menu-panel,
