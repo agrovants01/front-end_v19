@@ -22,8 +22,21 @@
 .form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 16px;
+    gap: 12px;
     overflow-x: hidden;
+}
+
+::ng-deep .orden-form-container .mdc-text-field--outlined {
+    --mdc-outlined-text-field-container-height: 44px;
+}
+
+::ng-deep .orden-form-container .mat-mdc-form-field-infix {
+    padding-top: 6px !important;
+    padding-bottom: 6px !important;
+}
+
+::ng-deep .orden-form-container .mat-mdc-form-field-subscript-wrapper {
+    display: none;
 }
 
 .section-title {
