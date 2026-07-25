@@ -73,6 +73,11 @@
                 <input matInput [value]="(form.get('opPrecioTotal')?.value | numberSeparator)" readonly>
             </mat-form-field>
 
+            <mat-form-field appearance="outline">
+                <mat-label>Aclaración</mat-label>
+                <textarea matInput formControlName="opAclaracion" placeholder="Notas o aclaraciones..."></textarea>
+            </mat-form-field>
+
             <div class="section-title">
                 Agroquímicos
                 <button type="button" class="add-btn" color="primary" (click)="addAgroquimico()"

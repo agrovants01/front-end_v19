@@ -22,7 +22,7 @@
 .form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 8px;
+    gap: 16px;
     overflow-x: hidden;
 }
 
@@ -53,10 +53,6 @@
     align-items: center;
     justify-content: center;
     transition: background-color 0.2s;
-}
-
-.form-grid > mat-form-field:nth-child(-n+2) {
-    margin-top: 8px;
 }
 
 .add-btn:hover:not(:disabled) {
@@ -90,10 +86,6 @@
 }
 
 .agroq-nombre { flex: 3; }
-.agroq-nombre .mat-form-field-wrapper {
-    margin-bottom: 0 !important;
-    padding-bottom: 0 !important;
-}
 .agroq-dosis { flex: 1; }
 
 .error-msg-inline {
