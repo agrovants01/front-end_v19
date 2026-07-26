@@ -1,4 +1,4 @@
-import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Subject } from 'rxjs';
@@ -11,12 +11,14 @@ import { OrdenPedido, UsuarioSelect, ListadoItem } from './orden-pedido.interfac
     standalone: false,
     selector: 'app-orden-pedido-form',
     templateUrl: './orden-pedido-form.component.html',
-    styleUrls: ['./orden-pedido-form.component.css'],
+    styleUrls: ['./orden-pedido-form.component.scss'],
+    encapsulation: ViewEncapsulation.None,
 })
 export class OrdenPedidoFormComponent implements OnInit, OnDestroy {
     private unsubscribe$ = new Subject<void>();
     form: FormGroup;
     isEdit = false;
+    isReadonly = false;
 
     pilotos: UsuarioSelect[] = [];
     propietarios: UsuarioSelect[] = [];
@@ -64,13 +66,25 @@ export class OrdenPedidoFormComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.isEdit = !!this.data?.opId;
-        this.fromMap = !!this.data?.desdeMapa && !this.isEdit;
+        this.isReadonly = !!this.data?.soloLectura;
+        this.fromMap = !!this.data?.desdeMapa && !this.isEdit && !this.isReadonly;
         if (this.data?.coordenadas) {
             this.form.patchValue({ opUbicacion: this.data.coordenadas });
         }
         if (this.fromMap) {
             this.form.get('propietarioSearch')?.disable();
             this.form.get('fk_Propietario')?.disable();
+
+            if (!this.data?.coordenadas) {
+                this.form.get('fk_Piloto')?.disable();
+                this.form.get('opCultivo')?.disable();
+                this.form.get('opSuperficie')?.disable();
+                this.form.get('opFormaPago')?.disable();
+                this.form.get('opAclaracion')?.disable();
+            }
+        }
+        if (this.isReadonly) {
+            this.form.disable();
         }
         this.loadData();
         this.setupCalculations();
@@ -157,15 +171,16 @@ export class OrdenPedidoFormComponent implements OnInit, OnDestroy {
             fk_Propietario: this.data!.fk_Propietario,
             opCultivo: this.data!.opCultivo,
             opSuperficie: this.data!.opSuperficie,
-            opFormaPago: this.data!.opFormaPago,
+            opFormaPago: this.data!.opFormaPago || 'PAGO PENDIENTE',
             opPrecioHa: this.data!.opPrecioHa,
             opPrecioTotal: this.data!.opPrecioTotal,
             opUbicacion: (this.data as any).opUbicacion || '',
-        });
+            opAclaracion: (this.data as any).opAclaracion || '',
+        }, { emitEvent: false });
         const prop = this.propietarios.find(p => p.usuarioId === this.data!.fk_Propietario);
-        if (prop) {
-            this.form.patchValue({ propietarioSearch: prop.aliasUsuario });
-        }
+        this.form.patchValue({
+            propietarioSearch: prop ? prop.aliasUsuario : (this.data!.fk_Propietario || ''),
+        }, { emitEvent: false });
         for (let i = 1; i <= 4; i++) {
             const nom = (this.data as any)[`opAgroq${i}`];
             const dosis = (this.data as any)[`opDosisAgroq${i}`];
@@ -282,6 +297,26 @@ export class OrdenPedidoFormComponent implements OnInit, OnDestroy {
 
     pickLocation(): void {
         this.dialogRef.close({ pickLocation: true });
+    }
+
+    onGeoBlock(event: MouseEvent): void {
+        if (!this.fromMap) return;
+        const locationValue = this.form.get('opUbicacion')?.value;
+        if (locationValue) return;
+
+        const target = event.target as HTMLElement;
+        const formGrid = event.currentTarget as HTMLElement;
+        const geoField = formGrid.querySelector('.geolocalizar-field');
+        if (geoField?.contains(target)) return;
+
+        event.preventDefault();
+        event.stopPropagation();
+        Swal.fire({
+            title: 'Ubicación requerida',
+            text: 'Geolocalizar primero la ubicación de la Orden de Pedido',
+            icon: 'warning',
+            confirmButtonText: 'Entendido',
+        });
     }
 
     onSubmit(): void {

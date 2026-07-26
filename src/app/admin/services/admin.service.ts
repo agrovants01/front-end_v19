@@ -831,8 +831,8 @@ export class AdminService {
         return this.http.get<any>(`${this.baseUrl}/backup/auto/status`);
     }
 
-    getUbicacionesOrdenes(): Observable<{ opId: string; opNomenclatura: string; opUbicacion: string }[]> {
-        return this.http.get<{ opId: string; opNomenclatura: string; opUbicacion: string }[]>(`${this.baseUrl}/orden-pedido/ubicaciones`);
+    getUbicacionesOrdenes(): Observable<OrdenPedido[]> {
+        return this.http.get<OrdenPedido[]>(`${this.baseUrl}/orden-pedido/ubicaciones`);
     }
 
 }

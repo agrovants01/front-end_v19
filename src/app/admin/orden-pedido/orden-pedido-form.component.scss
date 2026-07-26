@@ -1,0 +1,191 @@
+.orden-form-container {
+    max-height: 90vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0 10px;
+    box-sizing: border-box;
+
+    &::-webkit-scrollbar {
+        width: 1.2rem;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.65);
+        border-radius: 0.5rem;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        overflow-x: hidden;
+    }
+
+    // Compactar campos outline de MDC
+    .mdc-text-field--outlined {
+        --mdc-outlined-text-field-container-height: 44px;
+    }
+
+    .mat-mdc-form-field-infix {
+        padding-top: 6px !important;
+        padding-bottom: 6px !important;
+    }
+
+    .mat-mdc-form-field-subscript-wrapper {
+        display: none;
+    }
+
+    // Centrar verticalmente el texto de fecha
+    .fecha-field .mat-mdc-input-element {
+        transform: translateY(14px) !important;
+    }
+
+    // Centrar verticalmente el texto de propietario
+    .propietario-field .mat-mdc-input-element {
+        transform: translateY(14px) !important;
+    }
+
+    // Centrar verticalmente el texto de superficie
+    .superficie-field .mat-mdc-input-element {
+        transform: translateY(14px) !important;
+    }
+
+    // Centrar verticalmente el texto de precio por ha
+    .precio-ha-field .mat-mdc-input-element {
+        transform: translateY(16px) !important;
+    }
+
+    // Centrar verticalmente el texto de precio total
+    .precio-total-field .mat-mdc-input-element {
+        transform: translateY(16px) !important;
+    }
+
+    // Centrar verticalmente el texto de aclaración
+    .aclaracion-field .mat-mdc-input-element {
+        transform: translateY(16px) !important;
+    }
+
+    // Centrar verticalmente inputs dinámicos de agroquímicos y coadyuvantes
+    .agroq-nombre .mat-mdc-input-element,
+    .agroq-dosis .mat-mdc-input-element {
+        transform: translateY(16px) !important;
+    }
+
+    // Centrar verticalmente el texto de geolocalizar
+    .geolocalizar-field .mat-mdc-input-element {
+        transform: translateY(16px) !important;
+    }
+
+    // Centrar verticalmente el texto de forma de pago (select)
+    .forma-pago-field .mat-mdc-select-value {
+        transform: translateY(12px) !important;
+    }
+
+    .forma-pago-field .mat-mdc-select-arrow-wrapper {
+        transform: translateY(8px) !important;
+    }
+
+    // Centrar verticalmente el texto y flecha de Piloto (select)
+    .piloto-field .mat-mdc-select-value {
+        transform: translateY(12px) !important;
+    }
+
+    .piloto-field .mat-mdc-select-arrow-wrapper {
+        transform: translateY(8px) !important;
+    }
+
+    // Centrar verticalmente el texto y flecha de Cultivo (select)
+    .cultivo-field .mat-mdc-select-value {
+        transform: translateY(12px) !important;
+    }
+
+    .cultivo-field .mat-mdc-select-arrow-wrapper {
+        transform: translateY(8px) !important;
+    }
+
+    // Mover prefix $ y contenido del input Precio por Ha hacia la derecha
+    .precio-ha-field .mat-mdc-form-field-prefix {
+        padding-left: 0.5rem;
+    }
+
+    .precio-ha-field .mat-mdc-input-element {
+        padding-left: 0.25rem !important;
+    }
+}
+
+.section-title {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: bold;
+    font-size: 1.35rem;
+    margin-top: 2px;
+    padding-top: 2px;
+    border-top: 1px solid #ccc;
+}
+
+.add-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: none;
+    background-color: #3f51b5;
+    color: #fff;
+    font-size: 1.3rem;
+    font-weight: bold;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+
+    &:hover:not(:disabled) {
+        background-color: #303f9f;
+    }
+
+    &:disabled {
+        background-color: #9fa8da;
+        cursor: default;
+    }
+
+    &--accent {
+        background-color: #e91e63;
+
+        &:hover:not(:disabled) {
+            background-color: #c2185b;
+        }
+
+        &:disabled {
+            background-color: #f48fb1;
+        }
+    }
+}
+
+.agroq-row {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.agroq-row + .agroq-row {
+    margin-top: 16px;
+}
+
+.agroq-nombre { flex: 3; }
+.agroq-dosis { flex: 1; }
+
+.error-msg-inline {
+    color: #f43131;
+    font-size: 1.3rem;
+    font-weight: bold;
+    margin-top: 2px;
+}

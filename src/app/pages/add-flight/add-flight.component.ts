@@ -15,7 +15,7 @@ import { OwnerService } from 'src/app/pages/services/owner.service';
 import { Cultivo } from '../owner/cultivo.interface';
 import { Tecnico } from '../owner/tecnico.interface';
 import { AdminService } from 'src/app/admin/services/admin.service';
-import { OrdenPedido, ListadoItem } from 'src/app/admin/orden-pedido/orden-pedido.interface';
+import { OrdenPedido, ListadoItem, UsuarioSelect } from 'src/app/admin/orden-pedido/orden-pedido.interface';
 
 
 @Component({
@@ -74,6 +74,7 @@ export class AddFlightComponent implements OnInit, OnDestroy {
 
     listadoAgroquimicos: ListadoItem[] = [];
     listadoCoadyuvantes: ListadoItem[] = [];
+    usuariosPilotos: UsuarioSelect[] = [];
 
     filteredAgq1!: Observable<ListadoItem[]>;
     filteredAgq2!: Observable<ListadoItem[]>;
@@ -107,15 +108,15 @@ export class AddFlightComponent implements OnInit, OnDestroy {
         tecnicoFlight: ['', [Validators.required]],
         agq1Flight: ['-', [Validators.required, this.catalogoValidator('listadoAgroqNom')]],
         dosisagq1Flight: [0, [Validators.required]],
-        agq2Flight: ['-', [this.catalogoValidator('listadoAgroqNom')]],
+        agq2Flight: [null, [this.catalogoValidator('listadoAgroqNom')]],
         dosisagq2Flight: [0, [Validators.minLength(0)]],
-        agq3Flight: ['-', [this.catalogoValidator('listadoAgroqNom')]],
+        agq3Flight: [null, [this.catalogoValidator('listadoAgroqNom')]],
         dosisagq3Flight: [0, [Validators.minLength(0)]],
-        agq4Flight: ['-', [this.catalogoValidator('listadoAgroqNom')]],
+        agq4Flight: [null, [this.catalogoValidator('listadoAgroqNom')]],
         dosisagq4Flight: [0, [Validators.minLength(0)]],
         coad1Flight: ['-', [Validators.required, this.catalogoValidator('ListadoCoadNom')]],
         dosiscoad1Flight: [0, [Validators.required, Validators.minLength(0)]],
-        coad2Flight: ['-', [this.catalogoValidator('ListadoCoadNom')]],
+        coad2Flight: [null, [this.catalogoValidator('ListadoCoadNom')]],
         dosiscoad2Flight: [0, [Validators.minLength(0)]],
         formaPagoFlight: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(80)]],
         precioHaFlight: [0, [Validators.required, Validators.minLength(0)]],
@@ -189,6 +190,12 @@ export class AddFlightComponent implements OnInit, OnDestroy {
             .subscribe((items: ListadoItem[]) => {
                 this.listadoCoadyuvantes = items;
                 this.setupCoadyuvantesAutocomplete();
+            });
+
+        this.adminService.getPilotos()
+            .pipe(takeUntil(this.unsubscribe$))
+            .subscribe((usuarios: UsuarioSelect[]) => {
+                this.usuariosPilotos = usuarios;
             });
 
 
@@ -313,7 +320,7 @@ export class AddFlightComponent implements OnInit, OnDestroy {
     catalogoValidator(campoNombre: string) {
         return (control: AbstractControl): ValidationErrors | null => {
             const value = control.value;
-            if (!value || typeof value === 'object') return null;
+            if (!value || value === '-' || typeof value === 'object') return null;
             const existe = this.listadoAgroquimicos.some((item: any) => item[campoNombre] === value)
                 || this.listadoCoadyuvantes.some((item: any) => item[campoNombre] === value);
             return existe ? { existsInCatalog: true } : null;
@@ -337,27 +344,38 @@ export class AddFlightComponent implements OnInit, OnDestroy {
         if (this.isAdmin()) {
             this.flightForm.get('pilotoFlight')?.setValue(orden.fk_Piloto);
             this.flightForm.get('idPilotoCreateFlight')?.setValue(orden.fk_Piloto);
-            this.flightForm.get('pilotoNombreCompletoFlight')?.setValue(orden.fk_Piloto);
+            const pilotoUser = this.usuariosPilotos.find(u => u.usuarioId === orden.fk_Piloto);
+            const nombrePiloto = pilotoUser
+                ? (pilotoUser.aliasUsuario || `${pilotoUser.nombreUsuario} ${pilotoUser.apellidoUsuario}`)
+                : orden.fk_Piloto;
+            this.flightForm.get('pilotoNombreCompletoFlight')?.setValue(nombrePiloto);
         }
 
         this.flightForm.get('areaFlight')?.setValue(orden.opSuperficie);
 
-        this.flightForm.get('agq1Flight')?.setValue(orden.opAgroq1 || '-');
+        const agq1Item = orden.opAgroq1 ? this.listadoAgroquimicos?.find(a => a.listadoAgroqNom === orden.opAgroq1) : null;
+        this.flightForm.get('agq1Flight')?.setValue(agq1Item || '-');
         this.flightForm.get('dosisagq1Flight')?.setValue(orden.opDosisAgroq1 || 0);
-        this.flightForm.get('agq2Flight')?.setValue(orden.opAgroq2 || '-');
+        const agq2Item = orden.opAgroq2 ? this.listadoAgroquimicos?.find(a => a.listadoAgroqNom === orden.opAgroq2) : null;
+        this.flightForm.get('agq2Flight')?.setValue(agq2Item || null);
         this.flightForm.get('dosisagq2Flight')?.setValue(orden.opDosisAgroq2 || 0);
-        this.flightForm.get('agq3Flight')?.setValue(orden.opAgroq3 || '-');
+        const agq3Item = orden.opAgroq3 ? this.listadoAgroquimicos?.find(a => a.listadoAgroqNom === orden.opAgroq3) : null;
+        this.flightForm.get('agq3Flight')?.setValue(agq3Item || null);
         this.flightForm.get('dosisagq3Flight')?.setValue(orden.opDosisAgroq3 || 0);
-        this.flightForm.get('agq4Flight')?.setValue(orden.opAgroq4 || '-');
+        const agq4Item = orden.opAgroq4 ? this.listadoAgroquimicos?.find(a => a.listadoAgroqNom === orden.opAgroq4) : null;
+        this.flightForm.get('agq4Flight')?.setValue(agq4Item || null);
         this.flightForm.get('dosisagq4Flight')?.setValue(orden.opDosisAgroq4 || 0);
 
-        this.flightForm.get('coad1Flight')?.setValue(orden.opCoad1 || '-');
+        const coad1Item = orden.opCoad1 ? this.listadoCoadyuvantes?.find(c => c.ListadoCoadNom === orden.opCoad1) : null;
+        this.flightForm.get('coad1Flight')?.setValue(coad1Item || '-');
         this.flightForm.get('dosiscoad1Flight')?.setValue(orden.opDosisCoad1 || 0);
-        this.flightForm.get('coad2Flight')?.setValue(orden.opCoad2 || '-');
+        const coad2Item = orden.opCoad2 ? this.listadoCoadyuvantes?.find(c => c.ListadoCoadNom === orden.opCoad2) : null;
+        this.flightForm.get('coad2Flight')?.setValue(coad2Item || null);
         this.flightForm.get('dosiscoad2Flight')?.setValue(orden.opDosisCoad2 || 0);
 
         this.flightForm.get('formaPagoFlight')?.setValue(orden.opFormaPago);
         this.flightForm.get('precioHaFlight')?.setValue(orden.opPrecioHa);
+        this.flightForm.get('aclaracionFlight')?.setValue(orden.opAclaracion || '');
     }
 
     saveFlight() {
@@ -376,6 +394,12 @@ export class AddFlightComponent implements OnInit, OnDestroy {
                                 "type": "FeatureCollection",
                                 "features": this.flightForm.value.markersFlight
                             }
+                            const agq1Val = this.flightForm.value.agq1Flight;
+                            const agq2Val = this.flightForm.value.agq2Flight;
+                            const agq3Val = this.flightForm.value.agq3Flight;
+                            const agq4Val = this.flightForm.value.agq4Flight;
+                            const coad1Val = this.flightForm.value.coad1Flight;
+                            const coad2Val = this.flightForm.value.coad2Flight;
                             const req = {
                                 fechaVuelo: this.flightForm.value.dateFlight,
 
@@ -397,17 +421,17 @@ export class AddFlightComponent implements OnInit, OnDestroy {
 
 
                                 tecnicoVuelo: this.flightForm.value.tecnicoFlight, // (asistenteVuelo)
-                                agq1: this.flightForm.value.agq1Flight,
+                                agq1: typeof agq1Val === 'object' ? agq1Val?.listadoAgroqNom : agq1Val,
                                 dosisagq1: this.flightForm.value.dosisagq1Flight,
-                                agq2: this.flightForm.value.agq2Flight,
+                                agq2: typeof agq2Val === 'object' ? agq2Val?.listadoAgroqNom : agq2Val,
                                 dosisagq2: this.flightForm.value.dosisagq2Flight,
-                                agq3: this.flightForm.value.agq3Flight,
+                                agq3: typeof agq3Val === 'object' ? agq3Val?.listadoAgroqNom : agq3Val,
                                 dosisagq3: this.flightForm.value.dosisagq3Flight,
-                                agq4: this.flightForm.value.agq4Flight,
+                                agq4: typeof agq4Val === 'object' ? agq4Val?.listadoAgroqNom : agq4Val,
                                 dosisagq4: this.flightForm.value.dosisagq4Flight,
-                                coad1: this.flightForm.value.coad1Flight,
+                                coad1: typeof coad1Val === 'object' ? coad1Val?.ListadoCoadNom : coad1Val,
                                 dosiscoad1: this.flightForm.value.dosiscoad1Flight,
-                                coad2: this.flightForm.value.coad2Flight,
+                                coad2: typeof coad2Val === 'object' ? coad2Val?.ListadoCoadNom : coad2Val,
                                 dosiscoad2: this.flightForm.value.dosiscoad2Flight,
                                 formaPago: this.flightForm.value.formaPagoFlight,
                                 precioHa: this.flightForm.value.precioHaFlight,

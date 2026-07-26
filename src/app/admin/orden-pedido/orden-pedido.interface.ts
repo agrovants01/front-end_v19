@@ -23,6 +23,8 @@ export interface OrdenPedido {
     opPrecioTotal: number;
     opEstado: string;
     fk_Usuario?: string;
+    opAclaracion?: string;
+    opUbicacion?: string;
     pilotoAlias?: string;
     propietarioAlias?: string;
 }

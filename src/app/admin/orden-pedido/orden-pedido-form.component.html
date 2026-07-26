@@ -1,15 +1,17 @@
 <div class="orden-form-container">
-    <h2 mat-dialog-title>{{ isEdit ? 'Editar' : 'Nueva' }} Orden de Pedido</h2>
+    <h2 mat-dialog-title>
+        {{ isReadonly ? 'Orden de Pedido - ' + (data?.opNomenclatura || '') : (isEdit ? 'Editar' : 'Nueva') + ' Orden de Pedido' }}
+    </h2>
 
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
-        <div mat-dialog-content class="form-grid">
+        <div mat-dialog-content class="form-grid" (click)="onGeoBlock($event)">
 
             <!-- Geolocalizar -->
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="outline" class="geolocalizar-field">
                 <mat-label>Geolocalizar</mat-label>
                 <input matInput formControlName="opUbicacion" readonly>
                 <button type="button" mat-icon-button matSuffix color="primary" matTooltip="Seleccionar en el mapa"
-                    (click)="pickLocation()" *ngIf="fromMap">
+                    (click)="pickLocation()" *ngIf="fromMap && !isReadonly">
                     <mat-icon>pin_drop</mat-icon>
                 </button>
             </mat-form-field>
@@ -21,7 +23,7 @@
                 <mat-datepicker #picker></mat-datepicker>
             </mat-form-field>
 
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="outline" class="piloto-field">
                 <mat-label>Piloto</mat-label>
                 <mat-select formControlName="fk_Piloto">
                     <mat-option *ngFor="let p of pilotos" [value]="p.usuarioId">
@@ -30,7 +32,7 @@
                 </mat-select>
             </mat-form-field>
 
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="outline" class="propietario-field">
                 <mat-label>Propietario</mat-label>
                 <input type="text" matInput formControlName="propietarioSearch"
                     [matAutocomplete]="autoProp"
@@ -42,38 +44,36 @@
                 </mat-autocomplete>
             </mat-form-field>
 
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="outline" class="cultivo-field">
                 <mat-label>Cultivo</mat-label>
                 <mat-select formControlName="opCultivo">
                     <mat-option *ngFor="let c of cultivoOptions" [value]="c">{{ c }}</mat-option>
                 </mat-select>
             </mat-form-field>
 
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="outline" class="superficie-field">
                 <mat-label>Superficie (Ha)</mat-label>
                 <input matInput type="number" step="0.01" formControlName="opSuperficie">
             </mat-form-field>
 
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="outline" class="forma-pago-field">
                 <mat-label>Forma de Pago</mat-label>
                 <mat-select formControlName="opFormaPago">
                     <mat-option *ngFor="let fp of formaPagoOptions" [value]="fp">{{ fp }}</mat-option>
                 </mat-select>
             </mat-form-field>
 
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="outline" class="precio-ha-field">
                 <mat-label>Precio por Ha</mat-label>
-                <span matPrefix>$&nbsp;</span>
                 <input matInput [value]="(form.get('opPrecioHa')?.value | numberSeparator)" readonly>
             </mat-form-field>
 
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="outline" class="precio-total-field">
                 <mat-label>Precio Total (+10.5% IVA)</mat-label>
-                <span matPrefix>$&nbsp;</span>
                 <input matInput [value]="(form.get('opPrecioTotal')?.value | numberSeparator)" readonly>
             </mat-form-field>
 
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="outline" class="aclaracion-field">
                 <mat-label>Aclaración</mat-label>
                 <textarea matInput formControlName="opAclaracion" placeholder="Notas o aclaraciones..."></textarea>
             </mat-form-field>
@@ -81,7 +81,7 @@
             <div class="section-title">
                 Agroquímicos
                 <button type="button" class="add-btn" color="primary" (click)="addAgroquimico()"
-                    [disabled]="agroquimicosArray.length >= 4" matTooltip="Agregar agroquímico">
+                    [disabled]="agroquimicosArray.length >= 4" matTooltip="Agregar agroquímico" *ngIf="!isReadonly">
                     +
                 </button>
             </div>
@@ -107,7 +107,7 @@
                         <mat-label>Dosis</mat-label>
                         <input matInput type="number" step="0.01" formControlName="dosis">
                     </mat-form-field>
-                    <button type="button" mat-icon-button color="warn" (click)="removeAgroquimico(i)">
+                    <button type="button" mat-icon-button color="warn" (click)="removeAgroquimico(i)" *ngIf="!isReadonly">
                         <mat-icon>close</mat-icon>
                     </button>
                 </div>
@@ -116,7 +116,7 @@
             <div class="section-title">
                 Coadyuvantes
                 <button type="button" class="add-btn add-btn--accent" (click)="addCoadyuvante()"
-                    [disabled]="coadyuvantesArray.length >= 4" matTooltip="Agregar coadyuvante">
+                    [disabled]="coadyuvantesArray.length >= 4" matTooltip="Agregar coadyuvante" *ngIf="!isReadonly">
                     +
                 </button>
             </div>
@@ -142,7 +142,7 @@
                         <mat-label>Dosis</mat-label>
                         <input matInput type="number" step="0.01" formControlName="dosis">
                     </mat-form-field>
-                    <button type="button" mat-icon-button color="warn" (click)="removeCoadyuvante(i)">
+                    <button type="button" mat-icon-button color="warn" (click)="removeCoadyuvante(i)" *ngIf="!isReadonly">
                         <mat-icon>close</mat-icon>
                     </button>
                 </div>
@@ -151,8 +151,10 @@
         </div>
 
         <div mat-dialog-actions class="action-buttons">
-            <button type="button" mat-raised-button color="warn" (click)="onCancel()">Cancelar</button>
-            <button type="submit" mat-raised-button color="primary" [disabled]="form.invalid">
+            <button type="button" mat-raised-button color="warn" (click)="onCancel()">
+                {{ isReadonly ? 'Cerrar' : 'Cancelar' }}
+            </button>
+            <button type="submit" *ngIf="!isReadonly" mat-raised-button color="primary" [disabled]="form.invalid">
                 {{ isEdit ? 'Actualizar' : 'Crear' }}
             </button>
         </div>

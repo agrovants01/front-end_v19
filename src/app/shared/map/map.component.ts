@@ -163,6 +163,21 @@ export class MapComponent implements OnInit, OnDestroy {
         });
     }
 
+    private _openOrdenReadonly(orden: any): void {
+        const dialogRef = this.dialog.open(OrdenPedidoFormComponent, {
+            width: '800px',
+            maxHeight: '95vh',
+            disableClose: false,
+            data: {
+                ...orden,
+                soloLectura: true,
+                desdeMapa: false,
+                nombreCompleto: localStorage.getItem('nombreCompleto'),
+            },
+        });
+        dialogRef.afterClosed().subscribe(() => {});
+    }
+
     private _enterLocationPickerMode(): void {
         this.isPickingLocation = true;
         this._removePendingMarker();
@@ -195,6 +210,7 @@ export class MapComponent implements OnInit, OnDestroy {
         this.adminService.getUbicacionesOrdenes().subscribe({
             next: (ordenes) => {
                 for (const orden of ordenes) {
+                    if (!orden.opUbicacion) continue;
                     const parts = orden.opUbicacion.split(',').map(s => parseFloat(s.trim()));
                     if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
                         const marker = L.marker([parts[0], parts[1]], { icon: this._greenIcon() });
@@ -212,7 +228,7 @@ export class MapComponent implements OnInit, OnDestroy {
                             }
                         });
                         marker.on('click', () => {
-                            this.map.setView(marker.getLatLng(), 17, { animate: true });
+                            this._openOrdenReadonly(orden);
                         });
                         marker.addTo(this.orderMarkersLayer);
                     }
