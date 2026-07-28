@@ -48,3 +48,4 @@ Thumbs.db
 /backup-frontend
 build.sh
 rundev.sh
+.git-credentials
