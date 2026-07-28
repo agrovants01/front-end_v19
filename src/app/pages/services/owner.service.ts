@@ -292,6 +292,8 @@ export class OwnerService {
 
     openInfoDialog(data: any, type: string) {
         this.dialog.open(OwnerDataInfoComponent, {
+            width: '92vw',
+            maxWidth: '1100px',
             data: {
                 type,
                 data

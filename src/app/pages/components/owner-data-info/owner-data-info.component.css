@@ -1,66 +1,81 @@
-::ng-deep .mat-form-field-flex>.mat-form-field-infix {
-    padding: 0.5em 0px !important;
+:host {
+    display: block;
 }
 
-::ng-deep .mat-form-field-label-wrapper {
-    top: -1.1em;
+/* Modal container: padding equilibrado (dejamos abajo libre para botones sticky) */
+:host ::ng-deep .data-card {
+    padding: 24px 24px 0 24px !important;
+    box-sizing: border-box !important;
 }
 
-::ng-deep .mat-form-field-appearance-outline.mat-form-field-can-float.mat-form-field-should-float .mat-form-field-label {
-    transform: translateY(-1.1em) scale(.75);
-    width: 133.33333%;
+/* Header separado del contenido */
+:host ::ng-deep .data-card header {
+    margin-bottom: 16px !important;
 }
 
-::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline-thick {
-    height: 36px;
+/* Todos los campos ocupan el 100% de su celda/columna */
+:host ::ng-deep .data-card .card__content form .row .column mat-form-field {
+    width: 100% !important;
+    margin-bottom: 18px !important;
+    box-sizing: border-box !important;
 }
 
-::ng-deep .mat-form-field-flex>.mat-form-field-infix {
-    border-top: 5px solid transparent;
+/* Grid de columnas: mismo ancho, gaps consistentes */
+/* Selector con .data-card para igualar la especificidad del CSS global */
+:host ::ng-deep .data-card .card__content form .row {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 1.5rem !important;
+    width: 100% !important;
+    margin: 0 !important;
 }
 
-::ng-deep .mat-form-field-wrapper {
-    margin-bottom: -0.1em !important;
+:host ::ng-deep .data-card .card__content form .row .column {
+    display: flex !important;
+    flex-direction: column !important;
+    min-width: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    flex: none !important;
+    width: 100% !important;
 }
 
-.row {
-    display: flex;
-    flex-direction: row;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-    width: 100%;
+/* Ajustes MDC para que los campos se vean como en Angular 12 */
+:host ::ng-deep .mdc-text-field--outlined {
+    --mdc-outlined-text-field-container-height: 46px;
 }
 
-.row2 {
-    align-items: end;
-    display: flex;
-    flex-direction: row;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-    width: 100%;
+:host ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+    display: none;
 }
 
-.column {
-    display: flex;
-    flex-direction: column;
-    flex-basis: 100%;
-    flex: 1;
-    padding: 10px;
+/* Bajar texto de valores dentro de los inputs (Caldo, Agroquimicos, etc) */
+:host ::ng-deep .mat-mdc-input-element,
+:host ::ng-deep .mdc-text-field__input {
+    position: relative;
+    top: 5px;
 }
 
-.example-button-container {
-    display: flex;
-    justify-content: center;
-    width: 120px;
+/* Datepicker toggle: mismo alto que el resto de los campos */
+:host ::ng-deep .mat-mdc-form-field-icon-suffix .mat-mdc-icon-button.mat-mdc-button-base,
+:host ::ng-deep .mat-datepicker-toggle .mat-mdc-icon-button.mat-mdc-button-base {
+    --mdc-icon-button-state-layer-size: 32px;
+    width: 32px;
+    height: 32px;
+    padding: 4px;
 }
 
+:host ::ng-deep .mat-datepicker-toggle-default-icon,
+:host ::ng-deep .mat-datepicker-toggle .mat-icon {
+    width: 20px;
+    height: 20px;
+}
+
+/* Iconos deshabilitados */
 .icon-disabled {
     pointer-events: none;
-    /* No permite clics */
     opacity: 0.5;
-    /* Reduce la opacidad */
     cursor: not-allowed;
-    /* Cambia el cursor a un símbolo de no permitido */
 }
 
 .disabled {
@@ -71,9 +86,23 @@
 ::ng-deep .mat-tooltip {
     font-weight: bold;
     font-size: 16px;
-    /* Aumenta el tamaño de la letra a 16px */
 }
 
-.fondoOpcionesBotones{
-    background: 0px solid #213A2A;
+/* Responsive */
+@media (max-width: 1024px) {
+    :host ::ng-deep .data-card .card__content form .row {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 1rem !important;
+    }
+}
+
+@media (max-width: 600px) {
+    :host ::ng-deep .data-card .card__content form .row {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+    }
+
+    :host ::ng-deep .data-card {
+        padding: 16px 16px 0 16px !important;
+    }
 }

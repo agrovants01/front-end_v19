@@ -8,7 +8,7 @@
 
             <!-- Geolocalizar -->
             <mat-form-field appearance="outline" class="geolocalizar-field">
-                <mat-label>Geolocalizar</mat-label>
+                <mat-label>Geolocalizar*</mat-label>
                 <input matInput formControlName="opUbicacion" readonly>
                 <button type="button" mat-icon-button matSuffix color="primary" matTooltip="Seleccionar en el mapa"
                     (click)="pickLocation()" *ngIf="fromMap && !isReadonly">
@@ -150,11 +150,12 @@
 
         </div>
 
-        <div mat-dialog-actions class="action-buttons">
+        <div mat-dialog-actions class="action-buttons" [class.action-buttons--center]="isReadonly">
             <button type="button" mat-raised-button color="warn" (click)="onCancel()">
                 {{ isReadonly ? 'Cerrar' : 'Cancelar' }}
             </button>
-            <button type="submit" *ngIf="!isReadonly" mat-raised-button color="primary" [disabled]="form.invalid">
+            <button type="submit" *ngIf="!isReadonly" mat-raised-button color="primary"
+                [disabled]="form.invalid || (fromMap && !form.get('opUbicacion')?.value)">
                 {{ isEdit ? 'Actualizar' : 'Crear' }}
             </button>
         </div>

@@ -15,8 +15,6 @@ import { Piloto } from 'src/app/pages/owner/pilot.interface';
 import { OwnerListInput } from 'src/app/pages/owner/owner.interface';
 import { Cultivo } from '../../owner/cultivo.interface';
 import { Tecnico } from '../../owner/tecnico.interface';
-import { Agroquimico } from 'src/app/pages/owner/agroquimico.interface';
-import { Coadyuvante } from 'src/app/pages/owner/coadyuvante.interface';
 import { AdminService } from 'src/app/admin/services/admin.service';
 import { OrdenPedido, ListadoItem } from 'src/app/admin/orden-pedido/orden-pedido.interface';
 import * as moment from 'moment';
@@ -38,23 +36,16 @@ export class OwnerDataInfoComponent implements OnInit {
     ownersList: OwnerListInput[] = [];
     tecnicosList: Tecnico[] = [];
     cultivosList: Cultivo[] = [];
-    //==========================================================================
-    agroquimicosList: Agroquimico[] = [];
-    //filteredAgroquimicos: Agroquimico[] = [];
-    //==========================================================================
-    coadyuvantesList: Coadyuvante[] = [];
-    //filteredCoadyuvantes: Coadyuvante[] = [];
+    listadoAgroquimicos: ListadoItem[] = [];
+    listadoCoadyuvantes: ListadoItem[] = [];
+    ordenesList: OrdenPedido[] = [];
 
-
-
-
-
-    filteredAgq1: Observable<Agroquimico[]> = new Observable();
-    filteredAgq2: Observable<Agroquimico[]> = new Observable();
-    filteredAgq3: Observable<Agroquimico[]> = new Observable();
-    filteredAgq4: Observable<Agroquimico[]> = new Observable();
-    filteredCoad1: Observable<Coadyuvante[]> = new Observable();
-    filteredCoad2: Observable<Coadyuvante[]> = new Observable();
+    filteredAgq1: Observable<ListadoItem[]> = new Observable();
+    filteredAgq2: Observable<ListadoItem[]> = new Observable();
+    filteredAgq3: Observable<ListadoItem[]> = new Observable();
+    filteredAgq4: Observable<ListadoItem[]> = new Observable();
+    filteredCoad1: Observable<ListadoItem[]> = new Observable();
+    filteredCoad2: Observable<ListadoItem[]> = new Observable();
 
 
     formasPago = [
@@ -79,6 +70,7 @@ export class OwnerDataInfoComponent implements OnInit {
         // sintaxis para deshabilitar un campo de formulario con formulario reactivo
         vueloIdUpdateFlight: [{ value: this.data.data.vueloId, disabled: true }, [Validators.required]],
         dateUpdateFlight: [{ value: this.data.data.fechaVuelo, disabled: true }, []],
+        opNomenclaturaUpdateFlight: [{ value: this.data.data.opNomenclatura || 'Sin orden', disabled: true }, []],
         propietarioUpdateFlight2Text: [{ value: this.data.data.propietario, disabled: true }, [Validators.required]],
         propietarioUpdateFlight2: [null, Validators.required],
         cuadroUpdateFlight: [{ value: this.data.data.cuadroVuelo, disabled: true }, [Validators.required]],
@@ -89,19 +81,19 @@ export class OwnerDataInfoComponent implements OnInit {
         areaUpdateFlight: [{ value: this.data.data.superficieVuelo, disabled: true }, [Validators.required, Validators.minLength(0)]],
         pilotoUpdateFlight: [{ value: this.data.data.pilotoVuelo, disabled: true }, [Validators.required]],
         idPilotoUpdateFlight: [{ value: this.data.data.idPilotoVuelo, disabled: true }, []],
-        nomCompletoPilotoUpdateFlight: [{ value: this.data.data.pilotoVuelo }, []],
+        nomCompletoPilotoUpdateFlight: [{ value: this.data.data.pilotoNombreCompleto || this.data.data.pilotoVuelo }, []],
         tecnicoUpdateFlight: [{ value: this.data.data.tecnicoVuelo, disabled: true }, [Validators.required]],
-        agq1Flight: [{ value: this.data.data.agq1, disabled: true }, [Validators.required]],
+        agq1Flight: [{ value: this.data.data.agq1, disabled: true }, [Validators.required, this.catalogoValidator('listadoAgroqNom')]],
         dosisagq1Flight: [{ value: this.data.data.dosisagq1, disabled: true }, [Validators.required]],
-        agq2Flight: [{ value: this.data.data.agq2, disabled: true }, []],
+        agq2Flight: [{ value: this.data.data.agq2, disabled: true }, [this.catalogoValidator('listadoAgroqNom')]],
         dosisagq2Flight: [{ value: this.data.data.dosisagq2, disabled: true }, []],
-        agq3Flight: [{ value: this.data.data.agq3, disabled: true }, []],
+        agq3Flight: [{ value: this.data.data.agq3, disabled: true }, [this.catalogoValidator('listadoAgroqNom')]],
         dosisagq3Flight: [{ value: this.data.data.dosisagq3, disabled: true }, []],
-        agq4Flight: [{ value: this.data.data.agq4, disabled: true }, []],
+        agq4Flight: [{ value: this.data.data.agq4, disabled: true }, [this.catalogoValidator('listadoAgroqNom')]],
         dosisagq4Flight: [{ value: this.data.data.dosisagq4, disabled: true }, []],
-        coad1Flight: [{ value: this.data.data.coad1, disabled: true }, [Validators.required]],
+        coad1Flight: [{ value: this.data.data.coad1, disabled: true }, [Validators.required, this.catalogoValidator('ListadoCoadNom')]],
         dosiscoad1Flight: [{ value: this.data.data.dosiscoad1, disabled: true }, [Validators.required]],
-        coad2Flight: [{ value: this.data.data.coad2, disabled: true }, []],
+        coad2Flight: [{ value: this.data.data.coad2, disabled: true }, [this.catalogoValidator('ListadoCoadNom')]],
         dosiscoad2Flight: [{ value: this.data.data.dosiscoad2, disabled: true }, []],
         formaPagoUpdateFlight: [{ value: this.data.data.formaPago, disabled: true }, [Validators.required, Validators.minLength(2), Validators.maxLength(80)]],
         precioHaUpdateFlight: [{ value: this.data.data.precioHa, disabled: true }, [Validators.required, Validators.minLength(0)]],
@@ -125,7 +117,8 @@ export class OwnerDataInfoComponent implements OnInit {
         private observationsService: ObservationsService,
         private ownerService: OwnerService,
         private layerService: LayerService,
-        private router: Router
+        private router: Router,
+        private _adminService: AdminService
     ) {
         this.vuelosSeleccionados = data;
 
@@ -165,6 +158,11 @@ export class OwnerDataInfoComponent implements OnInit {
                     this.flightUpdateForm.patchValue({
                         propietarioUpdateFlight2: propietarioActual
                     });
+                    this._adminService.getOrdenesPorPropietario(propietarioActual.propietarioId)
+                        .pipe(takeUntil(this.unsubscribe$))
+                        .subscribe(ordenes => {
+                            this.ordenesList = ordenes;
+                        });
                 }
             });
 
@@ -219,120 +217,94 @@ export class OwnerDataInfoComponent implements OnInit {
             }
         });
 
-        this.ownerService.getAgroquimicos()
+        this._adminService.getAgroquimicos()
             .pipe(takeUntil(this.unsubscribe$))
-            .subscribe((agroquimicos: Agroquimico[]) => {
-                this.agroquimicosList = agroquimicos;
+            .subscribe((items: ListadoItem[]) => {
+                this.listadoAgroquimicos = items;
 
-
-                const agroquimicoInicial1 = this.agroquimicosList.find(agroquimico => agroquimico.nombreAgroquimico === this.data.data.agq1);
+                const agroquimicoInicial1 = this.listadoAgroquimicos.find(item => item.listadoAgroqNom === this.data.data.agq1);
                 if (agroquimicoInicial1) {
                     this.flightUpdateForm.get('agq1Flight')?.setValue(agroquimicoInicial1);
                 }
-                // Crear observables que filtren los agroquímicos según el valor ingresado
                 this.filteredAgq1 = this.flightUpdateForm.get('agq1Flight')!.valueChanges.pipe(
                     startWith(''),
                     map(value => {
-                        if (typeof value === 'string') {
-                            return this.filterAgroquimicos(value);
-                        } else {
-                            return [value];
-                        }
+                        if (!value || value === '-') return [];
+                        if (typeof value === 'string') return this.filterAgroquimicos(value);
+                        return [value];
                     })
                 );
 
-                const agroquimicoInicial2 = this.agroquimicosList.find(agroquimico => agroquimico.nombreAgroquimico === this.data.data.agq2);
+                const agroquimicoInicial2 = this.listadoAgroquimicos.find(item => item.listadoAgroqNom === this.data.data.agq2);
                 if (agroquimicoInicial2) {
                     this.flightUpdateForm.get('agq2Flight')?.setValue(agroquimicoInicial2);
                 }
-                // Crear observables que filtren los agroquímicos según el valor ingresado
                 this.filteredAgq2 = this.flightUpdateForm.get('agq2Flight')!.valueChanges.pipe(
                     startWith(''),
                     map(value => {
-                        if (typeof value === 'string') {
-                            return this.filterAgroquimicos(value);
-                        } else {
-                            return [value];
-                        }
+                        if (!value || value === '-') return [];
+                        if (typeof value === 'string') return this.filterAgroquimicos(value);
+                        return [value];
                     })
                 );
 
-                const agroquimicoInicial3 = this.agroquimicosList.find(agroquimico => agroquimico.nombreAgroquimico === this.data.data.agq3);
+                const agroquimicoInicial3 = this.listadoAgroquimicos.find(item => item.listadoAgroqNom === this.data.data.agq3);
                 if (agroquimicoInicial3) {
                     this.flightUpdateForm.get('agq3Flight')?.setValue(agroquimicoInicial3);
                 }
-                // Crear observables que filtren los agroquímicos según el valor ingresado
                 this.filteredAgq3 = this.flightUpdateForm.get('agq3Flight')!.valueChanges.pipe(
                     startWith(''),
                     map(value => {
-                        if (typeof value === 'string') {
-                            return this.filterAgroquimicos(value);
-                        } else {
-                            return [value];
-                        }
+                        if (!value || value === '-') return [];
+                        if (typeof value === 'string') return this.filterAgroquimicos(value);
+                        return [value];
                     })
                 );
 
-
-                const agroquimicoInicial4 = this.agroquimicosList.find(agroquimico => agroquimico.nombreAgroquimico === this.data.data.agq4);
+                const agroquimicoInicial4 = this.listadoAgroquimicos.find(item => item.listadoAgroqNom === this.data.data.agq4);
                 if (agroquimicoInicial4) {
                     this.flightUpdateForm.get('agq4Flight')?.setValue(agroquimicoInicial4);
                 }
-                // Crear observables que filtren los agroquímicos según el valor ingresado
                 this.filteredAgq4 = this.flightUpdateForm.get('agq4Flight')!.valueChanges.pipe(
                     startWith(''),
                     map(value => {
-                        if (typeof value === 'string') {
-                            return this.filterAgroquimicos(value);
-                        } else {
-                            return [value];
-                        }
+                        if (!value || value === '-') return [];
+                        if (typeof value === 'string') return this.filterAgroquimicos(value);
+                        return [value];
                     })
                 );
             });
 
-
-        this.ownerService.getCoadyuvantes()
+        this._adminService.getCoadyuvantes()
             .pipe(takeUntil(this.unsubscribe$))
-            .subscribe((coadyuvantes: Coadyuvante[]) => {
-                this.coadyuvantesList = coadyuvantes;
+            .subscribe((items: ListadoItem[]) => {
+                this.listadoCoadyuvantes = items;
 
-
-                const coadyuvanteInicial1 = this.coadyuvantesList.find(coadyuvante => coadyuvante.nombreCoadyuvante === this.data.data.coad1);
+                const coadyuvanteInicial1 = this.listadoCoadyuvantes.find(item => item.ListadoCoadNom === this.data.data.coad1);
                 if (coadyuvanteInicial1) {
                     this.flightUpdateForm.get('coad1Flight')?.setValue(coadyuvanteInicial1);
                 }
-                // Crear observables que filtren los agroquímicos según el valor ingresado
                 this.filteredCoad1 = this.flightUpdateForm.get('coad1Flight')!.valueChanges.pipe(
                     startWith(''),
                     map(value => {
-                        if (typeof value === 'string') {
-                            return this.filterCoadyuvantes(value);
-                        } else {
-                            return [value];
-                        }
+                        if (!value || value === '-') return [];
+                        if (typeof value === 'string') return this.filterCoadyuvantes(value);
+                        return [value];
                     })
                 );
 
-
-
-                const coadyuvanteInicial2 = this.coadyuvantesList.find(coadyuvante => coadyuvante.nombreCoadyuvante === this.data.data.coad2);
+                const coadyuvanteInicial2 = this.listadoCoadyuvantes.find(item => item.ListadoCoadNom === this.data.data.coad2);
                 if (coadyuvanteInicial2) {
                     this.flightUpdateForm.get('coad2Flight')?.setValue(coadyuvanteInicial2);
                 }
-                // Crear observables que filtren los agroquímicos según el valor ingresado
                 this.filteredCoad2 = this.flightUpdateForm.get('coad2Flight')!.valueChanges.pipe(
                     startWith(''),
                     map(value => {
-                        if (typeof value === 'string') {
-                            return this.filterCoadyuvantes(value);
-                        } else {
-                            return [value];
-                        }
+                        if (!value || value === '-') return [];
+                        if (typeof value === 'string') return this.filterCoadyuvantes(value);
+                        return [value];
                     })
                 );
-
-
             });
 
 
@@ -345,6 +317,25 @@ export class OwnerDataInfoComponent implements OnInit {
 
     // Segunda
 
+    catalogoValidator(nombreCampo: 'listadoAgroqNom' | 'ListadoCoadNom') {
+        return (control: AbstractControl): ValidationErrors | null => {
+            const value = control.value;
+            if (!value || value === '-' || typeof value !== 'string') {
+                return null;
+            }
+            const trimmed = value.trim();
+            if (!trimmed) return null;
+
+            const catalogo = nombreCampo === 'listadoAgroqNom' ? this.listadoAgroquimicos : this.listadoCoadyuvantes;
+            const existe = catalogo.some(item => {
+                const nom = (item[nombreCampo] || '').trim().toLowerCase();
+                return nom === trimmed.toLowerCase();
+            });
+
+            return existe ? { existsInCatalog: true } : null;
+        };
+    }
+
     enableEditing() {
 
 
@@ -356,6 +347,7 @@ export class OwnerDataInfoComponent implements OnInit {
             this.flightUpdateForm.get('propietarioUpdateFlight2Text')?.disable(); // Ocultamos el texto
             this.flightUpdateForm.get('propietarioUpdateFlight2')?.enable(); // Mostramos el select
             this.flightUpdateForm.get('dateUpdateFlight')?.enable();
+            this.flightUpdateForm.get('opNomenclaturaUpdateFlight')?.enable();
             this.flightUpdateForm.get('cuadroUpdateFlight')?.enable();
             this.flightUpdateForm.get('zonaUpdateFlight')?.enable();
             this.flightUpdateForm.get('cultivoUpdateFlight')?.enable();
@@ -384,6 +376,7 @@ export class OwnerDataInfoComponent implements OnInit {
             this.flightUpdateForm.get('propietarioUpdateFlight2Text')?.disable(); // Mostramos el texto
             this.flightUpdateForm.get('propietarioUpdateFlight2')?.disable(); // Ocultamos el select
             this.flightUpdateForm.get('dateUpdateFlight')?.disable();
+            this.flightUpdateForm.get('opNomenclaturaUpdateFlight')?.disable();
             this.flightUpdateForm.get('cuadroUpdateFlight')?.disable();
             this.flightUpdateForm.get('zonaUpdateFlight')?.disable();
             this.flightUpdateForm.get('cultivoUpdateFlight')?.disable();
@@ -510,9 +503,79 @@ export class OwnerDataInfoComponent implements OnInit {
         this.flightUpdateForm.get('nomCompletoPilotoUpdateFlight')?.setValue(`${pilotoSeleccionado?.nombrePiloto} ${pilotoSeleccionado?.apellidoPiloto}`);
     }
 
+    onOrdenSelected(nomenclatura: string): void {
+        if (!nomenclatura) return;
+        const orden = this.ordenesList.find(o => o.opNomenclatura === nomenclatura);
+        if (!orden) return;
+
+        this.flightUpdateForm.patchValue({
+            opNomenclaturaUpdateFlight: orden.opNomenclatura,
+            areaUpdateFlight: orden.opSuperficie,
+            formaPagoUpdateFlight: orden.opFormaPago,
+            precioHaUpdateFlight: orden.opPrecioHa,
+            aclaracionUpdateFlight: orden.opAclaracion || '',
+        });
+
+        if (orden.fk_Piloto) {
+            const pilotoMatch = this.pilotos.find(p => p.pilotoId === orden.fk_Piloto);
+            if (pilotoMatch) {
+                this.flightUpdateForm.patchValue({
+                    pilotoUpdateFlight: pilotoMatch.pilotoId,
+                    nomCompletoPilotoUpdateFlight: pilotoMatch.nombreCompletoPiloto,
+                });
+                this.flightUpdateForm.get('pilotoUpdateFlight')?.markAsDirty();
+            }
+        }
+
+        const propMatch = this.ownersList.find(o => o.propietarioId === orden.fk_Propietario);
+        if (propMatch) {
+            this.flightUpdateForm.patchValue({
+                propietarioUpdateFlight2: propMatch,
+            });
+        }
+
+        const getAgq = (nombre?: string) => {
+            if (!nombre) return '-';
+            const match = this.listadoAgroquimicos.find(a => a.listadoAgroqNom === nombre);
+            return match || nombre;
+        };
+        for (let i = 1; i <= 4; i++) {
+            const nombre = (orden as any)[`opAgroq${i}`];
+            const dosis = (orden as any)[`opDosisAgroq${i}`];
+            if (nombre) {
+                this.flightUpdateForm.patchValue({ [`agq${i}Flight`]: getAgq(nombre) });
+            }
+            if (dosis !== null && dosis !== undefined) {
+                this.flightUpdateForm.patchValue({ [`dosisagq${i}Flight`]: dosis });
+            }
+        }
+
+        const getCoad = (nombre?: string) => {
+            if (!nombre) return '-';
+            const match = this.listadoCoadyuvantes.find(c => c.ListadoCoadNom === nombre);
+            return match || nombre;
+        };
+        for (let i = 1; i <= 2; i++) {
+            const nombre = (orden as any)[`opCoad${i}`];
+            const dosis = (orden as any)[`opDosisCoad${i}`];
+            if (nombre) {
+                this.flightUpdateForm.patchValue({ [`coad${i}Flight`]: getCoad(nombre) });
+            }
+            if (dosis !== null && dosis !== undefined) {
+                this.flightUpdateForm.patchValue({ [`dosiscoad${i}Flight`]: dosis });
+            }
+        }
+    }
+
     updateData() {
 
         const nombreCompletoPiloto = localStorage.getItem('aliasPiloto');
+
+        const pilotoIdUpdate = this.flightUpdateForm.value.pilotoUpdateFlight;
+        const pilotoMatch = this.pilotos.find(p => p.pilotoId === pilotoIdUpdate);
+        const pilotoNombreResolved = pilotoMatch
+            ? pilotoMatch.nombreCompletoPiloto
+            : String(nombreCompletoPiloto || pilotoIdUpdate || '');
 
         // Validamos que los campos no obligatorios tengan un valor válido, si están vacíos les asignamos 0
         this.setDefaultValuesForOptionalFields();
@@ -535,18 +598,12 @@ export class OwnerDataInfoComponent implements OnInit {
                     switch (this.data.type) {
                         case "flight":
 
-                            const agq1Value = this.flightUpdateForm.value.agq1Flight;
-                            const agq1 = typeof agq1Value === 'object' ? agq1Value.nombreAgroquimico : agq1Value;
-                            const agq2Value = this.flightUpdateForm.value.agq2Flight;
-                            const agq2 = typeof agq1Value === 'object' ? agq2Value.nombreAgroquimico : agq2Value;
-                            const agq3Value = this.flightUpdateForm.value.agq3Flight;
-                            const agq3 = typeof agq3Value === 'object' ? agq3Value.nombreAgroquimico : agq3Value;
-                            const agq4Value = this.flightUpdateForm.value.agq4Flight;
-                            const agq4 = typeof agq4Value === 'object' ? agq4Value.nombreAgroquimico : agq4Value;
-                            const coad1Value = this.flightUpdateForm.value.coad1Flight;
-                            const coad1 = typeof coad1Value === 'object' ? coad1Value.nombreCoadyuvante : coad1Value;
-                            const coad2Value = this.flightUpdateForm.value.coad2Flight;
-                            const coad2 = typeof coad2Value === 'object' ? coad2Value.nombreCoadyuvante : coad2Value;
+                            const agq1 = this.extractNombre(this.flightUpdateForm.value.agq1Flight, 'listadoAgroqNom');
+                            const agq2 = this.extractNombre(this.flightUpdateForm.value.agq2Flight, 'listadoAgroqNom');
+                            const agq3 = this.extractNombre(this.flightUpdateForm.value.agq3Flight, 'listadoAgroqNom');
+                            const agq4 = this.extractNombre(this.flightUpdateForm.value.agq4Flight, 'listadoAgroqNom');
+                            const coad1 = this.extractNombre(this.flightUpdateForm.value.coad1Flight, 'ListadoCoadNom');
+                            const coad2 = this.extractNombre(this.flightUpdateForm.value.coad2Flight, 'ListadoCoadNom');
 
                             const updatedFlightData = {
                                 fechaVuelo: this.flightUpdateForm.value.dateUpdateFlight,
@@ -558,9 +615,7 @@ export class OwnerDataInfoComponent implements OnInit {
                                 superficieVuelo: this.flightUpdateForm.value.areaUpdateFlight,
                                 pilotoVuelo: this.flightUpdateForm.value.pilotoUpdateFlight,
                                 idPilotoVuelo: this.flightUpdateForm.value.pilotoUpdateFlight,
-                                pilotoNombreCompleto: this.flightUpdateForm.get('pilotoUpdateFlight')?.pristine
-                                    ? nombreCompletoPiloto
-                                    : this.flightUpdateForm.value.nomCompletoPilotoUpdateFlight,
+                                pilotoNombreCompleto: pilotoNombreResolved,
                                 tecnicoVuelo: this.flightUpdateForm.value.tecnicoUpdateFlight,
                                 formaPago: this.flightUpdateForm.value.formaPagoUpdateFlight,
                                 precioHa: this.flightUpdateForm.value.precioHaUpdateFlight,
@@ -584,6 +639,7 @@ export class OwnerDataInfoComponent implements OnInit {
                                 totcoad1: this.flightUpdateForm.value.areaUpdateFlight * this.flightUpdateForm.value.dosiscoad1Flight,
                                 totcoad2: this.flightUpdateForm.value.areaUpdateFlight * this.flightUpdateForm.value.dosiscoad2Flight,
                                 fk_Usuario: this.flightUpdateForm.value.propietarioUpdateFlight2.propietarioId, // Para el ID
+                                opNomenclatura: this.flightUpdateForm.value.opNomenclaturaUpdateFlight || this.data.data.opNomenclatura || null,
                             }
                             this.ownerService.updateFlight(this.data.data.vueloId, updatedFlightData)
                                 .pipe(takeUntil(this.unsubscribe$))
@@ -607,23 +663,36 @@ export class OwnerDataInfoComponent implements OnInit {
             });
     }
 
-    // Método para filtrar los agroquímicos
-    filterAgroquimicos(value: string): Agroquimico[] {
-        const filterValue = value.toLowerCase();
-        return this.agroquimicosList.filter(agroquimico => agroquimico.nombreAgroquimico.toLowerCase().includes(filterValue));
+    // Método para filtrar los agroquímicos desde el catálogo maestro
+    filterAgroquimicos(value: string): ListadoItem[] {
+        const filterValue = value.toLowerCase().trim();
+        if (!filterValue) return this.listadoAgroquimicos.slice();
+        return this.listadoAgroquimicos.filter(item =>
+            (item.listadoAgroqNom || '').toLowerCase().includes(filterValue)
+        );
     }
 
-    displayAgroquimico(agroquimico: any) {
-        return agroquimico && agroquimico.nombreAgroquimico ? agroquimico.nombreAgroquimico : '';
+    displayAgroquimico(item: ListadoItem | string) {
+        if (typeof item === 'string') return item;
+        return item?.listadoAgroqNom || '';
     }
 
-    filterCoadyuvantes(value: string): Coadyuvante[] {
-        const filterValue = value.toLowerCase();
-        return this.coadyuvantesList.filter(coadyuvante => coadyuvante.nombreCoadyuvante.toLowerCase().includes(filterValue));
+    filterCoadyuvantes(value: string): ListadoItem[] {
+        const filterValue = value.toLowerCase().trim();
+        if (!filterValue) return this.listadoCoadyuvantes.slice();
+        return this.listadoCoadyuvantes.filter(item =>
+            (item.ListadoCoadNom || '').toLowerCase().includes(filterValue)
+        );
     }
 
-    displayCoadyuvante(coadyuvante: any) {
-        return coadyuvante && coadyuvante.nombreCoadyuvante ? coadyuvante.nombreCoadyuvante : '';
+    displayCoadyuvante(item: ListadoItem | string) {
+        if (typeof item === 'string') return item;
+        return item?.ListadoCoadNom || '';
+    }
+
+    private extractNombre(value: any, campo: 'listadoAgroqNom' | 'ListadoCoadNom'): string {
+        if (typeof value === 'string') return value;
+        return value?.[campo] || '-';
     }
 
 }

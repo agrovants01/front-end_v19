@@ -278,6 +278,7 @@ export class OrdenPedidoFormComponent implements OnInit, OnDestroy {
 
     onCoadyuvanteSelected(coad: ListadoItem, index: number): void {
         this.coadyuvantesArray.at(index).patchValue({ nombre: coad.ListadoCoadNom });
+        this.coadError = null;
     }
 
     private _autoSelectPropietario(): void {
@@ -320,6 +321,16 @@ export class OrdenPedidoFormComponent implements OnInit, OnDestroy {
     }
 
     onSubmit(): void {
+        if (this.fromMap && !this.form.get('opUbicacion')?.value) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Datos incompletos',
+                text: 'Se solicita cargar ubicación y los demás datos obligatorios por favor.',
+                confirmButtonText: 'Entendido',
+            });
+            return;
+        }
+
         if (this.form.invalid) {
             this.form.markAllAsTouched();
             return;

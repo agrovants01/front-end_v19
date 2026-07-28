@@ -68,6 +68,23 @@
                             <mat-datepicker #picker></mat-datepicker>
                         </mat-form-field>
 
+                        <!-- Modo lectura: input text -->
+                        <mat-form-field appearance="outline" *ngIf="!isEditing">
+                            <mat-label>Orden de Pedido</mat-label>
+                            <input matInput formControlName="opNomenclaturaUpdateFlight" [disabled]="true" />
+                        </mat-form-field>
+
+                        <!-- Modo edición: select de órdenes -->
+                        <mat-form-field appearance="outline" *ngIf="isEditing">
+                            <mat-label>Orden de Pedido</mat-label>
+                            <mat-select formControlName="opNomenclaturaUpdateFlight" placeholder="Seleccione orden">
+                                <mat-option *ngFor="let orden of ordenesList" [value]="orden.opNomenclatura"
+                                            (click)="onOrdenSelected(orden.opNomenclatura || '')">
+                                    {{ orden.opNomenclatura }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+
 
 
                         <!-- Si no está en modo de edición, muestra el texto del propietario -->
@@ -214,10 +231,11 @@
                             <mat-label>Agroquímico 1</mat-label>
                             <input matInput formControlName="agq1Flight" [matAutocomplete]="autoAgq1">
                             <mat-autocomplete #autoAgq1="matAutocomplete" [displayWith]="displayAgroquimico">
-                                <mat-option *ngFor="let agroquimico of filteredAgq1 | async" [value]="agroquimico">
-                                    {{ agroquimico.nombreAgroquimico }}
+                                <mat-option *ngFor="let item of filteredAgq1 | async" [value]="item">
+                                    {{ item.listadoAgroqNom }}
                                 </mat-option>
                             </mat-autocomplete>
+                            <mat-error *ngIf="flightUpdateForm.get('agq1Flight')?.hasError('existsInCatalog')">Este agroquímico ya existe en el catálogo. Por favor selecciónelo de la lista.</mat-error>
                         </mat-form-field>
 
 
@@ -235,10 +253,11 @@
                             <mat-label>Agroquímico 2</mat-label>
                             <input matInput formControlName="agq2Flight" [matAutocomplete]="autoAgq2">
                             <mat-autocomplete #autoAgq2="matAutocomplete" [displayWith]="displayAgroquimico">
-                                <mat-option *ngFor="let agroquimico of filteredAgq2 | async" [value]="agroquimico">
-                                    {{ agroquimico.nombreAgroquimico }}
+                                <mat-option *ngFor="let item of filteredAgq2 | async" [value]="item">
+                                    {{ item.listadoAgroqNom }}
                                 </mat-option>
                             </mat-autocomplete>
+                            <mat-error *ngIf="flightUpdateForm.get('agq2Flight')?.hasError('existsInCatalog')">Este agroquímico ya existe en el catálogo. Por favor selecciónelo de la lista.</mat-error>
                         </mat-form-field>
 
                         <mat-form-field appearance="outline">
@@ -252,10 +271,11 @@
                             <mat-label>Agroquímico 3</mat-label>
                             <input matInput formControlName="agq3Flight" [matAutocomplete]="autoAgq3">
                             <mat-autocomplete #autoAgq3="matAutocomplete" [displayWith]="displayAgroquimico">
-                                <mat-option *ngFor="let agroquimico of filteredAgq3 | async" [value]="agroquimico">
-                                    {{ agroquimico.nombreAgroquimico }}
+                                <mat-option *ngFor="let item of filteredAgq3 | async" [value]="item">
+                                    {{ item.listadoAgroqNom }}
                                 </mat-option>
                             </mat-autocomplete>
+                            <mat-error *ngIf="flightUpdateForm.get('agq3Flight')?.hasError('existsInCatalog')">Este agroquímico ya existe en el catálogo. Por favor selecciónelo de la lista.</mat-error>
                         </mat-form-field>
 
                         <mat-form-field appearance="outline">
@@ -273,10 +293,11 @@
                             <mat-label>Agroquímico 4</mat-label>
                             <input matInput formControlName="agq4Flight" [matAutocomplete]="autoAgq4">
                             <mat-autocomplete #autoAgq4="matAutocomplete" [displayWith]="displayAgroquimico">
-                                <mat-option *ngFor="let agroquimico of filteredAgq4 | async" [value]="agroquimico">
-                                    {{ agroquimico.nombreAgroquimico }}
+                                <mat-option *ngFor="let item of filteredAgq4 | async" [value]="item">
+                                    {{ item.listadoAgroqNom }}
                                 </mat-option>
                             </mat-autocomplete>
+                            <mat-error *ngIf="flightUpdateForm.get('agq4Flight')?.hasError('existsInCatalog')">Este agroquímico ya existe en el catálogo. Por favor selecciónelo de la lista.</mat-error>
                         </mat-form-field>
 
 
@@ -290,10 +311,11 @@
                             <mat-label>Coadyuvante 1</mat-label>
                             <input matInput formControlName="coad1Flight" [matAutocomplete]="autoCoad1">
                             <mat-autocomplete #autoCoad1="matAutocomplete" [displayWith]="displayCoadyuvante">
-                                <mat-option *ngFor="let coadyuvante of filteredCoad1 | async" [value]="coadyuvante">
-                                    {{ coadyuvante.nombreCoadyuvante }}
+                                <mat-option *ngFor="let item of filteredCoad1 | async" [value]="item">
+                                    {{ item.ListadoCoadNom }}
                                 </mat-option>
                             </mat-autocomplete>
+                            <mat-error *ngIf="flightUpdateForm.get('coad1Flight')?.hasError('existsInCatalog')">Este coadyuvante ya existe en el catálogo. Por favor selecciónelo de la lista.</mat-error>
                         </mat-form-field>
 
 
@@ -308,10 +330,11 @@
                             <mat-label>Coadyuvante 2</mat-label>
                             <input matInput formControlName="coad2Flight" [matAutocomplete]="autoCoad2">
                             <mat-autocomplete #autoCoad2="matAutocomplete" [displayWith]="displayCoadyuvante">
-                                <mat-option *ngFor="let coadyuvante of filteredCoad2 | async" [value]="coadyuvante">
-                                    {{ coadyuvante.nombreCoadyuvante }}
+                                <mat-option *ngFor="let item of filteredCoad2 | async" [value]="item">
+                                    {{ item.ListadoCoadNom }}
                                 </mat-option>
                             </mat-autocomplete>
+                            <mat-error *ngIf="flightUpdateForm.get('coad2Flight')?.hasError('existsInCatalog')">Este coadyuvante ya existe en el catálogo. Por favor selecciónelo de la lista.</mat-error>
                         </mat-form-field>
 
                         <mat-form-field appearance="outline">
