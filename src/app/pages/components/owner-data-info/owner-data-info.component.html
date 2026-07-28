@@ -4,6 +4,7 @@
     <ng-container *ngIf="data.type === 'flight'">
         <header>
             <div class="card__title">
+
                 <div>Vuelo</div>
                 <!-- Si es el admin muestra boton de eliminar vuelo -->
                 <div *appRole="['ADMIN', 'PILOTO', 'CONTRATISTA']" style="display: inline-block;">
