@@ -6,6 +6,38 @@
 :host ::ng-deep .data-card {
     padding: 24px 24px 0 24px !important;
     box-sizing: border-box !important;
+    margin-right: 10px !important;
+}
+
+:host ::ng-deep .data-card::-webkit-scrollbar {
+    width: 10px;
+}
+
+:host ::ng-deep .data-card::-webkit-scrollbar-button,
+:host ::ng-deep .data-card::-webkit-scrollbar-button:vertical:decrement,
+:host ::ng-deep .data-card::-webkit-scrollbar-button:vertical:increment {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
+:host ::ng-deep .data-card::-webkit-scrollbar-corner {
+    display: none;
+}
+
+:host ::ng-deep .data-card::-webkit-scrollbar-track {
+    background: transparent;
+    margin: 10px 0;
+}
+
+:host ::ng-deep .data-card::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.35);
+    border-radius: 5px;
+}
+
+:host ::ng-deep .data-card::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.55);
+    cursor: pointer;
 }
 
 /* Header separado del contenido */
