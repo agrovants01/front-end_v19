@@ -202,6 +202,8 @@
 
     .mat-list-item,
     .mat-mdc-list-item {
+        border-radius: 0 !important;
+
         &:hover {
             background-color: rgba($color: white, $alpha: 0.1);
         }
