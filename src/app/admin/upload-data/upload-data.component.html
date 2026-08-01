@@ -15,12 +15,24 @@
                                 style="display: none"
                             />
                             <!-- Fetch selected filed on change -->
-                            <input
-                                class="file-input"
-                                type="file"
-                                #fileInput
-                                (change)="onFileChanged($event)"
-                            />
+                            <div class="file-input">
+                                <input
+                                    type="file"
+                                    #fileInput
+                                    (change)="onFileChanged($event)"
+                                    style="display: none"
+                                />
+                                <button
+                                    type="button"
+                                    mat-flat-button
+                                    color="primary"
+                                    class="file-input-button"
+                                    (click)="openFileInput()"
+                                >
+                                    Seleccionar archivo
+                                </button>
+                                <span class="file-name">{{ selectedFileName || 'Sin archivos seleccionados' }}</span>
+                            </div>
                         </form>
                         <button
                             class="stepper-button"

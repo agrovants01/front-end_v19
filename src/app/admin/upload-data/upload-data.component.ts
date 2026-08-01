@@ -1,6 +1,6 @@
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { StepperOrientation, STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
@@ -25,6 +25,8 @@ import Swal from 'sweetalert2';
 })
 export class UploadDataComponent implements OnInit {
 
+    @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+
     private unsubscribe$ = new Subject<void>();
 
 
@@ -35,6 +37,7 @@ export class UploadDataComponent implements OnInit {
     })
 
     flights: any;
+    selectedFileName: string = '';
 
     constructor(
         private fb: FormBuilder,
@@ -49,8 +52,13 @@ export class UploadDataComponent implements OnInit {
             .pipe(map(({ matches }) => (matches ? 'horizontal' : 'vertical')));
     }
 
+    openFileInput() {
+        this.fileInput.nativeElement.click();
+    }
+
     onFileChanged(event: any) {
         const selectedFile = event.target.files[0];
+        this.selectedFileName = selectedFile ? selectedFile.name : '';
         const fileReader: FileReader = new FileReader();
         fileReader.readAsText(selectedFile, "UTF-8");
         fileReader.onload = () => {

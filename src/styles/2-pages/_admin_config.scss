@@ -102,6 +102,43 @@
     .flights-form {
         margin-top: 2rem;
     }
+
+    .mat-step-label,
+    .mat-step-text-label,
+    .mat-mdc-step-text-label,
+    .mat-step-label-content,
+    p,
+    mat-label,
+    .mat-mdc-label,
+    .mat-mdc-form-field,
+    .mat-mdc-input-element {
+        font-size: 14px !important;
+        font-family: 'Nunito', sans-serif !important;
+    }
+
+    .file-input-button {
+        margin-right: 1rem;
+    }
+
+    .file-input {
+        display: flex;
+        align-items: center;
+    }
+
+    .mat-mdc-unelevated-button,
+    .mat-mdc-raised-button {
+        --mdc-filled-button-label-text-size: 14px !important;
+        --mdc-filled-button-label-text-weight: 700 !important;
+        font-size: 14px !important;
+        font-weight: 700 !important;
+        font-family: 'Nunito', sans-serif !important;
+
+        .mdc-button__label {
+            font-size: 14px !important;
+            font-weight: 700 !important;
+            font-family: 'Nunito', sans-serif !important;
+        }
+    }
 }
 
 .admin-cont .admin__indexes {
@@ -202,8 +239,7 @@
 
     .mat-list-item,
     .mat-mdc-list-item {
-        min-height: 48px !important;
-        padding: 0 16px !important;
+        border-radius: 0 !important;
 
         &:hover {
             background-color: rgba($color: white, $alpha: 0.1);
@@ -214,15 +250,23 @@
         }
     }
 
-    .mat-list-item-content,
-    .mat-mdc-list-item-content {
-        gap: 1rem !important;
-        align-items: baseline !important;
-        line-height: 20px !important;
+    .mat-mdc-list-item-icon {
+        color: white !important;
+        opacity: 1 !important;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 20px;
+        min-width: 20px;
+        height: 20px;
+        min-height: 20px;
 
         svg {
-            position: relative;
-            top: 5px;
+            stroke: white !important;
+            opacity: 1 !important;
+            display: block;
+            width: 20px;
+            height: 20px;
         }
     }
 }
