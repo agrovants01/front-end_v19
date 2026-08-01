@@ -153,7 +153,7 @@
 //         width: 94%;
 
 //         .timeslider__container {
-//             button.mat-flat-button {
+//             button.mat-mdc-unelevated-button {
 //                 min-width: 0;
 //                 width: 3.5rem;
 //             }
@@ -224,10 +224,10 @@
     display: flex;
     overflow: hidden;
     width: 11rem;
-    height: 3.6rem;
+    height: 8rem;
 }
 
-.timeslider__container button.mat-flat-button {
+.timeslider__container button.mat-mdc-unelevated-button {
     background-color: $mainColor;
     position: absolute;
     bottom: 0;
@@ -236,12 +236,12 @@
     align-items: center;
     justify-content: center;
     width: 11rem;
-    height: 3.6rem;
+    height: 8rem;
     transition:
         width 300ms,
         height 300ms;
 
-    .mat-button-wrapper div {
+    .mdc-button__label div {
         display: flex;
         align-items: center;
         justify-content: center;
@@ -250,7 +250,7 @@
     @include desktop {
         padding: 0 1.5rem;
 
-        .mat-button-wrapper div {
+        .mdc-button__label div {
             width: auto;
         }
     }
@@ -325,7 +325,7 @@
     height: 8rem;
 
     .timeslider__container {
-        button.mat-flat-button {
+        button.mat-mdc-unelevated-button {
             border-top-right-radius: 0;
             border-bottom-right-radius: 0;
             padding: 0 0.4rem;
@@ -372,7 +372,7 @@
         width: 94%;
 
         .timeslider__container {
-            button.mat-flat-button {
+            button.mat-mdc-unelevated-button {
                 min-width: 0;
                 width: 3.5rem;
             }
