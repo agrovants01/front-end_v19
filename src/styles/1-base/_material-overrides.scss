@@ -380,4 +380,12 @@ mat-list {
 .mat-mdc-menu-panel,
 .mat-menu-panel {
     font-family: 'Nunito', sans-serif !important;
+
+    .mat-mdc-menu-item {
+        font-size: 14px !important;
+        min-height: 36px !important;
+        line-height: 1.2 !important;
+        padding-top: 6px !important;
+        padding-bottom: 6px !important;
+    }
 }
