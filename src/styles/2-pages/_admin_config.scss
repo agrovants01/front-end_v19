@@ -203,7 +203,7 @@
     .mat-list-item,
     .mat-mdc-list-item {
         min-height: 48px !important;
-        padding: 12px 8px !important;
+        padding: 0 8px !important;
 
         &:hover {
             background-color: rgba($color: white, $alpha: 0.1);
@@ -217,5 +217,7 @@
     .mat-list-item-content,
     .mat-mdc-list-item-content {
         gap: 2rem !important;
+        align-items: center !important;
+        line-height: 20px !important;
     }
 }
