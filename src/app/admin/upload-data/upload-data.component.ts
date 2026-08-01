@@ -37,6 +37,7 @@ export class UploadDataComponent implements OnInit {
     })
 
     flights: any;
+    selectedFileName: string = '';
 
     constructor(
         private fb: FormBuilder,
@@ -57,6 +58,7 @@ export class UploadDataComponent implements OnInit {
 
     onFileChanged(event: any) {
         const selectedFile = event.target.files[0];
+        this.selectedFileName = selectedFile ? selectedFile.name : '';
         const fileReader: FileReader = new FileReader();
         fileReader.readAsText(selectedFile, "UTF-8");
         fileReader.onload = () => {

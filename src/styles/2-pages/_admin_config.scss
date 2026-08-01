@@ -120,6 +120,11 @@
         margin-right: 1rem;
     }
 
+    .file-input {
+        display: flex;
+        align-items: center;
+    }
+
     .mat-mdc-unelevated-button,
     .mat-mdc-raised-button {
         --mdc-filled-button-label-text-size: 14px !important;
