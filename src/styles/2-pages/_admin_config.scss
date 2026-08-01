@@ -216,14 +216,13 @@
 
     .mat-list-item-content,
     .mat-mdc-list-item-content {
-        gap: 2rem !important;
+        gap: 1rem !important;
         align-items: baseline !important;
         line-height: 20px !important;
 
         svg {
             position: relative;
-            top: 2px;
-            padding-right: 18px;
+            top: 5px;
         }
     }
 }
