@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import Swal from 'sweetalert2';
 import { loadingAlert, errorAlert } from '../../../../shared/services/alerts';
 import * as L from 'leaflet';
@@ -36,7 +36,8 @@ export const MY_FORMATS = {
   standalone: false,
     selector: 'app-timeslider',
     templateUrl: './timeslider.component.html',
-    styleUrls: [],
+    styleUrls: ['./timeslider.component.scss'],
+    encapsulation: ViewEncapsulation.None,
     providers: [
         {
             provide: DateAdapter,
@@ -86,6 +87,9 @@ export class TimesliderComponent implements OnInit {
         const sidebar = document.querySelector('.sidebar');
         const sidebarToggle = document.querySelector('.sidebar__toggle');
 
+        // Default values para que las labels floten desde el inicio
+        this.requestForm.get('weekRequest')?.setValue(this.weeks[0].value);
+
         // Timeslider toggle
         timesliderToggle?.addEventListener('click', () => {
             const cond = sidebar?.classList.contains('sidebar--extended') && window.matchMedia("(max-width: 600px)").matches;
@@ -106,6 +110,9 @@ export class TimesliderComponent implements OnInit {
                     layers.push({ value: index.indiceId, viewValue: index.siglasIndice });
                 })
                 this.layers = layers;
+                if (layers.length > 0) {
+                    this.requestForm.get('layerRequest')?.setValue(layers[0].value);
+                }
             });
     }
 

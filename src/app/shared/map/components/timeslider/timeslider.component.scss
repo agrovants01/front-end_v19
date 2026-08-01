@@ -1,0 +1,204 @@
+.timeslider {
+    position: absolute;
+    bottom: 1.2rem;
+    left: 1rem;
+    z-index: 1000;
+    display: flex;
+    overflow: hidden;
+    width: 11rem;
+    height: 3.6rem;
+}
+
+/* Botón toggle (satélite colapsado) */
+.timeslider__container button.mat-mdc-unelevated-button {
+    background-color: #0B8D38 !important;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 11rem;
+    height: 3.6rem;
+    min-width: 0;
+    border-radius: 0.5rem;
+    transition: width 300ms, height 300ms, border-radius 300ms;
+}
+
+.timeslider__container button.mat-mdc-unelevated-button .mdc-button__label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Barra desplegable (colapsada invisible) */
+.timeslider__container .timeslider__content {
+    background-color: #0B8D38;
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    padding-right: 1rem;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 1rem;
+    width: 1rem;
+    visibility: hidden;
+    transition: width 500ms ease 300ms, padding 300ms ease 200ms, height 300ms;
+}
+
+/* Form fields: invisibles cuando colapsado */
+.timeslider__container .timeslider__content .mat-mdc-form-field {
+    opacity: 0;
+    transition: opacity 300ms;
+    min-width: 0;
+}
+
+/* ===== OVERRIDES MDC COMPACTOS ===== */
+.timeslider__container .timeslider__content .mdc-text-field--outlined {
+    --mdc-outlined-text-field-container-height: 44px;
+}
+
+.timeslider__container .timeslider__content .mat-mdc-form-field-infix {
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+    min-height: auto !important;
+}
+
+.timeslider__container .timeslider__content .mat-mdc-form-field-subscript-wrapper {
+    display: none !important;
+}
+
+.timeslider__container .timeslider__content .mat-mdc-input-element {
+    font-size: 13px;
+}
+
+.timeslider__container .timeslider__content .mat-mdc-select-value-text {
+    font-size: 13px;
+}
+
+.timeslider__container .timeslider__content .mat-mdc-select-arrow-wrapper {
+    height: 20px;
+}
+
+.timeslider__container .timeslider__content .mat-datepicker-toggle .mat-mdc-icon-button {
+    width: 28px;
+    height: 28px;
+    padding: 2px;
+}
+
+.timeslider__container .timeslider__content .mat-datepicker-toggle .mat-icon {
+    width: 18px;
+    height: 18px;
+}
+
+/* Botón buscar/request */
+.timeslider__container .timeslider__content .timeslider__request {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 75%;
+    border-radius: 0.4rem;
+    padding: 1rem;
+    margin-left: -0.5rem;
+    background-color: transparent;
+    border: 0;
+}
+
+.timeslider__container .timeslider__content .timeslider__request:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* ===== ESTADO ACTIVO (barra desplegada) ===== */
+.timeslider--active {
+    height: 6.4rem;
+}
+
+.timeslider--active .timeslider__container button.mat-mdc-unelevated-button {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    padding: 0 0.4rem;
+    height: 6.4rem;
+    width: 3rem;
+}
+
+.timeslider--active .timeslider__container .timeslider__content {
+    height: 6.4rem;
+    width: 83.6rem;
+    padding-left: 5rem;
+    visibility: visible;
+}
+
+.timeslider--active .timeslider__container .timeslider__content .mat-mdc-form-field {
+    opacity: 1;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1270px) {
+    .timeslider--active .timeslider__container .timeslider__content {
+        .mat-mdc-form-field:nth-child(1) { width: 10rem; }
+        .mat-mdc-form-field:nth-child(2) { width: 18rem; }
+        .mat-mdc-form-field:nth-child(3) { width: 13rem; }
+    }
+}
+
+@media (max-width: 1024px) {
+    .timeslider--active {
+        left: 1rem;
+        width: 94%;
+
+        .timeslider__container {
+            button.mat-mdc-unelevated-button {
+                min-width: 0;
+                width: 3.5rem;
+            }
+
+            .timeslider__content {
+                padding-left: 3.7rem;
+                gap: 1rem;
+                width: 100%;
+                max-width: 33.5rem;
+                padding-right: 4rem;
+                justify-content: space-evenly;
+
+                .mat-mdc-form-field:nth-child(1) { width: 6rem; }
+                .mat-mdc-form-field:nth-child(2) { width: 3rem; }
+                .mat-mdc-form-field:nth-child(3) { width: 9rem; }
+
+                .mat-mdc-form-field {
+                    font-size: 1.2rem;
+                    .mat-mdc-form-field-flex {
+                        background-color: transparent;
+                        padding-left: 0;
+                        padding-right: 0;
+                    }
+                }
+
+                .timeslider__request {
+                    padding: 0.5rem;
+                    margin-left: -0.6rem;
+                    position: absolute;
+                    right: 0.6rem;
+                }
+            }
+        }
+    }
+}
+
+@media (min-width: 1025px) {
+    .timeslider--active {
+        width: 59rem;
+    }
+    .timeslider--active .timeslider__container .timeslider__content {
+        width: 100%;
+    }
+}
+
+@media (min-width: 1440px) {
+    .timeslider--active {
+        width: 83.6rem;
+    }
+}
