@@ -20,7 +20,17 @@
                                 type="file"
                                 #fileInput
                                 (change)="onFileChanged($event)"
+                                style="display: none"
                             />
+                            <button
+                                type="button"
+                                mat-flat-button
+                                color="primary"
+                                class="file-input-button"
+                                (click)="openFileInput()"
+                            >
+                                Seleccionar archivo
+                            </button>
                         </form>
                         <button
                             class="stepper-button"

@@ -1,6 +1,6 @@
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { StepperOrientation, STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
@@ -25,6 +25,8 @@ import Swal from 'sweetalert2';
 })
 export class UploadDataComponent implements OnInit {
 
+    @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+
     private unsubscribe$ = new Subject<void>();
 
 
@@ -47,6 +49,10 @@ export class UploadDataComponent implements OnInit {
         this.stepperOrientation = this.breakpointObserver
             .observe('(min-width: 800px)')
             .pipe(map(({ matches }) => (matches ? 'horizontal' : 'vertical')));
+    }
+
+    openFileInput() {
+        this.fileInput.nativeElement.click();
     }
 
     onFileChanged(event: any) {

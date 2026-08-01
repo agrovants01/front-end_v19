@@ -102,6 +102,38 @@
     .flights-form {
         margin-top: 2rem;
     }
+
+    .mat-step-label,
+    .mat-step-text-label,
+    .mat-mdc-step-text-label,
+    .mat-step-label-content,
+    p,
+    mat-label,
+    .mat-mdc-label,
+    .mat-mdc-form-field,
+    .mat-mdc-input-element {
+        font-size: 14px !important;
+        font-family: 'Nunito', sans-serif !important;
+    }
+
+    .file-input-button {
+        margin-right: 1rem;
+    }
+
+    .mat-mdc-unelevated-button,
+    .mat-mdc-raised-button {
+        --mdc-filled-button-label-text-size: 14px !important;
+        --mdc-filled-button-label-text-weight: 700 !important;
+        font-size: 14px !important;
+        font-weight: 700 !important;
+        font-family: 'Nunito', sans-serif !important;
+
+        .mdc-button__label {
+            font-size: 14px !important;
+            font-weight: 700 !important;
+            font-family: 'Nunito', sans-serif !important;
+        }
+    }
 }
 
 .admin-cont .admin__indexes {
