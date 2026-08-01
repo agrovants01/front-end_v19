@@ -214,15 +214,13 @@
         }
     }
 
-    .mat-list-item-content,
-    .mat-mdc-list-item-content {
-        gap: 1rem !important;
-        align-items: baseline !important;
-        line-height: 20px !important;
+    .mat-mdc-list-item-icon {
+        color: white !important;
+        opacity: 1 !important;
 
         svg {
-            position: relative;
-            top: 5px;
+            stroke: white !important;
+            opacity: 1 !important;
         }
     }
 }
