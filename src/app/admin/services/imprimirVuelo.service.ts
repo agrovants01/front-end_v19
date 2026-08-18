@@ -66,7 +66,19 @@ export class ImprimirVueloService {
             setTimeout(() => {
                 const map = this.mapService.map;
                 if (map) {
+                    // Cerrar popups abiertos (ej. hover de polígonos o pines de OP)
+                    map.closePopup();
+                    map.eachLayer((layer: any) => {
+                        if (layer && layer.closeTooltip) {
+                            layer.closeTooltip();
+                        }
+                    });
+
                     const mapElement = map.getContainer();
+                    if (!mapElement) {
+                        reject(new Error('Contenedor del mapa no disponible'));
+                        return;
+                    }
                     domtoimage.toPng(mapElement, {
                         width: mapElement.offsetWidth,
                         height: mapElement.offsetHeight,
@@ -75,8 +87,8 @@ export class ImprimirVueloService {
                             transformOrigin: 'top left'
                         },
                         filter: (node) => {
-                            if (!(node instanceof HTMLElement)) return true;
-                            return !node.classList.contains('no-print');
+                            const el = node as HTMLElement;
+                            return !(el.classList && el.classList.contains('no-print'));
                         }
                     })
                         .then((dataUrl: string) => {

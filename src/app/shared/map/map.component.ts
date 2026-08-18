@@ -186,6 +186,7 @@ export class MapComponent implements OnInit, OnDestroy {
         this._locationClickHandler = (e: L.LeafletMouseEvent) => {
             const coords = `${e.latlng.lat.toFixed(6)}, ${e.latlng.lng.toFixed(6)}`;
             this.pendingLocationMarker = L.marker(e.latlng, { icon: this._greenIcon() }).addTo(this.map);
+            this.pendingLocationMarker.on('add', () => this.pendingLocationMarker?.getElement()?.classList.add('no-print'));
             this.isPickingLocation = false;
             this.map.getContainer().style.cursor = '';
             if (this._locationClickHandler) {
@@ -214,6 +215,7 @@ export class MapComponent implements OnInit, OnDestroy {
                     const parts = orden.opUbicacion.split(',').map(s => parseFloat(s.trim()));
                     if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
                         const marker = L.marker([parts[0], parts[1]], { icon: this._greenIcon() });
+                        marker.on('add', () => marker.getElement()?.classList.add('no-print'));
                         marker.bindPopup(
                             `<div style="font-size: 14px; font-weight: bold;">
                                 <p>Orden de pedido: ${orden.opNomenclatura}</p>

@@ -5,7 +5,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { UserFormComponent } from 'src/app/admin/components/user-form/user-form.component';
 import { GlobalsService } from 'src/app/shared/services/globals.service';
-import { cancelAlert, warningAlert, loadingAlert, successAlert } from '../../../shared/services/alerts';
+import { cancelAlert, warningAlert, loadingAlert, successAlert, errorAlert } from '../../../shared/services/alerts';
 import { ReportService } from '../../services/report.service';
 import { MapService } from 'src/app/shared/services/map.service';
 import jsPDF from 'jspdf';
@@ -158,6 +158,7 @@ export class ReportComponent implements OnInit {
             }
         });
 
+        try {
         const doc = new jsPDF('l', 'mm', 'a4');
 
         // Agregar la tabla con todos los vuelos en la primera página
@@ -231,130 +232,131 @@ export class ReportComponent implements OnInit {
             });
 
             // Esperar un poco para asegurarte de que las capas se hayan eliminado
-            await new Promise((resolve) => {
-                setTimeout(() => {
-                    resolve(null);
-                }, 500);
-            });
+            await this.waitForMapSettled(500);
 
             // Ir a la posición y zoom del vuelo
-            await new Promise((resolve) => {
-                this.mapService.flyToBounds(vuelo.geometryVuelo.coordinates[0]);
-                // Esperar a que el mapa termine de moverse
+            this.mapService.flyToBounds(vuelo.geometryVuelo.coordinates[0]);
+            await this.waitForMapSettled(3000);
 
-                setTimeout(async () => {
-                    // Capturar la imagen del vuelo
-                    const mapElement = this.mapService.map.getContainer();
-                    const dataUrl = await domtoimage.toPng(mapElement, {
-                        width: mapElement.offsetWidth,
-                        height: mapElement.offsetHeight,
-                        style: {
-                            transform: 'scale(1)',
-                            transformOrigin: 'top left'
-                        },
-                        filter: (node) => {
-                            if (!(node instanceof HTMLElement)) return true;
-                            return !node.classList.contains('no-print');
-                        }
-                    });
+            // Guard: si el mapa no está disponible, abortar con mensaje claro
+            const map = this.mapService.map;
+            if (!map) {
+                throw new Error('Mapa no disponible para generar el reporte');
+            }
 
-                    const imgData = '../../../../assets/img/agrovants.png';
-                    doc.addImage(imgData, 'PNG', 15, 7, 33.625, 14);
-
-                    doc.setFontSize(12);
-                    const titulo = "Planilla de Buenas Prácticas Agrícolas";
-                    const subtitulo = vuelo.propietario;
-
-                    const anchoPagina = doc.internal.pageSize.width;
-                    doc.setFont("Helvetica", "bold");
-                    doc.setTextColor(0, 0, 0);
-                    doc.text(titulo, (anchoPagina - doc.getTextWidth(titulo)) / 2, 12);
-                    doc.text(subtitulo, (anchoPagina - doc.getTextWidth(subtitulo)) / 2, 18);
-
-                    let finalY = 25;
-                    const table = this.getTableData(vuelo);
-                    doc.autoTable({
-                        head: [table.head],
-                        body: table.body,
-                        theme: 'grid',
-                        startY: finalY,
-                        styles: {
-                            fontSize: 8,
-                            cellWidth: 'wrap',
-                            overflow: 'linebreak',
-                            halign: 'left'
-                        },
-                        headStyles: {
-                            fontSize: 7,
-                            fillColor: [16, 71, 16],
-                            textColor: [255, 255, 255],
-                            valign: 'middle',
-                            halign: 'left'
-                        },
-                        columnStyles: {
-                            0: { cellWidth: 23 },
-                            1: { cellWidth: 18 },
-                            2: { cellWidth: 18 },
-                            3: { cellWidth: 11 },// area
-                            4: { cellWidth: 17 },// agroq 1
-                            5: { cellWidth: 16 },// total agroq 1
-                            6: { cellWidth: 17 },// agroq 2
-                            7: { cellWidth: 16 },// total agroq 2
-                            8: { cellWidth: 17 },// agroq 3
-                            9: { cellWidth: 16 },// total agroq 3
-                            10: { cellWidth: 17 },// agroq 4
-                            11: { cellWidth: 16 },// total agroq 4
-                            12: { cellWidth: 18 },// coadyuv
-                            13: { cellWidth: 16 },// total coadyuv
-                            14: { cellWidth: 13 },// total h2o
-                            15: { cellWidth: 11 },// total caldo
-                        },
-                        didDrawPage: (data: { cursor: { y: number } }) => {
-                            finalY = data.cursor.y;
-                        }
-                    });
-
-                    finalY += 10;
-
-                    const imagenHeight = 154;
-                    const imagenWidth = 231;
-
-                    let newHeight = imagenHeight;
-                    let newWidth = imagenWidth;
-                    if (finalY + newHeight > doc.internal.pageSize.height - 10) {
-                        newHeight = doc.internal.pageSize.height - finalY - 10;
-                        newWidth = (newHeight / imagenHeight) * imagenWidth;
-                    }
-
-                    const x = (anchoPagina - newWidth) / 2;
-                    doc.addImage(dataUrl, 'PNG', x, finalY, newWidth, newHeight);
-                    doc.setDrawColor(128, 128, 128);
-                    doc.setLineWidth(0.3);
-                    doc.rect(x, finalY, newWidth, newHeight, 'S');
-
-                    const text = "Imagen satelital de superficie de vuelo";
-                    const textX = x + 2;
-                    const textY = finalY + 5;
-
-                    doc.setFont("Helvetica", "bold");
-                    doc.setTextColor(0, 0, 0);
-                    doc.text(text, textX - 0.3, textY - 0.3);
-                    doc.text(text, textX + 0.3, textY - 0.3);
-                    doc.text(text, textX - 0.3, textY + 0.3);
-                    doc.text(text, textX + 0.3, textY + 0.3);
-
-                    doc.setTextColor(253, 178, 0);
-                    doc.text(text, textX, textY);
-
-                    // Agregar de nuevo todas las capas de vuelo
-                    this.mapService.addFlightsToMap(this.flights);
-
-                    resolve(null);
-
-                }, 1500);
-                //================================================================================
-
+            // Cerrar popups abiertos (ej. hover de polígonos o pines de OP)
+            map.closePopup();
+            map.eachLayer((layer: any) => {
+                if (layer && layer.closeTooltip) {
+                    layer.closeTooltip();
+                }
             });
+
+            // Capturar la imagen del vuelo
+            const mapElement = map.getContainer();
+            if (!mapElement) {
+                throw new Error('Contenedor del mapa no disponible');
+            }
+            const dataUrl = await domtoimage.toPng(mapElement, {
+                width: mapElement.offsetWidth,
+                height: mapElement.offsetHeight,
+                style: {
+                    transform: 'scale(1)',
+                    transformOrigin: 'top left'
+                },
+                filter: (node) => {
+                    const el = node as HTMLElement;
+                    return !(el.classList && el.classList.contains('no-print'));
+                }
+            });
+
+            const imgData2 = '../../../../assets/img/agrovants.png';
+            doc.addImage(imgData2, 'PNG', 15, 7, 33.625, 14);
+
+            doc.setFontSize(12);
+            const titulo2 = "Planilla de Buenas Prácticas Agrícolas";
+            const subtitulo2 = vuelo.propietario;
+
+            const anchoPagina2 = doc.internal.pageSize.width;
+            doc.setFont("Helvetica", "bold");
+            doc.setTextColor(0, 0, 0);
+            doc.text(titulo2, (anchoPagina2 - doc.getTextWidth(titulo2)) / 2, 12);
+            doc.text(subtitulo2, (anchoPagina2 - doc.getTextWidth(subtitulo2)) / 2, 18);
+
+            let finalY2 = 25;
+            const table2 = this.getTableData(vuelo);
+            doc.autoTable({
+                head: [table2.head],
+                body: table2.body,
+                theme: 'grid',
+                startY: finalY2,
+                styles: {
+                    fontSize: 8,
+                    cellWidth: 'wrap',
+                    overflow: 'linebreak',
+                    halign: 'left'
+                },
+                headStyles: {
+                    fontSize: 7,
+                    fillColor: [16, 71, 16],
+                    textColor: [255, 255, 255],
+                    valign: 'middle',
+                    halign: 'left'
+                },
+                columnStyles: {
+                    0: { cellWidth: 23 },
+                    1: { cellWidth: 18 },
+                    2: { cellWidth: 18 },
+                    3: { cellWidth: 11 },// area
+                    4: { cellWidth: 17 },// agroq 1
+                    5: { cellWidth: 16 },// total agroq 1
+                    6: { cellWidth: 17 },// agroq 2
+                    7: { cellWidth: 16 },// total agroq 2
+                    8: { cellWidth: 17 },// agroq 3
+                    9: { cellWidth: 16 },// total agroq 3
+                    10: { cellWidth: 17 },// agroq 4
+                    11: { cellWidth: 16 },// total agroq 4
+                    12: { cellWidth: 18 },// coadyuv
+                    13: { cellWidth: 16 },// total coadyuv
+                    14: { cellWidth: 13 },// total h2o
+                    15: { cellWidth: 11 },// total caldo
+                },
+                didDrawPage: (data: { cursor: { y: number } }) => {
+                    finalY2 = data.cursor.y;
+                }
+            });
+
+            finalY2 += 10;
+
+            const imagenHeight = 154;
+            const imagenWidth = 231;
+
+            let newHeight = imagenHeight;
+            let newWidth = imagenWidth;
+            if (finalY2 + newHeight > doc.internal.pageSize.height - 10) {
+                newHeight = doc.internal.pageSize.height - finalY2 - 10;
+                newWidth = (newHeight / imagenHeight) * imagenWidth;
+            }
+
+            const x = (anchoPagina2 - newWidth) / 2;
+            doc.addImage(dataUrl, 'PNG', x, finalY2, newWidth, newHeight);
+            doc.setDrawColor(128, 128, 128);
+            doc.setLineWidth(0.3);
+            doc.rect(x, finalY2, newWidth, newHeight, 'S');
+
+            const text = "Imagen satelital de superficie de vuelo";
+            const textX = x + 2;
+            const textY = finalY2 + 5;
+
+            doc.setFont("Helvetica", "bold");
+            doc.setTextColor(0, 0, 0);
+            doc.text(text, textX - 0.3, textY - 0.3);
+            doc.text(text, textX + 0.3, textY - 0.3);
+            doc.text(text, textX - 0.3, textY + 0.3);
+            doc.text(text, textX + 0.3, textY + 0.3);
+
+            doc.setTextColor(253, 178, 0);
+            doc.text(text, textX, textY);
         }
 
         const pdfBlob = doc.output('blob');
@@ -369,6 +371,9 @@ export class ReportComponent implements OnInit {
 
         //a.download = 'reporte_vuelos.pdf';
         a.click();
+        setTimeout(() => {
+            URL.revokeObjectURL(fileURL);
+        }, 1000);
         setTimeout(() => {
             Swal.close();
             Swal.fire({
@@ -386,12 +391,43 @@ export class ReportComponent implements OnInit {
             });
             this.data.formatRangeDates();
         }, 1000);
-        URL.revokeObjectURL(fileURL);
+        } catch (error) {
+            console.error('Error al generar el reporte con imágenes:', error);
+            Swal.close();
+            errorAlert('No se pudo generar el reporte con imágenes', 'Revisá la consola del navegador para más detalles.');
+        } finally {
+            // Restaurar todas las capas de vuelo aunque falle
+            this.mapService.addFlightsToMap(this.flights);
+        }
     }
 
     getMonthString(month: number) {
         const months = ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'];
         return months[month];
+    }
+
+    /**
+     * Espera a que el mapa termine de moverse (evento 'moveend') o hasta un timeout.
+     * Si no hay mapa disponible, resuelve inmediatamente.
+     */
+    private waitForMapSettled(timeout: number): Promise<void> {
+        const map = this.mapService.map;
+        if (!map) {
+            return Promise.resolve();
+        }
+        return new Promise((resolve) => {
+            let settled = false;
+            const finish = () => {
+                if (settled) return;
+                settled = true;
+                map.off('moveend', onMoveEnd);
+                clearTimeout(timer);
+                resolve();
+            };
+            const onMoveEnd = () => finish();
+            const timer = setTimeout(finish, timeout);
+            map.on('moveend', onMoveEnd);
+        });
     }
     getTableDataForAllFlights(flights: any[]) {
         // Ordenar vuelos por fecha ascendente
