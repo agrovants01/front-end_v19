@@ -1,10 +1,12 @@
 import { Component, Inject, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Subject } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 import { AdminService } from '../services/admin.service';
+import { ImprimirOrdenPedidoService } from '../services/imprimir-orden-pedido.service';
+import { MapService } from '../../shared/services/map.service';
 import { OrdenPedido, UsuarioSelect, ListadoItem } from './orden-pedido.interface';
 
 @Component({
@@ -19,6 +21,17 @@ export class OrdenPedidoFormComponent implements OnInit, OnDestroy {
     form: FormGroup;
     isEdit = false;
     isReadonly = false;
+    precioManual = false;
+
+    get formTitle(): string {
+        if (this.isReadonly) {
+            return this.data?.opNomenclatura ? `Orden de Pedido Nº ${this.data.opNomenclatura}` : 'Orden de Pedido';
+        }
+        if (this.isEdit && this.data?.opNomenclatura) {
+            return `Editar Orden de Pedido Nº ${this.data.opNomenclatura}`;
+        }
+        return this.isEdit ? 'Editar Orden de Pedido' : 'Nueva Orden de Pedido';
+    }
 
     pilotos: UsuarioSelect[] = [];
     propietarios: UsuarioSelect[] = [];
@@ -39,6 +52,8 @@ export class OrdenPedidoFormComponent implements OnInit, OnDestroy {
     constructor(
         private fb: FormBuilder,
         private _adminService: AdminService,
+        private _imprimirOpService: ImprimirOrdenPedidoService,
+        private _mapService: MapService,
         public dialogRef: MatDialogRef<OrdenPedidoFormComponent>,
         @Inject(MAT_DIALOG_DATA) public data: any
     ) {
@@ -63,6 +78,16 @@ export class OrdenPedidoFormComponent implements OnInit, OnDestroy {
     get coadyuvantesArray(): FormArray { return this.form.get('coadyuvantes') as FormArray; }
 
     fromMap = false;
+
+    get puedeImprimir(): boolean {
+        return this.isReadonly && !!this.data?.puedeImprimir;
+    }
+
+    get modoMapa(): boolean {
+        return !!this.data?.puedeImprimir;
+    }
+
+    editando = false;
 
     ngOnInit(): void {
         this.isEdit = !!this.data?.opId;
@@ -117,107 +142,110 @@ export class OrdenPedidoFormComponent implements OnInit, OnDestroy {
     loadData(): void {
         this._adminService.getPilotos().pipe(takeUntil(this.unsubscribe$)).subscribe(p => {
             this.pilotos = p;
-            this.filteredPilotos = p;
-        });
-        this._adminService.getPropietarios().pipe(takeUntil(this.unsubscribe$)).subscribe(p => {
-            this.propietarios = p;
-            this.filteredPropietarios = p;
-            if (this.isEdit) {
-                this.populateForm();
-            } else {
-                this._autoSelectPropietario();
+            this.filteredPilotos = [...p];
+            if (this.data?.fk_Piloto) {
+                this.form.get('fk_Piloto')?.setValue(this.data.fk_Piloto);
             }
         });
+
+        this._adminService.getPropietarios().pipe(takeUntil(this.unsubscribe$)).subscribe((p: any[]) => {
+            this.propietarios = p;
+            this.filteredPropietarios = [...p];
+            if (this.data?.fk_Propietario) {
+                const prop = this.propietarios.find(x => x.usuarioId === this.data.fk_Propietario);
+                if (prop) {
+                    this.form.get('fk_Propietario')?.setValue(prop.usuarioId);
+                    this.form.get('propietarioSearch')?.setValue(`${prop.nombreUsuario} ${prop.apellidoUsuario}`);
+                }
+            }
+        });
+
         this._adminService.getAgroquimicos().pipe(takeUntil(this.unsubscribe$)).subscribe(a => {
             this.agroquimicos = a;
-            this.filteredAgroquimicos = a;
+            this.filteredAgroquimicos = [...a];
         });
+
         this._adminService.getCoadyuvantes().pipe(takeUntil(this.unsubscribe$)).subscribe(c => {
             this.coadyuvantes = c;
-            this.filteredCoadyuvantes = c;
+            this.filteredCoadyuvantes = [...c];
         });
+
+        if (this.data?.opId) {
+            this.loadOrdenData();
+        }
+    }
+
+    private loadOrdenData(): void {
+        if (!this.data) return;
+
+        this.form.patchValue({
+            opFecha: this._parseDate(this.data.opFecha),
+            opCultivo: this.data.opCultivo || '',
+            opSuperficie: this.data.opSuperficie || null,
+            opFormaPago: this.data.opFormaPago || 'PAGO PENDIENTE',
+            opPrecioHa: this.data.opPrecioHa || null,
+            opPrecioTotal: this.data.opPrecioTotal || 0,
+            opAclaracion: this.data.opAclaracion || '',
+            opUbicacion: this.data.opUbicacion || '',
+        });
+
+        if (this.data.opUbicacion) {
+            this.form.get('opUbicacion')?.enable();
+        }
+
+        this.agroquimicosArray.clear();
+        this.coadyuvantesArray.clear();
+
+        for (let i = 1; i <= 4; i++) {
+            const nombre = this.data[`opAgroq${i}`];
+            const dosis = this.data[`opDosisAgroq${i}`];
+            if (nombre) {
+                this.agroquimicosArray.push(this.fb.group({
+                    nombre: [nombre],
+                    dosis: [dosis || 0],
+                }));
+            }
+        }
+
+        for (let i = 1; i <= 2; i++) {
+            const nombre = this.data[`opCoad${i}`];
+            const dosis = this.data[`opDosisCoad${i}`];
+            if (nombre) {
+                this.coadyuvantesArray.push(this.fb.group({
+                    nombre: [nombre],
+                    dosis: [dosis || 0],
+                }));
+            }
+        }
     }
 
     setupCalculations(): void {
-        this.form.get('opSuperficie')?.valueChanges.pipe(takeUntil(this.unsubscribe$)).subscribe(() => this.calcularTarifa());
-        this.form.get('opCultivo')?.valueChanges.pipe(takeUntil(this.unsubscribe$)).subscribe(() => this.calcularTarifa());
+        this.form.get('opSuperficie')?.valueChanges.pipe(takeUntil(this.unsubscribe$)).subscribe(() => this.calcularPrecio());
         this.form.get('opPrecioHa')?.valueChanges.pipe(takeUntil(this.unsubscribe$)).subscribe(() => this.calcularTotal());
-        this.form.get('opSuperficie')?.valueChanges.pipe(takeUntil(this.unsubscribe$)).subscribe(() => this.calcularTotal());
     }
 
-    calcularTarifa(): void {
-        const cultivo = this.form.get('opCultivo')?.value;
-        const superficie = this.form.get('opSuperficie')?.value;
-        if (cultivo && superficie && superficie > 0) {
-            this._adminService.calcularTarifa(cultivo, superficie).pipe(takeUntil(this.unsubscribe$)).subscribe(res => {
-                if (res.ok) {
-                    this.form.patchValue({ opPrecioHa: res.precioHa }, { emitEvent: false });
-                    this.calcularTotal();
-                }
-            });
+    calcularPrecio(): void {
+        if (this.precioManual) return;
+        const sup = this.form.get('opSuperficie')?.value;
+        const total = this.form.get('opPrecioTotal')?.value;
+        if (sup > 0 && total > 0) {
+            this.form.get('opPrecioHa')?.setValue(+(total / sup).toFixed(2), { emitEvent: false });
         }
     }
 
     calcularTotal(): void {
-        const sup = this.form.get('opSuperficie')?.value || 0;
-        const precioHa = this.form.get('opPrecioHa')?.value || 0;
-        this.form.get('opPrecioTotal')?.setValue(+(sup * precioHa * 1.105).toFixed(2), { emitEvent: false });
-    }
-
-    populateForm(): void {
-        this.form.patchValue({
-            opFecha: this._parseDate(this.data!.opFecha),
-            fk_Piloto: this.data!.fk_Piloto,
-            fk_Propietario: this.data!.fk_Propietario,
-            opCultivo: this.data!.opCultivo,
-            opSuperficie: this.data!.opSuperficie,
-            opFormaPago: this.data!.opFormaPago || 'PAGO PENDIENTE',
-            opPrecioHa: this.data!.opPrecioHa,
-            opPrecioTotal: this.data!.opPrecioTotal,
-            opUbicacion: (this.data as any).opUbicacion || '',
-            opAclaracion: (this.data as any).opAclaracion || '',
-        }, { emitEvent: false });
-        const prop = this.propietarios.find(p => p.usuarioId === this.data!.fk_Propietario);
-        this.form.patchValue({
-            propietarioSearch: prop ? prop.aliasUsuario : (this.data!.fk_Propietario || ''),
-        }, { emitEvent: false });
-        for (let i = 1; i <= 4; i++) {
-            const nom = (this.data as any)[`opAgroq${i}`];
-            const dosis = (this.data as any)[`opDosisAgroq${i}`];
-            if (nom) this.addAgroquimico(nom, dosis);
-        }
-        for (let i = 1; i <= 2; i++) {
-            const nom = (this.data as any)[`opCoad${i}`];
-            const dosis = (this.data as any)[`opDosisCoad${i}`];
-            if (nom) this.addCoadyuvante(nom, dosis);
+        const sup = this.form.get('opSuperficie')?.value;
+        const precio = this.form.get('opPrecioHa')?.value;
+        if (sup > 0 && precio > 0) {
+            this.form.get('opPrecioTotal')?.setValue(+(sup * precio).toFixed(2), { emitEvent: false });
         }
     }
 
-    filterPilotos(val: string): void {
-        const filter = val.toLowerCase();
-        this.filteredPilotos = this.pilotos.filter(p =>
-            (p.aliasUsuario || '').toLowerCase().includes(filter) ||
-            (p.nombreUsuario || '').toLowerCase().includes(filter)
-        );
-    }
-
-    filterPropietarios(val: string): void {
-        const filter = val.toLowerCase();
-        this.filteredPropietarios = this.propietarios.filter(p =>
-            (p.aliasUsuario || '').toLowerCase().includes(filter) ||
-            (p.nombreUsuario || '').toLowerCase().includes(filter)
-        );
-    }
-
-    onPropietarioSelected(p: UsuarioSelect): void {
-        this.form.patchValue({ fk_Propietario: p.usuarioId, propietarioSearch: p.aliasUsuario });
-    }
-
-    addAgroquimico(nombre?: string, dosis?: number): void {
+    addAgroquimico(): void {
         if (this.agroquimicosArray.length >= 4) return;
         this.agroquimicosArray.push(this.fb.group({
-            nombre: [nombre || '', Validators.required],
-            dosis: [dosis || 0],
+            nombre: ['', Validators.required],
+            dosis: [0],
         }));
     }
 
@@ -247,11 +275,11 @@ export class OrdenPedidoFormComponent implements OnInit, OnDestroy {
         }
     }
 
-    addCoadyuvante(nombre?: string, dosis?: number): void {
-        if (this.coadyuvantesArray.length >= 4) return;
+    addCoadyuvante(): void {
+        if (this.coadyuvantesArray.length >= 2) return;
         this.coadyuvantesArray.push(this.fb.group({
-            nombre: [nombre || '', Validators.required],
-            dosis: [dosis || 0],
+            nombre: ['', Validators.required],
+            dosis: [0],
         }));
     }
 
@@ -267,6 +295,11 @@ export class OrdenPedidoFormComponent implements OnInit, OnDestroy {
         this.validateCoadyuvante(index);
     }
 
+    onCoadyuvanteSelected(coad: ListadoItem, index: number): void {
+        this.coadyuvantesArray.at(index).patchValue({ nombre: coad.ListadoCoadNom });
+        this.coadError = null;
+    }
+
     validateCoadyuvante(index: number): void {
         const val = this.coadyuvantesArray.at(index).get('nombre')?.value;
         if (val && !this.coadyuvantes.some(c => (c.ListadoCoadNom || '').toLowerCase() === val.toLowerCase())) {
@@ -276,39 +309,8 @@ export class OrdenPedidoFormComponent implements OnInit, OnDestroy {
         }
     }
 
-    onCoadyuvanteSelected(coad: ListadoItem, index: number): void {
-        this.coadyuvantesArray.at(index).patchValue({ nombre: coad.ListadoCoadNom });
-        this.coadError = null;
-    }
-
-    private _autoSelectPropietario(): void {
-        const nombreGuardado = this.data?.nombreCompleto || localStorage.getItem('nombreCompleto');
-        if (!nombreGuardado) return;
-        const match = this.propietarios.find(p =>
-            p.aliasUsuario === nombreGuardado ||
-            (p.nombreUsuario + ' ' + p.apellidoUsuario) === nombreGuardado
-        );
-        if (match) {
-            this.form.patchValue({
-                fk_Propietario: match.usuarioId,
-                propietarioSearch: match.aliasUsuario,
-            });
-        }
-    }
-
-    pickLocation(): void {
-        this.dialogRef.close({ pickLocation: true });
-    }
-
-    onGeoBlock(event: MouseEvent): void {
-        if (!this.fromMap) return;
-        const locationValue = this.form.get('opUbicacion')?.value;
-        if (locationValue) return;
-
-        const target = event.target as HTMLElement;
-        const formGrid = event.currentTarget as HTMLElement;
-        const geoField = formGrid.querySelector('.geolocalizar-field');
-        if (geoField?.contains(target)) return;
+    onGeoBlock(event: Event): void {
+        if (this.fromMap && !this.isReadonly) return;
 
         event.preventDefault();
         event.stopPropagation();
@@ -318,6 +320,11 @@ export class OrdenPedidoFormComponent implements OnInit, OnDestroy {
             icon: 'warning',
             confirmButtonText: 'Entendido',
         });
+    }
+
+    pickLocation(): void {
+        if (this.form.get('opUbicacion')?.value) return;
+        this.dialogRef.close({ pickLocation: true });
     }
 
     onSubmit(): void {
@@ -389,7 +396,26 @@ export class OrdenPedidoFormComponent implements OnInit, OnDestroy {
             : this._adminService.saveOrden(orden);
 
         req.pipe(takeUntil(this.unsubscribe$)).subscribe({
-            next: () => {
+            next: (res: any) => {
+                let syncDone$ = of(null);
+                if (this.isEdit && this.data?.opNomenclatura) {
+                    orden.opNomenclatura = this.data.opNomenclatura;
+                    const pilotoSel = this.pilotos.find(p => p.usuarioId === formVal.fk_Piloto);
+                    if (pilotoSel) {
+                        orden.pilotoNombreCompleto = `${pilotoSel.nombreUsuario} ${pilotoSel.apellidoUsuario}`.trim();
+                    }
+                    syncDone$ = this._adminService.syncFlightsWithOrden(orden);
+                }
+
+                syncDone$.subscribe({
+                    next: () => {
+                        if (this.modoMapa) {
+                            this._mapService.reloadFlights();
+                        }
+                    },
+                    error: (err) => console.error('Error al sincronizar vuelos con la OP:', err),
+                });
+
                 Swal.fire({
                     icon: 'success',
                     title: 'Éxito',
@@ -397,13 +423,62 @@ export class OrdenPedidoFormComponent implements OnInit, OnDestroy {
                     showConfirmButton: false,
                     timer: 2000,
                 });
-                this.dialogRef.close(true);
+                if (this.modoMapa) {
+                    const saved = res?.data || orden;
+                    this.data = { ...this.data, ...saved, opNomenclatura: this.data.opNomenclatura };
+                    this.form.get('opPrecioTotal')?.setValue(saved.opPrecioTotal, { emitEvent: false });
+                    this.form.get('opPrecioHa')?.setValue(saved.opPrecioHa, { emitEvent: false });
+                    this._volverAReadonly();
+                } else {
+                    this.dialogRef.close(true);
+                }
             },
             error: () => Swal.fire('Error', 'No se pudo guardar la orden', 'error'),
         });
     }
 
+    imprimirReporte(): void {
+        const piloto = this.pilotos.find(p => p.usuarioId === this.data?.fk_Piloto);
+        const propietario = this.propietarios.find(p => p.usuarioId === this.data?.fk_Propietario);
+
+        const propietarioNombre = propietario
+            ? (propietario.nombreUsuario + ' ' + propietario.apellidoUsuario).trim()
+            : '';
+
+        const payload: any = {
+            ...this.data,
+            pilotoAlias: piloto?.aliasUsuario || this.data?.pilotoAlias,
+            propietarioAlias: propietario?.aliasUsuario || this.data?.propietarioAlias,
+            propietarioNombre: propietarioNombre || this.data?.propietarioNombre,
+        };
+
+        this._imprimirOpService.imprimirOrdenPedido(payload)
+            .catch(() => Swal.fire('Error', 'No se pudo generar el reporte', 'error'));
+    }
+
+    activarEdicion(): void {
+        this.editando = true;
+        this.isReadonly = false;
+        this.form.enable();
+        this.form.get('opUbicacion')?.disable();
+        this.form.get('opPrecioTotal')?.disable();
+        if (!this.precioManual) {
+            this.form.get('opPrecioHa')?.disable();
+        }
+    }
+
+    private _volverAReadonly(): void {
+        this.editando = false;
+        this.isReadonly = true;
+        this.precioManual = false;
+        this.form.disable();
+    }
+
     onCancel(): void {
-        this.dialogRef.close();
+        if (this.editando) {
+            this._volverAReadonly();
+        } else {
+            this.dialogRef.close();
+        }
     }
 }

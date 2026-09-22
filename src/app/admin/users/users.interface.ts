@@ -11,7 +11,8 @@ export interface UserList extends UserBase {
     emailUsuario: string;
     telefonoUsuario: string;
     cuitUsuario: string;
-    activo: boolean
+    activo: boolean;
+    esContratista?: boolean;
 }
 
 export interface UserLogin extends UserBase {

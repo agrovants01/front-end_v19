@@ -326,7 +326,7 @@ import { ProfileList } from '../../services/profiles.interface';
 import { AdminService } from '../../services/admin.service';
 import { takeUntil } from 'rxjs/operators';
 import { Observable, Subject } from 'rxjs';
-import { cancelAlert, confirmAlert, errorAlert } from '../../../shared/services/alerts';
+import { cancelAlert, confirmAlert, errorAlert, duplicadosAlert } from '../../../shared/services/alerts';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 
 //Data from parent components
@@ -381,7 +381,8 @@ export class UserFormComponent implements OnInit, OnDestroy {
             Validators.minLength(11),
             Validators.maxLength(50),
             Validators.pattern(numericPattern)]],
-        perfilUsuario: ['', [Validators.required]]
+        perfilUsuario: ['', [Validators.required]],
+        esContratista: [false]
     });
 
     //Get the avalibles profiles
@@ -389,9 +390,8 @@ export class UserFormComponent implements OnInit, OnDestroy {
         this._adminService.getUsuerProfiles()
             .pipe(takeUntil(this.unsubscribe$))
             .subscribe((profiles: ProfileList[]) => {
+                this.perfilesList = profiles;
                 observer.next(profiles);
-                //console.log(profiles);
-                //console.log('Trae bien los perfiles');
             }, error => {
                 console.log(error);
                 errorAlert('No se pudo recuperar el listado de perfiles').then(() => {
@@ -401,6 +401,19 @@ export class UserFormComponent implements OnInit, OnDestroy {
             })
 
     });
+
+    private perfilesList: ProfileList[] = [];
+    private isInitializing = true;
+    private originalNombre = '';
+    private originalAlias = '';
+    private originalEmail = '';
+
+    // True solo cuando el perfil seleccionado es PILOTO
+    get esPerfilPiloto(): boolean {
+        const perfilId = this.userForm.get('perfilUsuario')?.value;
+        const perfil = this.perfilesList.find((p) => p.perfilId === perfilId);
+        return perfil?.nombrePerfil?.toUpperCase() === 'PILOTO';
+    }
 
     constructor(
         private fb: FormBuilder,
@@ -414,14 +427,12 @@ export class UserFormComponent implements OnInit, OnDestroy {
         //Set the title
         this.title = this.userFormData.title;
 
-        //Debug logs
-        console.log(this.userFormData.user?.domicilioUsuario);
-        console.log(this.userFormData.user?.nombreUsuario);
-        console.log(this.userFormData.user?.apellidoUsuario?.trim() || null);
-        console.log(this.userFormData.user?.aliasUsuario);
-
         //If the parent is edit, fill the form with the user data
         if (this.userFormData.user) {
+            this.originalNombre = (this.userFormData.user?.nombreUsuario || '').trim();
+            this.originalAlias = (this.userFormData.user?.aliasUsuario || '').trim();
+            this.originalEmail = (this.userFormData.user?.emailUsuario || '').trim();
+
             this.userForm.reset({
                 nombreUsuario: this.userFormData.user?.nombreUsuario,
                 apellidoUsuario: this.userFormData.user?.apellidoUsuario || '',
@@ -431,6 +442,7 @@ export class UserFormComponent implements OnInit, OnDestroy {
                 telefonoUsuario: this.userFormData.user?.telefonoUsuario,
                 cuitUsuario: this.userFormData.user?.cuitUsuario,
                 perfilUsuario: this.userFormData.user?.perfilUsuario,
+                esContratista: this.userFormData.user?.esContratista || false,
             });
 
             // Para usuario existente, determinar si el alias fue personalizado
@@ -445,6 +457,14 @@ export class UserFormComponent implements OnInit, OnDestroy {
 
             this.setProfileValue(this.userFormData.user?.perfilUsuario);
         }
+
+        // Si el perfil deja de ser PILOTO, desmarcar contratista
+        this.userForm.get('perfilUsuario')?.valueChanges.subscribe(() => {
+            if (this.isInitializing) return;
+            if (!this.esPerfilPiloto) {
+                this.userForm.get('esContratista')?.setValue(false, { emitEvent: false });
+            }
+        });
 
     }
 
@@ -511,9 +531,6 @@ export class UserFormComponent implements OnInit, OnDestroy {
 
     get telefonoErrorMsg(): string {
         const errors = this.userForm.get('telefonoUsuario')?.errors;
-        // if (errors?.required) {
-        //     return 'Este campo es obligatorio';
-        // } else
         if (errors?.maxlength || errors?.minlength) {
             return 'Este campo debe tener de 7 a 50 caracteres';
         } else if (errors?.pattern) {
@@ -525,9 +542,6 @@ export class UserFormComponent implements OnInit, OnDestroy {
 
     get cuitErrorMsg(): string {
         const errors = this.userForm.get('cuitUsuario')?.errors;
-        // if (errors?.required) {
-        //     return 'Este campo es obligatorio';
-        // } else
         if (errors?.pattern || errors?.maxlength || errors?.minlength) {
             return 'El formato no es válido';
         }
@@ -596,18 +610,84 @@ export class UserFormComponent implements OnInit, OnDestroy {
             return;
         }
 
-        confirmAlert()
-            .then((result: any) => {
-                if (result.isConfirmed) {
-                    //Return the form data to the parent
-                    let output: UserList = this.userForm.value;
-                    if (this.userFormData.user) {
-                        output.usuarioId = this.userFormData.user!.usuarioId;
+        this.verificarDuplicados();
+    }
+
+    // Verifica si hay usuarios duplicados (exactos) o parecidos antes de confirmar el guardado
+    private verificarDuplicados(): void {
+        const nombre = (this.userForm.get('nombreUsuario')?.value || '').trim();
+        const apellido = (this.userForm.get('apellidoUsuario')?.value || '').trim();
+        const alias = (this.userForm.get('aliasUsuario')?.value || '').trim();
+        const email = (this.userForm.get('emailUsuario')?.value || '').trim();
+        const perfilUsuario = this.userForm.get('perfilUsuario')?.value;
+        const excluirUsuarioId = this.userFormData.user?.usuarioId;
+        const isEdit = !!this.userFormData.user;
+
+        // En edición, si nombre, alias y email no cambiaron, saltar validación de duplicados
+        if (isEdit && nombre === this.originalNombre && alias === this.originalAlias && email === this.originalEmail) {
+            let output: UserList = this.userForm.value;
+            output.usuarioId = this.userFormData.user!.usuarioId;
+            this.dialogRef.close(output);
+            return;
+        }
+
+        this._adminService.buscarUsuariosSimilares(nombre, apellido, alias, perfilUsuario, excluirUsuarioId)
+            .pipe(takeUntil(this.unsubscribe$))
+            .subscribe({
+                next: (res) => {
+                    const exactos = res?.exactos || [];
+                    const similares = res?.similares || [];
+
+                    // Bloqueo duro: ya existe un usuario idéntico en el mismo perfil
+                    if (exactos.length > 0) {
+                        const d = exactos[0];
+                        const nombreD = [d.nombreUsuario, d.apellidoUsuario].filter(Boolean).join(' ');
+                        errorAlert(
+                            'Ya existe un usuario con esos datos',
+                            `Ya existe "${nombreD || d.aliasUsuario}"${d.perfil ? ` (${d.perfil})` : ''} en el mismo perfil.`
+                        );
+                        return;
                     }
-                    this.dialogRef.close(output);
+
+                    // Aviso suave: hay usuarios parecidos
+                    const continuar = () => {
+                        confirmAlert()
+                            .then((result: any) => {
+                                if (result.isConfirmed) {
+                                    let output: UserList = this.userForm.value;
+                                    if (this.userFormData.user) {
+                                        output.usuarioId = this.userFormData.user!.usuarioId;
+                                    }
+                                    this.dialogRef.close(output);
+                                }
+                            });
+                    };
+
+                    if (similares.length > 0) {
+                        duplicadosAlert(similares, undefined, isEdit)
+                            .then((result: any) => {
+                                if (result.isConfirmed) {
+                                    continuar();
+                                }
+                            });
+                    } else {
+                        continuar();
+                    }
+                },
+                error: () => {
+                    // Si falla la consulta de parecidos, se continúa con el flujo normal
+                    confirmAlert()
+                        .then((result: any) => {
+                            if (result.isConfirmed) {
+                                let output: UserList = this.userForm.value;
+                                if (this.userFormData.user) {
+                                    output.usuarioId = this.userFormData.user!.usuarioId;
+                                }
+                                this.dialogRef.close(output);
+                            }
+                        });
                 }
             });
-
     }
 
     // Método simplificado para alternar el bloqueo de alias
@@ -642,6 +722,7 @@ export class UserFormComponent implements OnInit, OnDestroy {
                         }
                     });
                 }
+                this.isInitializing = false;
                 return;
             })
         return;

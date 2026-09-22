@@ -54,10 +54,6 @@
     font-size: 3px !important;
 }
 
-.admin__content .admin__users {
-    min-height: 1000px !important;
-}
-
 ::ng-deep .mat-form-field-flex>.mat-form-field-infix {
     padding: 0.5em 0px !important;
 }
@@ -89,22 +85,31 @@
     margin-bottom: 0;
     background: #182a1e;
     border-radius: 8px;
-    /*padding: 20px 10px 10px 10px;*/
 }
 
-/* ESTILOS COPIADOS DE REMITO-ADMIN - USAR appearance="fill" */
 .date-container ::ng-deep .mat-form-field {
     width: 100% !important;
 }
 
+::ng-deep .mat-form-field-appearance-fill .mat-form-field-flex {
+    background-color: #384E40;
+    color: white;
+}
+
+.buscador-gestion {
+    width: calc(38rem + 4vw);
+    max-width: 100%;
+    margin: 12px 20px 0 20px;
+}
+
 .date-container ::ng-deep .mat-form-field-appearance-fill .mat-form-field-flex {
-    background-color: rgba(255, 255, 255, 0.1) !important;
+    background-color: #384E40 !important;
     border-radius: 4px !important;
     padding: 0.75em 0.75em 0 0.75em !important;
 }
 
 .date-container ::ng-deep .mat-form-field-appearance-fill .mat-form-field-label {
-    color: #a0d2a0 !important;
+    color: rgba(255, 255, 255, 0.7) !important;
     top: 1.28125em !important;
 }
 
@@ -159,53 +164,121 @@ th.mat-header-cell:first-of-type, td.mat-cell:first-of-type, td.mat-footer-cell:
 /* Estilos para totales - CON FONDO VERDE */
 .totales-container {
     background: #182a1e !important;
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 20px;
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 22px;
     border: 1px solid #2a3e2e;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 10px 24px rgba(0, 0, 0, 0.18);
 }
 
 .totales-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 15px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
 }
 
 .total-item {
-    background: rgba(255, 255, 255, 0.1);
-    padding: 15px;
-    border-radius: 6px;
+    position: relative;
+    overflow: hidden;
+    padding: 18px 18px 16px;
+    border-radius: 10px;
     border-left: 4px solid #3498db;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    transition: all 0.3s ease;
+    border-top: 1px solid rgba(160, 210, 160, 0.18);
+    border-right: 1px solid rgba(160, 210, 160, 0.12);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.35);
+    background:
+        radial-gradient(circle at 88% -30%, rgba(52, 152, 219, 0.16), transparent 55%),
+        linear-gradient(160deg, rgba(255, 255, 255, 0.10) 0%, rgba(255, 255, 255, 0.03) 100%);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        0 8px 20px rgba(0, 0, 0, 0.28);
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
 .total-item:hover {
-    background: rgba(255, 255, 255, 0.15);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    transform: translateY(-3px);
+    border-left-color: #4aa3e4;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.12),
+        0 14px 30px rgba(0, 0, 0, 0.38),
+        0 0 0 1px rgba(52, 152, 219, 0.2);
 }
 
 .total-item .total-label {
-    display: block;
-    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 11px;
+    font-weight: 600;
     color: #a0d2a0;
-    margin-bottom: 5px;
-    font-weight: 500;
+    margin-bottom: 8px;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 1.1px;
+}
+
+.total-item .total-label::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    flex: 0 0 auto;
+    background: #3498db;
+    border-radius: 2px;
+    transform: rotate(45deg);
+    box-shadow: 0 0 6px rgba(52, 152, 219, 0.6);
 }
 
 .total-item .total-value {
     display: block;
-    font-size: 18px;
-    font-weight: 600;
+    font-size: 21px;
+    font-weight: 700;
     color: #ffffff;
+    letter-spacing: 0.2px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
 }
 
 .total-item .total-general {
     color: #4cd964;
     font-size: 20px;
+}
+
+.total-item-centrado {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.total-item-centrado .total-value {
+    color: #4cd964;
+    font-size: 24px;
+}
+
+.valor-servicio-input {
+    width: 50%;
+    margin-top: 8px;
+}
+
+.valor-servicio-input ::ng-deep .mat-form-field-appearance-fill .mat-form-field-flex {
+    background-color: #384E40 !important;
+    border-radius: 4px !important;
+    height: 40px;
+    align-items: center;
+}
+
+.valor-servicio-input ::ng-deep .mat-form-field-infix {
+    padding: 0.25em 0 !important;
+    border-top: 0.3em solid transparent !important;
+}
+
+.valor-servicio-input ::ng-deep .mat-input-element {
+    color: #ffffff !important;
+}
+
+.valor-servicio-input ::ng-deep .mat-form-field-label {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.valor-servicio-input ::ng-deep .mat-form-field.mat-focused .mat-form-field-ripple {
+    background-color: #3498db !important;
 }
 
 /* Estilos para acciones de selección - CON FONDO VERDE */
@@ -282,6 +355,12 @@ th.mat-header-cell:first-of-type, td.mat-cell:first-of-type, td.mat-footer-cell:
     width: 100px !important;
     min-width: 100px !important;
     max-width: 100px !important;
+}
+
+.mat-column-opNomenclatura {
+    width: 160px !important;
+    min-width: 160px !important;
+    max-width: 180px !important;
 }
 
 .mat-column-propietario {
@@ -365,7 +444,11 @@ th.mat-header-cell:first-of-type, td.mat-cell:first-of-type, td.mat-footer-cell:
 
 /* Estilos para los formularios */
 ::ng-deep .mat-form-field-label {
-    color: #a0d2a0 !important;
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+::ng-deep .mat-input-element::placeholder {
+    color: rgba(255, 255, 255, 0.7) !important;
 }
 
 ::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline {
@@ -449,53 +532,42 @@ button[disabled] {
 /* ESTILOS PARA LA BARRA DE DESPLAZAMIENTO HORIZONTAL */
 .admin-table::-webkit-scrollbar {
     height: 12px;
-    /* Más gruesa que los 8px originales */
 }
 
 .admin-table::-webkit-scrollbar-track {
     background: #1a3325;
-    /* Verde oscuro para el track */
     border-radius: 6px;
     box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3);
 }
 
 .admin-table::-webkit-scrollbar-thumb {
     background: linear-gradient(135deg, #2a553e, #3a7d5a);
-    /* Gradiente verde */
     border-radius: 6px;
     border: 2px solid #1a3325;
-    /* Borde del mismo color que el track */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     transition: all 0.3s ease;
 }
 
 .admin-table::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(135deg, #3a7d5a, #4daa7a);
-    /* Gradiente más claro al hover */
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.4);
     transform: scale(1.05);
-    /* Efecto de agrandamiento al hover */
 }
 
 .admin-table::-webkit-scrollbar-thumb:active {
     background: linear-gradient(135deg, #4daa7a, #5ec98e);
-    /* Más claro al hacer clic */
 }
 
 /* Para Firefox */
 .admin-table {
     scrollbar-width: thick;
-    /* Barra más gruesa en Firefox */
     scrollbar-color: #3a7d5a #1a3325;
-    /* Thumb y track en Firefox */
 }
 
-/* Si quieres un efecto de sombra adicional alrededor de la tabla con scroll */
 .admin-table {
     position: relative;
 }
 
-/* Indicador visual de que hay más contenido */
 .admin-table:after {
     content: '';
     position: absolute;
@@ -508,19 +580,14 @@ button[disabled] {
     pointer-events: none;
 }
 
-/* Para el track cuando está en modo oscuro/verde */
 .admin-table::-webkit-scrollbar-track:hover {
     background: #1e3a2a;
-    /* Un poco más claro al hover sobre el track */
 }
 
-/* Estilo para las esquinas de la scrollbar */
 .admin-table::-webkit-scrollbar-corner {
     background: #182a1e;
-    /* Mismo fondo que la app */
 }
 
-/* Si quieres agregar flechas (no todos los navegadores lo soportan) */
 .admin-table::-webkit-scrollbar-button:single-button {
     background-color: #1a3325;
     display: block;
@@ -528,13 +595,11 @@ button[disabled] {
     background-repeat: no-repeat;
 }
 
-/* Flecha izquierda */
 .admin-table::-webkit-scrollbar-button:single-button:horizontal:decrement {
     background-image: url("data:image/svg+xml;utf8,<svg fill='%233a7d5a' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M15.41 16.09l-4.58-4.59 4.58-4.59L14 5.5l-6 6 6 6z'/><path d='M0-.5h24v24H0z' fill='none'/></svg>");
     background-position: center;
 }
 
-/* Flecha derecha */
 .admin-table::-webkit-scrollbar-button:single-button:horizontal:increment {
     background-image: url("data:image/svg+xml;utf8,<svg fill='%233a7d5a' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M8.59 16.34l4.58-4.59-4.58-4.59L10 5.75l6 6-6 6z'/><path d='M0-.25h24v24H0z' fill='none'/></svg>");
     background-position: center;
@@ -548,27 +613,6 @@ button[disabled] {
     background-color: #2a553e;
 }
 
-/* Versión simplificada si prefieres algo más minimalista */
-/*
-.admin-table::-webkit-scrollbar {
-    height: 14px;
-}
-
-.admin-table::-webkit-scrollbar-track {
-    background: #1e3a2a;
-    border-radius: 10px;
-}
-
-.admin-table::-webkit-scrollbar-thumb {
-    background: #3a7d5a;
-    border-radius: 10px;
-    border: 3px solid #1e3a2a;
-}
-
-.admin-table::-webkit-scrollbar-thumb:hover {
-    background: #4daa7a;
-}
-*/
 /* ESTILOS PARA EL CONTENEDOR DE FILTROS */
 .filtros-container {
     display: flex;
@@ -596,7 +640,6 @@ button[disabled] {
 .limpiar-btn {
     white-space: nowrap;
     height: 56px;
-    /* Altura similar al mat-form-field */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -635,13 +678,11 @@ button[disabled] {
 
 .date-container-wrapper {
     flex: 0 0 auto;
-    /* No crece, no se encoge, tamaño automático */
 }
 
 .date-container {
     margin: 0;
     width: 500px;
-    /* Mantiene el ancho original */
     background: #182a1e;
     border-radius: 8px;
     padding: 10px;
@@ -651,15 +692,12 @@ button[disabled] {
     flex: 0 0 auto;
     margin-left: 15px;
     margin-top: 10px;
-    /* Alinea verticalmente con el contenido */
 }
 
 .btn-limpiar {
     white-space: nowrap;
     height: auto;
-    /* Altura normal */
     padding: 0 16px;
-    /* Padding estándar de botones Material */
 }
 
 /* Responsive */
@@ -693,7 +731,175 @@ button[disabled] {
     margin-top: 1.8% !important;
 }
 
-/* O específicamente para el botón dentro del wrapper */
 .btn-limpiar-wrapper .btn-limpiar {
     margin-top: 1.8% !important;
+}
+
+.date-container {
+    background: transparent !important;
+}
+
+/* ESTILOS PARA FILTROS EXCLUSIVOS POR PERSONA (PILOTO / TÉCNICO / CONTRATISTA) */
+.filtros-persona {
+    display: flex;
+    align-items: stretch;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin: 0 0 12px 0;
+}
+
+.filter-card {
+    flex: 1 1 0;
+    min-width: 200px;
+    border: 1px solid rgba(160, 210, 160, 0.25);
+    border-radius: 8px;
+    overflow: visible;
+    background: transparent;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.filter-card:hover {
+    border-color: rgba(160, 210, 160, 0.45);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+}
+
+.filter-card-header {
+    background-color: #1E5A34;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.1px;
+    padding: 6px 14px;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.filter-card-body {
+    padding: 12px 12px 0 12px;
+}
+
+.filter-card-body-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 64px;
+}
+
+.filter-card-body mat-form-field {
+    width: 100%;
+}
+
+.filter-card-body ::ng-deep .mat-form-field-subscript-wrapper {
+    height: 0 !important;
+    padding-top: 0 !important;
+    overflow: hidden;
+}
+
+.filter-card-body ::ng-deep .mat-form-field-appearance-fill .mat-form-field-flex {
+    padding-bottom: 10px !important;
+}
+
+.filter-card-body ::ng-deep .mat-form-field-appearance-fill .mat-form-field-flex {
+    background-color: #384E40 !important;
+    border-radius: 4px !important;
+    padding: 0.75em 0.75em 0 0.75em !important;
+}
+
+.filter-card-body ::ng-deep .mat-form-field-appearance-fill .mat-form-field-label {
+    color: rgba(255, 255, 255, 0.7) !important;
+    top: 1.28125em !important;
+}
+
+.filter-card-body ::ng-deep .mat-form-field-appearance-fill.mat-form-field-can-float.mat-form-field-should-float .mat-form-field-label {
+    transform: translateY(-1.1em) scale(0.75) !important;
+    color: #3498db !important;
+}
+
+.filter-card-body ::ng-deep .mat-form-field-appearance-fill .mat-form-field-infix {
+    padding: 0.5em 0 !important;
+}
+
+.filter-card-body ::ng-deep .mat-select-value {
+    color: #ffffff !important;
+}
+
+.filter-card-body ::ng-deep .mat-select-placeholder {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.filter-card-body ::ng-deep .mat-select-arrow {
+    color: #a0d2a0 !important;
+}
+
+.filter-card-body ::ng-deep .mat-form-field.mat-focused .mat-form-field-label {
+    color: #3498db !important;
+}
+
+.filter-card-body ::ng-deep .mat-form-field.mat-focused .mat-form-field-ripple {
+    background-color: #3498db !important;
+}
+
+/* Botón Planilla General */
+.btn-planilla-general {
+    background-color: #1976d2;
+    color: #fff;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    padding: 6px 60px;
+    border-radius: 6px;
+    font-size: 16px;
+    line-height: 44px;
+}
+
+.btn-planilla-general:hover {
+    background-color: #1565c0;
+}
+
+.btn-planilla-general.btn-cerrar {
+    background-color: #d32f2f;
+}
+
+.btn-planilla-general.btn-cerrar:hover {
+    background-color: #b71c1c;
+}
+
+.btn-planilla-general svg {
+    stroke: #fff;
+    flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+    .filtros-persona {
+        flex-direction: column;
+        gap: 12px;
+        overflow: visible;
+    }
+
+    .filter-card {
+        min-width: 100%;
+        overflow: visible;
+    }
+}
+
+.fecha-y-limpiar {
+    margin: 6px 0 0 0 !important;
+}
+
+.date-container {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.buscador-gestion {
+    margin: 6px 0 0 0;
+}
+
+/* Rango de fechas más angosto */
+.date-container {
+    width: 320px !important;
+}
+
+mat-date-range-input {
+    width: 100% !important;
 }

@@ -1,10 +1,10 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { SortDirection } from '@angular/material/sort';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { UserList } from '../users/users.interface';
-import { catchError, delay, map, retry, tap } from 'rxjs/operators';
+import { catchError, delay, map, retry, switchMap, tap } from 'rxjs/operators';
 import { ProfileList } from './profiles.interface';
 import { IndexData, IndexList, IndexRange } from '../indexes/index.interface';
 import { Backup } from '../backup/backup.interface';
@@ -55,6 +55,26 @@ export class AdminService {
         );
     }
 
+    // Buscar usuarios duplicados / parecidos para validar antes de guardar
+    buscarUsuariosSimilares(
+        nombre: string,
+        apellido: string,
+        alias: string,
+        perfilUsuario?: string,
+        excluirUsuarioId?: string
+    ): Observable<{ exactos: any[]; similares: any[] }> {
+        let params = new HttpParams();
+        if (nombre) params = params.set('nombre', nombre);
+        if (apellido) params = params.set('apellido', apellido);
+        if (alias) params = params.set('alias', alias);
+        if (perfilUsuario) params = params.set('perfilUsuario', perfilUsuario);
+        if (excluirUsuarioId) params = params.set('excluirUsuarioId', excluirUsuarioId);
+        return this.http.get<{ exactos: any[]; similares: any[] }>(
+            `${this.baseUrl}/usuario/similares`,
+            { params }
+        );
+    }
+
     // updateBatchFlights(vuelos: any[], cambios: any): Observable<any> {
     //     const payload = { vuelos, cambios }; // Prepara el objeto con los datos requeridos
     //     return this.http.put(`${this.baseUrl}/vuelo/admin/batch-update`, payload);
@@ -80,13 +100,14 @@ export class AdminService {
 
     }
 
-    getUsuersAdminList(sort: string = '', order: SortDirection, page: number = 0, filter: string = '', limit: number) {
+    getUsuersAdminList(sort: string = '', order: SortDirection, page: number = 0, filter: string = '', limit: number, perfil: string = '') {
         const params = new HttpParams().appendAll({
             sort,
             order,
             page: page,
             q: filter,
-            limit
+            limit,
+            ...(perfil ? { perfil } : {})
         })
         return this.http.get<any>(`${this.baseUrl}/usuario/admin`, { params })
             .pipe(
@@ -606,8 +627,9 @@ export class AdminService {
         page: number,
         search: string = '',
         limit: number = 100,
-        range?: { fechaDesde: string; fechaHasta: string }
-    ): Observable<{ count: number; rows: any[] }> {
+        range?: { fechaDesde: string; fechaHasta: string },
+        filtros?: { piloto?: string; tecnico?: string; contratista?: string }
+    ): Observable<{ count: number; rows: any[]; totalSuperficie: number }> {
 
         let params = new HttpParams()
             .set('sort', sort)
@@ -618,6 +640,10 @@ export class AdminService {
         if (search) {
             params = params.set('q', search);
         }
+
+        if (filtros?.piloto) params = params.set('piloto', filtros.piloto);
+        if (filtros?.tecnico) params = params.set('tecnico', filtros.tecnico);
+        if (filtros?.contratista) params = params.set('contratista', filtros.contratista);
 
         // ===============================
         // 🔥 NORMALIZACIÓN OBLIGATORIA ISO
@@ -646,12 +672,27 @@ export class AdminService {
         const url = `${this.baseUrl}/vuelo/vuelos/gestion`;
 
         return this.http
-            .get<{ count: number; rows: any[] }>(url, { params })
+            .get<{ count: number; rows: any[]; totalSuperficie: number }>(url, { params })
             .pipe(
                 catchError(error => {
                     throw error;
                 })
             );
+    }
+
+    // Listas para los filtros de gestión: piloto (puro), técnico y contratista
+    getGestionFiltros(): Observable<{
+        pilotos: { usuarioId: string; nombreCompleto: string }[];
+        tecnicos: string[];
+        contratistas: { usuarioId: string; nombreCompleto: string }[];
+    }> {
+        return this.http.get<{
+            pilotos: { usuarioId: string; nombreCompleto: string }[];
+            tecnicos: string[];
+            contratistas: { usuarioId: string; nombreCompleto: string }[];
+        }>(
+            `${this.baseUrl}/vuelo/vuelos/gestion/filtros`
+        );
     }
 
 
@@ -774,14 +815,18 @@ export class AdminService {
         sortDirection: 'asc' | 'desc',
         pageIndex: number,
         search: string = '',
-        pageSize: number = 50
+        pageSize: number = 50,
+        fechaDesde?: string,
+        fechaHasta?: string
     ): Observable<{ items: OrdenPedido[]; total_count: number }> {
-        const params = new HttpParams()
+        let params = new HttpParams()
             .set('sortActive', sortActive)
             .set('sortDirection', sortDirection)
             .set('pageIndex', pageIndex.toString())
             .set('search', search)
             .set('pageSize', pageSize.toString());
+        if (fechaDesde) params = params.set('fechaDesde', fechaDesde);
+        if (fechaHasta) params = params.set('fechaHasta', fechaHasta);
         return this.http.get<{ items: OrdenPedido[]; total_count: number }>(
             `${this.baseUrl}/orden-pedido`, { params }
         );
@@ -831,8 +876,52 @@ export class AdminService {
         return this.http.get<any>(`${this.baseUrl}/backup/auto/status`);
     }
 
-    getUbicacionesOrdenes(): Observable<OrdenPedido[]> {
-        return this.http.get<OrdenPedido[]>(`${this.baseUrl}/orden-pedido/ubicaciones`);
+    getUbicacionesOrdenes(): Observable<{ opId: string; opNomenclatura: string; opUbicacion: string }[]> {
+        return this.http.get<{ opId: string; opNomenclatura: string; opUbicacion: string }[]>(`${this.baseUrl}/orden-pedido/ubicaciones`);
+    }
+
+    syncFlightsWithOrden(ordenData: any): Observable<any> {
+        const params = new HttpParams()
+            .set('sort', 'fechaVuelo')
+            .set('order', 'asc')
+            .set('page', '0')
+            .set('q', ordenData.opNomenclatura || '')
+            .set('limit', '1000');
+
+        return this.http.get<any>(`${this.baseUrl}/vuelo/admin/vuelos`, { params }).pipe(
+            switchMap((result: any) => {
+                const rows = result.items || result.rows || [];
+                const vueloIds = rows.map((v: any) => v.vueloId || v.VueloId).filter(Boolean);
+                if (vueloIds.length === 0) return of(null);
+
+                const cambios: any = {};
+                for (let i = 1; i <= 4; i++) {
+                    cambios[`agq${i}`] = ordenData[`opAgroq${i}`] || null;
+                    cambios[`dosisagq${i}`] = ordenData[`opDosisAgroq${i}`] || 0;
+                }
+                for (let i = 1; i <= 2; i++) {
+                    cambios[`coad${i}`] = ordenData[`opCoad${i}`] || null;
+                    cambios[`dosiscoad${i}`] = ordenData[`opDosisCoad${i}`] || 0;
+                }
+                cambios['formaPago'] = ordenData.opFormaPago;
+                cambios['precioHa'] = ordenData.opPrecioHa;
+                cambios['aclaracion'] = ordenData.opAclaracion || null;
+                cambios['superficieVuelo'] = ordenData.opSuperficie;
+                cambios['cultivoVuelo'] = ordenData.opCultivo;
+                cambios['fechaVuelo'] = ordenData.opFecha;
+                cambios['fk_Usuario'] = ordenData.fk_Propietario;
+
+                if (ordenData.fk_Piloto) {
+                    cambios['pilotoVuelo'] = ordenData.fk_Piloto;
+                    cambios['idPilotoVuelo'] = ordenData.fk_Piloto;
+                }
+                if (ordenData.pilotoNombreCompleto) {
+                    cambios['pilotoNombreCompleto'] = ordenData.pilotoNombreCompleto;
+                }
+
+                return this.updateBatchFlights(vueloIds, cambios);
+            })
+        );
     }
 
 }

@@ -85,3 +85,30 @@ export const errorAlert = (title: string, msg?: string) => {
         confirmButtonText: 'Ok',
     });
 }
+
+export const duplicadosAlert = (usuarios: any[], titulo?: string, isEdit?: boolean) => {
+    const items = usuarios
+        .map((u) => {
+            const nombre = [u.nombreUsuario, u.apellidoUsuario].filter(Boolean).join(' ') || u.aliasUsuario;
+            const perfil = u.perfil || '';
+            return `<li><strong>${nombre}</strong>${perfil ? ` <em>(${perfil})</em>` : ''}${u.aliasUsuario && nombre !== u.aliasUsuario ? ` — alias: ${u.aliasUsuario}` : ''}</li>`;
+        })
+        .join('');
+
+    return Swal.fire({
+        icon: 'warning',
+        title: titulo || 'Se han detectado usuarios parecidos',
+        html: `
+            <div style="text-align:left; font-size:14px;">
+                <p>Se detectaron los siguientes usuarios similares al que está intentando ${isEdit ? 'editar' : 'crear'}:</p>
+                <ul style="margin-left:20px;">${items}</ul>
+                <p style="margin-top:12px; font-weight:bold;">¿Está seguro de no ${isEdit ? 'editar' : 'crear'} un duplicado?</p>
+            </div>
+        `,
+        showDenyButton: true,
+        confirmButtonText: isEdit ? 'Guardar edición' : 'Crear igual',
+        denyButtonText: 'Cancelar',
+        reverseButtons: true,
+        width: 'auto',
+    });
+}

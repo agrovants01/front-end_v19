@@ -1116,11 +1116,14 @@ export class MapService {
     reloadOrdenesPins(): void {
         this._reloadOrdenesPins.next();
     }
+
+    private _reloadFlights = new Subject<void>();
+    flightsReload$ = this._reloadFlights.asObservable();
+
+    reloadFlights(): void {
+        this._reloadFlights.next();
+    }
 }
-
-
-
-
 
 
 

@@ -82,6 +82,11 @@
                 perfilErrorMsg
                 }}</mat-error>
         </mat-form-field>
+
+        <mat-checkbox *ngIf="esPerfilPiloto" formControlName="esContratista" class="form-field contratista-checkbox"
+            color="primary">
+            ¿Es contratista?
+        </mat-checkbox>
     </form>
 </div>
 <!-- END Form Content -->

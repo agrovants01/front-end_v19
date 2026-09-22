@@ -1,6 +1,17 @@
 <div class="orden-form-container">
-    <h2 mat-dialog-title>
-        {{ isReadonly ? 'Orden de Pedido - ' + (data?.opNomenclatura || '') : (isEdit ? 'Editar' : 'Nueva') + ' Orden de Pedido' }}
+    <h2 mat-dialog-title style="display:flex; align-items:center; justify-content:space-between;">
+        <span>{{ formTitle }}</span>
+        <span *ngIf="puedeImprimir && !editando" matTooltip="Editar Orden de Pedido" matTooltipPosition="above"
+            style="padding-right: 24px;">
+            <svg (click)="activarEdicion()" xmlns="http://www.w3.org/2000/svg"
+                class="icon-hover" width="20" height="20" viewBox="0 0 24 24"
+                stroke-width="2" stroke="#B6B6B6" fill="none"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24V24H0z" fill="none"/>
+                <path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4"/>
+                <line x1="13.5" y1="6.5" x2="17.5" y2="10.5"/>
+            </svg>
+        </span>
     </h2>
 
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
@@ -16,147 +27,166 @@
                 </button>
             </mat-form-field>
 
-            <mat-form-field appearance="outline" class="fecha-field">
+            <!-- Propietario (solo en modo creación desde mapa) -->
+            <mat-form-field *ngIf="fromMap && !isReadonly" appearance="outline">
+                <mat-label>Propietario</mat-label>
+                <input matInput formControlName="propietarioSearch" [matAutocomplete]="autoProp"
+                    placeholder="Buscar propietario...">
+                <mat-autocomplete #autoProp="matAutocomplete" (optionSelected)="form.get('fk_Propietario')?.setValue($event.option.value)">
+                    <mat-option *ngFor="let p of filteredPropietarios" [value]="p.usuarioId">
+                        {{ p.nombreUsuario }} {{ p.apellidoUsuario }}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+
+            <!-- Fecha -->
+            <mat-form-field appearance="outline">
                 <mat-label>Fecha</mat-label>
                 <input matInput [matDatepicker]="picker" formControlName="opFecha">
                 <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                 <mat-datepicker #picker></mat-datepicker>
             </mat-form-field>
 
-            <mat-form-field appearance="outline" class="piloto-field">
-                <mat-label>Piloto</mat-label>
+            <!-- Piloto -->
+            <mat-form-field appearance="outline">
+                <mat-label>Piloto*</mat-label>
                 <mat-select formControlName="fk_Piloto">
-                    <mat-option *ngFor="let p of pilotos" [value]="p.usuarioId">
-                        {{ p.aliasUsuario || p.nombreUsuario }}
+                    <mat-option *ngFor="let p of filteredPilotos" [value]="p.usuarioId">
+                        {{ p.nombreUsuario }} {{ p.apellidoUsuario }}
                     </mat-option>
                 </mat-select>
             </mat-form-field>
 
-            <mat-form-field appearance="outline" class="propietario-field">
-                <mat-label>Propietario</mat-label>
-                <input type="text" matInput formControlName="propietarioSearch"
-                    [matAutocomplete]="autoProp"
-                    (input)="!fromMap && filterPropietarios(form.get('propietarioSearch')?.value)">
-                <mat-autocomplete #autoProp="matAutocomplete" [hidden]="fromMap" (optionSelected)="onPropietarioSelected($event.option.value)">
-                    <mat-option *ngFor="let p of filteredPropietarios" [value]="p">
-                        {{ p.aliasUsuario || p.nombreUsuario }}
-                    </mat-option>
-                </mat-autocomplete>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="cultivo-field">
-                <mat-label>Cultivo</mat-label>
+            <!-- Cultivo -->
+            <mat-form-field appearance="outline">
+                <mat-label>Cultivo*</mat-label>
                 <mat-select formControlName="opCultivo">
                     <mat-option *ngFor="let c of cultivoOptions" [value]="c">{{ c }}</mat-option>
                 </mat-select>
             </mat-form-field>
 
-            <mat-form-field appearance="outline" class="superficie-field">
-                <mat-label>Superficie (Ha)</mat-label>
-                <input matInput type="number" step="0.01" formControlName="opSuperficie">
+            <!-- Superficie -->
+            <mat-form-field appearance="outline">
+                <mat-label>Superficie (Ha)*</mat-label>
+                <input matInput type="number" formControlName="opSuperficie">
             </mat-form-field>
 
-            <mat-form-field appearance="outline" class="forma-pago-field">
+            <!-- Forma de Pago -->
+            <mat-form-field appearance="outline">
                 <mat-label>Forma de Pago</mat-label>
                 <mat-select formControlName="opFormaPago">
                     <mat-option *ngFor="let fp of formaPagoOptions" [value]="fp">{{ fp }}</mat-option>
                 </mat-select>
             </mat-form-field>
 
-            <mat-form-field appearance="outline" class="precio-ha-field">
-                <mat-label>Precio por Ha</mat-label>
-                <input matInput [value]="(form.get('opPrecioHa')?.value | numberSeparator)" readonly>
+            <!-- Precio/Ha -->
+            <mat-form-field appearance="outline">
+                <mat-label>Precio/Ha</mat-label>
+                <input matInput type="number" formControlName="opPrecioHa">
             </mat-form-field>
 
-            <mat-form-field appearance="outline" class="precio-total-field">
-                <mat-label>Precio Total (+10.5% IVA)</mat-label>
-                <input matInput [value]="(form.get('opPrecioTotal')?.value | numberSeparator)" readonly>
+            <!-- Precio Total -->
+            <mat-form-field appearance="outline">
+                <mat-label>Precio Total</mat-label>
+                <input matInput type="number" formControlName="opPrecioTotal">
             </mat-form-field>
 
-            <mat-form-field appearance="outline" class="aclaracion-field">
+            <!-- Aclaración -->
+            <mat-form-field appearance="outline" class="full-width">
                 <mat-label>Aclaración</mat-label>
-                <textarea matInput formControlName="opAclaracion" placeholder="Notas o aclaraciones..."></textarea>
+                <textarea matInput formControlName="opAclaracion" rows="2"></textarea>
             </mat-form-field>
 
-            <div class="section-title">
-                Agroquímicos
-                <button type="button" class="add-btn" color="primary" (click)="addAgroquimico()"
-                    [disabled]="agroquimicosArray.length >= 4" matTooltip="Agregar agroquímico" *ngIf="!isReadonly">
-                    +
-                </button>
-            </div>
-
-            <div formArrayName="agroquimicos">
-                <div *ngFor="let agq of agroquimicosArray.controls; let i = index" [formGroupName]="i" class="agroq-row">
-                    <div class="agroq-nombre">
-                        <mat-form-field appearance="outline">
-                            <mat-label>Agroquímico {{ i + 1 }}</mat-label>
-                            <input type="text" matInput formControlName="nombre"
-                                [matAutocomplete]="autoAgq" (input)="filterAgroquimicos(agq.get('nombre')?.value, i)"
-                                (focus)="filteredAgroquimicos = []">
-                            <mat-autocomplete #autoAgq="matAutocomplete"
-                                (optionSelected)="onAgroquimicoSelected($event.option.value, i)">
-                                <mat-option *ngFor="let a of filteredAgroquimicos" [value]="a">
-                                    {{ a.listadoAgroqNom }}
-                                </mat-option>
-                            </mat-autocomplete>
-                        </mat-form-field>
-                        <div *ngIf="agroqError" class="error-msg-inline">{{ agroqError }}</div>
-                    </div>
-                    <mat-form-field appearance="outline" class="agroq-dosis">
-                        <mat-label>Dosis</mat-label>
-                        <input matInput type="number" step="0.01" formControlName="dosis">
-                    </mat-form-field>
-                    <button type="button" mat-icon-button color="warn" (click)="removeAgroquimico(i)" *ngIf="!isReadonly">
-                        <mat-icon>close</mat-icon>
+            <!-- Agroquímicos -->
+            <div class="full-width">
+                <div class="section-title">
+                    Agroquímicos
+                    <button type="button" class="add-btn" color="primary" (click)="addAgroquimico()"
+                        [disabled]="agroquimicosArray.length >= 4" matTooltip="Agregar agroquímico" *ngIf="!isReadonly">
+                        +
                     </button>
+                </div>
+                <div *ngIf="agroqError" class="error-msg">{{ agroqError }}</div>
+                <div formArrayName="agroquimicos">
+                    <div *ngFor="let agq of agroquimicosArray.controls; let i = index" [formGroupName]="i" class="agroq-row">
+                        <div class="agroq-nombre">
+                            <mat-form-field appearance="outline">
+                                <mat-label>Agroquímico {{ i + 1 }}</mat-label>
+                                <input type="text" matInput formControlName="nombre"
+                                    [matAutocomplete]="autoAgq"
+                                    (input)="filterAgroquimicos(agq.get('nombre')?.value, i)"
+                                    (focus)="filteredAgroquimicos = []">
+                                <mat-autocomplete #autoAgq="matAutocomplete"
+                                    (optionSelected)="onAgroquimicoSelected($event.option.value, i)">
+                                    <mat-option *ngFor="let a of filteredAgroquimicos" [value]="a">
+                                        {{ a.listadoAgroqNom }}
+                                    </mat-option>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                            <div *ngIf="agroqError" class="error-msg-inline">{{ agroqError }}</div>
+                        </div>
+                        <mat-form-field appearance="outline" class="agroq-dosis">
+                            <mat-label>Dosis</mat-label>
+                            <input matInput type="number" step="0.01" formControlName="dosis">
+                        </mat-form-field>
+                        <button type="button" mat-icon-button color="warn" (click)="removeAgroquimico(i)" *ngIf="!isReadonly">
+                            <mat-icon>close</mat-icon>
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <div class="section-title">
-                Coadyuvantes
-                <button type="button" class="add-btn add-btn--accent" (click)="addCoadyuvante()"
-                    [disabled]="coadyuvantesArray.length >= 4" matTooltip="Agregar coadyuvante" *ngIf="!isReadonly">
-                    +
-                </button>
-            </div>
-
-            <div formArrayName="coadyuvantes">
-                <div *ngFor="let coad of coadyuvantesArray.controls; let i = index" [formGroupName]="i" class="agroq-row">
-                    <div class="agroq-nombre">
-                        <mat-form-field appearance="outline">
-                            <mat-label>Coadyuvante {{ i + 1 }}</mat-label>
-                            <input type="text" matInput formControlName="nombre"
-                                [matAutocomplete]="autoCoad" (input)="filterCoadyuvantes(coad.get('nombre')?.value, i)"
-                                (focus)="filteredCoadyuvantes = []">
-                            <mat-autocomplete #autoCoad="matAutocomplete"
-                                (optionSelected)="onCoadyuvanteSelected($event.option.value, i)">
-                                <mat-option *ngFor="let c of filteredCoadyuvantes" [value]="c">
-                                    {{ c.ListadoCoadNom }}
-                                </mat-option>
-                            </mat-autocomplete>
-                        </mat-form-field>
-                        <div *ngIf="coadError" class="error-msg-inline">{{ coadError }}</div>
-                    </div>
-                    <mat-form-field appearance="outline" class="agroq-dosis">
-                        <mat-label>Dosis</mat-label>
-                        <input matInput type="number" step="0.01" formControlName="dosis">
-                    </mat-form-field>
-                    <button type="button" mat-icon-button color="warn" (click)="removeCoadyuvante(i)" *ngIf="!isReadonly">
-                        <mat-icon>close</mat-icon>
+            <!-- Coadyuvantes -->
+            <div class="full-width">
+                <div class="section-title">
+                    Coadyuvantes
+                    <button type="button" class="add-btn add-btn--accent" (click)="addCoadyuvante()"
+                        [disabled]="coadyuvantesArray.length >= 2" matTooltip="Agregar coadyuvante" *ngIf="!isReadonly">
+                        +
                     </button>
+                </div>
+                <div *ngIf="coadError" class="error-msg">{{ coadError }}</div>
+                <div formArrayName="coadyuvantes">
+                    <div *ngFor="let coad of coadyuvantesArray.controls; let i = index" [formGroupName]="i" class="agroq-row">
+                        <div class="agroq-nombre">
+                            <mat-form-field appearance="outline">
+                                <mat-label>Coadyuvante {{ i + 1 }}</mat-label>
+                                <input type="text" matInput formControlName="nombre"
+                                    [matAutocomplete]="autoCoad"
+                                    (input)="filterCoadyuvantes(coad.get('nombre')?.value, i)"
+                                    (focus)="filteredCoadyuvantes = []">
+                                <mat-autocomplete #autoCoad="matAutocomplete"
+                                    (optionSelected)="onCoadyuvanteSelected($event.option.value, i)">
+                                    <mat-option *ngFor="let c of filteredCoadyuvantes" [value]="c">
+                                        {{ c.ListadoCoadNom }}
+                                    </mat-option>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                            <div *ngIf="coadError" class="error-msg-inline">{{ coadError }}</div>
+                        </div>
+                        <mat-form-field appearance="outline" class="agroq-dosis">
+                            <mat-label>Dosis</mat-label>
+                            <input matInput type="number" step="0.01" formControlName="dosis">
+                        </mat-form-field>
+                        <button type="button" mat-icon-button color="warn" (click)="removeCoadyuvante(i)" *ngIf="!isReadonly">
+                            <mat-icon>close</mat-icon>
+                        </button>
+                    </div>
                 </div>
             </div>
 
         </div>
 
-        <div mat-dialog-actions class="action-buttons" [class.action-buttons--center]="isReadonly">
+        <div mat-dialog-actions class="action-buttons">
+            <button *ngIf="puedeImprimir && !editando" type="button" mat-raised-button color="primary" (click)="imprimirReporte()">
+                <mat-icon style="font-weight: 400; vertical-align: middle;">print</mat-icon>&nbsp;Imprimir reporte
+            </button>
             <button type="button" mat-raised-button color="warn" (click)="onCancel()">
-                {{ isReadonly ? 'Cerrar' : 'Cancelar' }}
+                {{ editando ? 'Descartar cambios' : (isReadonly ? 'Cerrar' : 'Cancelar') }}
             </button>
             <button type="submit" *ngIf="!isReadonly" mat-raised-button color="primary"
                 [disabled]="form.invalid || (fromMap && !form.get('opUbicacion')?.value)">
-                {{ isEdit ? 'Actualizar' : 'Crear' }}
+                {{ modoMapa ? 'Guardar edición' : (isEdit ? 'Actualizar' : 'Crear') }}
             </button>
         </div>
     </form>

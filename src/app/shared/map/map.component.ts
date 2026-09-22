@@ -172,6 +172,7 @@ export class MapComponent implements OnInit, OnDestroy {
                 ...orden,
                 soloLectura: true,
                 desdeMapa: false,
+                puedeImprimir: true,
                 nombreCompleto: localStorage.getItem('nombreCompleto'),
             },
         });

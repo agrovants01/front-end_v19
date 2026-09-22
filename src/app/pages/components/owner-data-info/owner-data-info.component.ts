@@ -6,6 +6,7 @@ import { Observable, Subject } from 'rxjs';
 import { takeUntil, startWith, map } from 'rxjs/operators';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { GlobalsService } from 'src/app/shared/services/globals.service';
+import { MapService } from 'src/app/shared/services/map.service';
 import { confirmAlert, successAlert, errorAlert } from '../../../shared/services/alerts';
 import { LayerService } from '../../services/layer.service';
 import { ObservationsService } from '../../services/observations.service';
@@ -118,7 +119,8 @@ export class OwnerDataInfoComponent implements OnInit {
         private ownerService: OwnerService,
         private layerService: LayerService,
         private router: Router,
-        private _adminService: AdminService
+        private _adminService: AdminService,
+        private mapService: MapService
     ) {
         this.vuelosSeleccionados = data;
 
@@ -422,7 +424,7 @@ export class OwnerDataInfoComponent implements OnInit {
                                 .pipe(takeUntil(this.unsubscribe$))
                                 .subscribe((_) => {
                                     successAlert('El vuelo ha sido eliminado')
-                                        .then(() => { this.globalsService.reloadPage(); });
+                                        .then(() => { this.mapService.reloadFlights(); });
                                 }, error => {
                                     console.log(error);
                                     errorAlert(error.error.msg)
@@ -514,6 +516,9 @@ export class OwnerDataInfoComponent implements OnInit {
             formaPagoUpdateFlight: orden.opFormaPago,
             precioHaUpdateFlight: orden.opPrecioHa,
             aclaracionUpdateFlight: orden.opAclaracion || '',
+            cultivoUpdateFlight: orden.opCultivo,
+            cultivoUpdateFlightText: orden.opCultivo,
+            dateUpdateFlight: orden.opFecha,
         });
 
         if (orden.fk_Piloto) {
@@ -646,8 +651,7 @@ export class OwnerDataInfoComponent implements OnInit {
                                 .subscribe((_) => {
                                     successAlert('El vuelo ha sido actualizado')
                                         .then(() => {
-                                            this.globalsService.reloadPage();
-
+                                            this.mapService.reloadFlights();
                                         });
                                 }, error => {
                                     console.log(error);

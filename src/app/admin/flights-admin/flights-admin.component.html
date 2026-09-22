@@ -60,13 +60,15 @@
 
 
 
-            <div class="admin__content admin__users">
-                <mat-progress-bar *ngIf="isLoadingResults" mode="query"></mat-progress-bar>
-
+            <div class="filtros-vuelos">
+                <mat-form-field appearance="fill" class="filtro-busqueda">
+                    <mat-label>Buscar Vuelo</mat-label>
+                    <input matInput [formControl]="searchFlights" placeholder="Buscar..." />
+                </mat-form-field>
 
                 <!--BUSCADOR POR RANGO DE FECHAS-->
                 <div class="date-container">
-                    <mat-form-field appearance="outline">
+                    <mat-form-field appearance="fill">
                         <mat-label>Rango de fechas</mat-label>
                         <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
                             <input matStartDate formControlName="start" placeholder="Fecha desde" />
@@ -80,18 +82,16 @@
                         </mat-icon>
                     </mat-form-field>
                 </div>
+            </div>
 
-
-                <!-- FILTRO Y TABLA DE RESULTADOS -->
-                <mat-form-field appearance="outline">
-                    <mat-label>Buscar Vuelo</mat-label>
-                    <input matInput [formControl]="searchFlights" placeholder="Buscar..." />
-                </mat-form-field>
+            <div class="admin__content admin__users">
+                <mat-progress-bar *ngIf="isLoadingResults" mode="query"></mat-progress-bar>
 
                 <!-- <button mat-button (click)="exportarResultados()">Exportar resultados a Excel</button> -->
 
                 <div class="admin-table">
-                    <table mat-table [dataSource]="data" matSort>
+                    <div class="table-scroll-wrapper" #scrollWrapper>
+                        <table mat-table [dataSource]="data" matSort>
 
                         <!-- Checkbox Column -->
                         <ng-container matColumnDef="select">
@@ -178,7 +178,7 @@
                                 Piloto
                             </th>
                             <td [style.font-size]="'1.2rem'" *matCellDef="let row">
-                                {{ row.pilotoNombreCompleto }}
+                                {{ row.pilotoNombreCompleto }}{{ row.esContratistaPiloto ? ' (C)' : '' }}
                             </td>
                         </ng-container>
 
@@ -240,6 +240,7 @@
                             </td>
                         </tr>
                     </table>
+                    </div>
 
                     <mat-paginator [length]="resultsLength" [pageSize]="50" [pageSizeOptions]="pageSizeOptions">
                     </mat-paginator>
